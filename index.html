@@ -166,27 +166,31 @@
 <!-- SKILL SUBMIT MODAL -->
 <div id="skillModal" class="skill-modal-overlay hidden" onclick="if(event.target===this)closeSkillModal()">
   <div class="skill-modal">
-    <h3>💡 みんなのスキルを投稿</h3>
-    <p class="sub">全社定例などで「こんな使い方してる！」を共有しよう。投稿するとすぐにカードとして表示されます。</p>
+    <h3>✍️ 私の活用事例を投稿</h3>
+    <p class="sub">2週に1回の定例でシェアした内容をここに記録しよう。投稿するとすぐにカードとして表示されます。</p>
     <div class="form-row">
       <label>あなたの名前 <span style="color:#EF4444">*</span></label>
       <input id="skill-name" class="form-control" type="text" placeholder="例：Hiro" maxlength="30" />
     </div>
     <div class="form-row">
-      <label>スキル名・タイトル <span style="color:#EF4444">*</span></label>
-      <input id="skill-title" class="form-control" type="text" placeholder="例：請求書メールを30秒で返信" maxlength="60" />
+      <label>やったこと（タイトル）<span style="color:#EF4444">*</span></label>
+      <input id="skill-title" class="form-control" type="text" placeholder="例：請求書メールを30秒で返信できるようにした" maxlength="60" />
     </div>
     <div class="form-row">
-      <label>一言説明 <span style="color:#EF4444">*</span></label>
-      <textarea id="skill-desc" class="form-control" placeholder="何をどう使っているか、ひとことで説明してください"></textarea>
+      <label>使ったツール <span style="color:#EF4444">*</span></label>
+      <input id="skill-tools" class="form-control" type="text" placeholder="例：Claude / Slack / Notion / GAS" maxlength="80" />
     </div>
     <div class="form-row">
-      <label>何が変わった？<span class="hint">（任意）</span></label>
-      <input id="skill-stat" class="form-control" type="text" placeholder="例：作業時間が1時間→15分に" maxlength="50" />
+      <label>Before — やる前はどうだった？<span style="color:#EF4444">*</span></label>
+      <textarea id="skill-before" class="form-control" placeholder="例：メールの返信文を毎回ゼロから書いていた。1通15〜20分かかっていた。"></textarea>
     </div>
     <div class="form-row">
-      <label>プロンプト例<span class="hint">（任意）実際に使っているプロンプトや手順</span></label>
-      <textarea id="skill-prompt" class="form-control" placeholder="コピペで使えるプロンプトがあれば貼ってください"></textarea>
+      <label>After — どう変わった？<span style="color:#EF4444">*</span></label>
+      <textarea id="skill-after" class="form-control" placeholder="例：話し言葉で指示するだけで下書きが完成。確認して送るだけになった。30秒で完了。"></textarea>
+    </div>
+    <div class="form-row">
+      <label>使ったプロンプト<span class="hint">（任意）コピペで使えるプロンプトがあれば</span></label>
+      <textarea id="skill-prompt" class="form-control" placeholder="例：〇〇さんへの返信メールを書いて。丁寧だけど簡潔に。"></textarea>
     </div>
     <div class="form-row">
       <label>カテゴリ<span class="hint">（複数選択OK）</span></label>
@@ -322,7 +326,7 @@
     </div>
     <button class="submit-skill-btn shrink-0" onclick="openSkillModal()">
       <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-      スキルを投稿
+      私の事例を投稿
     </button>
   </div>
 
@@ -1387,7 +1391,7 @@ function openSkillModal() {
 
 function closeSkillModal() {
   document.getElementById('skillModal').classList.add('hidden');
-  ['skill-name','skill-title','skill-desc','skill-stat','skill-prompt'].forEach(id => {
+  ['skill-name','skill-title','skill-tools','skill-before','skill-after','skill-prompt'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.querySelectorAll('.tag-check').forEach(cb => cb.checked = false);
@@ -1401,13 +1405,14 @@ function submitSkill() {
   if (!db) { alert('Firebase が設定されていないため投稿できません。'); return; }
   const name   = document.getElementById('skill-name').value.trim();
   const title  = document.getElementById('skill-title').value.trim();
-  const desc   = document.getElementById('skill-desc').value.trim();
-  const stat   = document.getElementById('skill-stat').value.trim();
+  const tools  = document.getElementById('skill-tools').value.trim();
+  const before = document.getElementById('skill-before').value.trim();
+  const after  = document.getElementById('skill-after').value.trim();
   const prompt = document.getElementById('skill-prompt').value.trim();
   const tags   = Array.from(document.querySelectorAll('.tag-check:checked')).map(cb => cb.value);
 
-  if (!name || !title || !desc) {
-    alert('名前・タイトル・説明は必須です。');
+  if (!name || !title || !tools || !before || !after) {
+    alert('名前・タイトル・ツール・Before・Afterは必須です。');
     return;
   }
 
@@ -1417,8 +1422,7 @@ function submitSkill() {
   setMyName(name);
 
   db.collection('skills').add({
-    person: name, title, desc,
-    stat:   stat   || null,
+    person: name, title, tools, before, after,
     prompt: prompt || null,
     tags,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1450,17 +1454,33 @@ function loadCommunitySkills() {
     .onSnapshot(snapshot => {
       communityCards = snapshot.docs.map(doc => {
         const d = doc.data();
+        // Support both old format (desc/stat) and new format (before/after/tools)
+        const hasBeforeAfter = d.before || d.after;
+        const toolsHtml = d.tools
+          ? `<p style="font-size:.75rem;color:#6B7280;margin-bottom:.75rem;">🛠 ${escHtml(d.tools)}</p>` : '';
+        const beforeHtml = d.before
+          ? `<div style="background:#FFF7ED;border-left:3px solid #F97316;padding:.75rem 1rem;border-radius:0 .5rem .5rem 0;margin-bottom:.5rem;"><p style="font-size:.7rem;font-weight:700;color:#C2410C;margin-bottom:.25rem;">BEFORE</p><p style="font-size:.78rem;color:#7C2D12;line-height:1.55;">${escHtml(d.before)}</p></div>` : '';
+        const afterHtml = d.after
+          ? `<div style="background:#F0FDF4;border-left:3px solid #22C55E;padding:.75rem 1rem;border-radius:0 .5rem .5rem 0;margin-bottom:.75rem;"><p style="font-size:.7rem;font-weight:700;color:#15803D;margin-bottom:.25rem;">AFTER</p><p style="font-size:.78rem;color:#14532D;line-height:1.55;">${escHtml(d.after)}</p></div>` : '';
         const promptHtml = d.prompt
-          ? `<div class="cmd-box mt-3">${escHtml(d.prompt)}</div>` : '';
+          ? `<div class="cmd-box mt-1">${escHtml(d.prompt)}</div>` : '';
+        // Old format fallback
+        const descHtml = !hasBeforeAfter && d.desc
+          ? `<p style="font-size:.82rem;color:#374151;line-height:1.6;margin-bottom:.75rem;">${escHtml(d.desc)}</p>` : '';
+        const statHtml = !hasBeforeAfter && d.stat
+          ? `<span class="stat">${escHtml(d.stat)}</span>` : '';
+        const shortDesc = hasBeforeAfter
+          ? (d.before ? d.before.slice(0, 60) + (d.before.length > 60 ? '…' : '') : '')
+          : (d.desc || '');
         return {
           id: `community-${doc.id}`,
           type: 'community',
           title: d.title,
           tags: d.tags || [],
-          desc: d.desc,
+          desc: shortDesc,
           person: d.person,
-          stat: d.stat || null,
-          detail: `<div class="person-chip mb-4"><span class="dot"></span>${escHtml(d.person)}</div>${promptHtml}`
+          stat: (!hasBeforeAfter && d.stat) ? d.stat : null,
+          detail: `<div class="person-chip mb-3"><span class="dot"></span>${escHtml(d.person)}</div>${toolsHtml}${beforeHtml}${afterHtml}${descHtml}${statHtml}${promptHtml}`
         };
       });
       applyFilters();
