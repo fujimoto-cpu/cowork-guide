@@ -280,7 +280,7 @@
       <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
         <div class="w-8 h-8 rounded-xl bg-gray-900 text-white flex items-center justify-center text-xs font-bold mb-3">3</div>
         <h3 class="font-semibold text-sm mb-1">ツールを接続する</h3>
-        <p class="text-xs text-gray-500 leading-relaxed">サイドバー「Connectors」からSlack・Notion・Googleを接続。</p>
+        <p class="text-xs text-gray-500 leading-relaxed">設定メニューの「コネクタ」からSlack・Notion・Googleを接続。</p>
       </div>
       <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
         <div class="w-8 h-8 rounded-xl bg-gray-900 text-white flex items-center justify-center text-xs font-bold mb-3">4</div>
@@ -495,7 +495,7 @@ const cards = [
           <div class="step-body"><strong>生成された文章をメールアプリにコピペ</strong></div>
         </div>
       </div>
-      <div class="tip-box"><p>✅ PMの Aさんが実践中。スケジュール調整メールの作成時間が半分以下になったとのこと。</p></div>
+      <div class="tip-box"><p>✅ 社内のPM担当が「メール作成の自動化（音声入力→Claude自動作成）」として活用しています。</p></div>
     `
   },
 
@@ -513,7 +513,7 @@ const cards = [
       <div class="step-list mb-4">
         <div class="step-row">
           <div class="step-num">1</div>
-          <div class="step-body"><strong>左サイドバー「Connectors」をクリック</strong></div>
+          <div class="step-body"><strong>設定 → コネクタ を開く</strong></div>
         </div>
         <div class="step-row">
           <div class="step-num">2</div>
@@ -575,7 +575,7 @@ const cards = [
       <div class="step-list mb-4">
         <div class="step-row">
           <div class="step-num">1</div>
-          <div class="step-body"><strong>左サイドバー「Connectors」をクリック</strong></div>
+          <div class="step-body"><strong>設定 → コネクタ を開く</strong></div>
         </div>
         <div class="step-row">
           <div class="step-num">2</div>
@@ -596,13 +596,13 @@ const cards = [
     type: 'link',
     title: 'Notion を Cowork に接続する',
     tags: ['Notion', '連携'],
-    desc: 'Notionのタスク・ページ・DBをCoworkから読み書きできます。タスク管理が劇的に楽になります。',
+    desc: 'Notionのタスク・ページ・DBをCoworkから読み書きできます。',
     related: [{ id: 'morning-briefing', label: '朝のブリーフィングを自動化する' }, { id: 'google-meet', label: 'Google Meet議事録を自動保存する' }],
     detail: `
       <div class="step-list mb-4">
         <div class="step-row">
           <div class="step-num">1</div>
-          <div class="step-body"><strong>左サイドバー「Connectors」→ Notion を選択</strong></div>
+          <div class="step-body"><strong>設定 → コネクタ → Notion を選択</strong></div>
         </div>
         <div class="step-row">
           <div class="step-num">2</div>
@@ -629,7 +629,7 @@ const cards = [
       <div class="step-list mb-4">
         <div class="step-row">
           <div class="step-num">1</div>
-          <div class="step-body"><strong>左サイドバー「Connectors」→ Google Calendar</strong></div>
+          <div class="step-body"><strong>設定 → コネクタ → Google Calendar を選択</strong></div>
         </div>
         <div class="step-row">
           <div class="step-num">2</div>
@@ -681,7 +681,7 @@ const cards = [
     title: '議事録の要点をSlackに自動共有したい',
     tags: ['Notion', 'Slack', '自動化'],
     related: [{ id: 'google-meet', label: '先に：Google Meetの議事録を作る' }, { id: 'notion-connect', label: 'Notionを接続する' }, { id: 'slack-connect', label: 'Slackを接続する' }],
-    desc: 'Notionに保存された議事録を読んで、決定事項とアクションをSlackに自動投稿。会議参加者への共有が一瞬で完了します。',
+    desc: 'Notionに保存された議事録を読んで、決定事項とアクションをSlackに投稿。会議後の共有作業をCoworkに任せられます。',
     detail: `
       <div class="step-list mb-4">
         <div class="step-row">
@@ -694,8 +694,7 @@ const cards = [
         </div>
       </div>
       <div class="cmd-box mb-3">Notionの今日の〇〇定例の議事録を読んで、「決定事項」と「みんなに関係あるアクション」を3〜5行にまとめて、Slackの#〇〇チャンネルに投稿して。</div>
-      <div class="tip-box mb-2"><p>✅ 議事録のNotion URLを直接貼って指定することもできます。</p></div>
-      <div class="tip-box"><p>✅ スケジュール機能と組み合わせると、定例会議の翌日朝に自動で共有することも可能です。</p></div>
+      <div class="tip-box"><p>✅ 議事録のNotion URLを直接貼って指定することもできます。</p></div>
     `
   },
 
