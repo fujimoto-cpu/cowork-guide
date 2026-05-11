@@ -1184,6 +1184,7 @@ function escHtml(str) {
 const reactionListeners = {};
 const likeListeners    = {};
 let _pendingReactionCardId = null;
+let _pendingLikeCardId     = null;
 
 function getMyName() { return localStorage.getItem('cowork_member_name') || ''; }
 function setMyName(name) { localStorage.setItem('cowork_member_name', name); }
@@ -1202,6 +1203,7 @@ function handleReaction(cardId) {
 
 function closeNameModal() {
   _pendingReactionCardId = null;
+  _pendingLikeCardId     = null;
   document.getElementById('nameModal').classList.add('hidden');
 }
 
@@ -1213,6 +1215,9 @@ function confirmName() {
   if (_pendingReactionCardId) {
     toggleReaction(_pendingReactionCardId, name);
     _pendingReactionCardId = null;
+  } else if (_pendingLikeCardId) {
+    toggleLike(_pendingLikeCardId, name);
+    _pendingLikeCardId = null;
   }
 }
 document.getElementById('nameInput')?.addEventListener('keydown', e => {
@@ -1264,8 +1269,10 @@ function loadReactions(cardId) {
 function handleLike(cardId) {
   const name = getMyName();
   if (!name) {
-    _pendingReactionCardId = cardId; // 名前モーダルを流用
-    openNameModal();
+    _pendingLikeCardId = cardId;
+    document.getElementById('nameModal').classList.remove('hidden');
+    document.getElementById('nameInput').value = '';
+    setTimeout(() => document.getElementById('nameInput').focus(), 50);
     return;
   }
   toggleLike(cardId, name);
