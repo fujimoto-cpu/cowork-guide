@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cowork 活用ガイド | KONNEKT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: 'Inter', 'Noto Sans JP', sans-serif; }
+
+    /* Cards */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; }
+    .card { transition: box-shadow .15s, transform .15s; }
+    .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.07); transform: translateY(-2px); }
+
+    /* Badges */
+    .badge-step   { background:#EFF6FF; color:#1D4ED8; }
+    .badge-case   { background:#FFF7ED; color:#C2410C; }
+    .badge-link   { background:#FAF5FF; color:#7C3AED; }
+
+    /* Tags */
+    .tag { display:inline-block; padding:2px 10px; border-radius:99px; font-size:.72rem; font-weight:500; background:#F3F4F6; color:#6B7280; }
+
+    /* Filter */
+    .filter-btn { transition:all .15s; }
+    .filter-btn.active { background:#1A1A1A; color:#fff; }
+    .filter-btn:not(.active):hover { background:#F3F4F6; }
+
+    /* Accordion */
+    details summary { cursor:pointer; list-style:none; }
+    details summary::-webkit-details-marker { display:none; }
+    details[open] .chevron { transform:rotate(180deg); }
+    .chevron { transition:transform .2s; }
+
+    /* Step list inside detail */
+    .step-list { display:flex; flex-direction:column; gap:.75rem; }
+    .step-row { display:flex; gap:.75rem; align-items:flex-start; }
+    .step-num { flex-shrink:0; width:1.75rem; height:1.75rem; border-radius:50%; background:#1A1A1A; color:#fff; font-size:.72rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    .step-body { flex:1; padding-top:.2rem; }
+    .step-body strong { font-size:.82rem; color:#111; display:block; margin-bottom:.2rem; }
+    .step-body p { font-size:.78rem; color:#6B7280; line-height:1.55; }
+
+    /* Tip / Note boxes */
+    .tip-box { background:#F0FDF4; border-left:3px solid #22C55E; padding:.75rem 1rem; border-radius:0 .5rem .5rem 0; }
+    .tip-box p { font-size:.78rem; color:#15803D; line-height:1.55; }
+    .note-box { background:#FFF7ED; border-left:3px solid #F97316; padding:.75rem 1rem; border-radius:0 .5rem .5rem 0; }
+    .note-box p { font-size:.78rem; color:#C2410C; line-height:1.55; }
+    .cmd-box { background:#F8FAFC; border:1px solid #E2E8F0; border-radius:.5rem; padding:.75rem 1rem; font-family:monospace; font-size:.78rem; color:#334155; line-height:1.6; }
+
+    /* PDF button */
+    .pdf-btn { display:inline-flex; align-items:center; gap:.5rem; background:#1A1A1A; color:#fff; font-size:.75rem; font-weight:600; padding:.5rem 1rem; border-radius:.625rem; text-decoration:none; transition:opacity .15s; }
+    .pdf-btn:hover { opacity:.85; }
+    .pdf-btn-outline { display:inline-flex; align-items:center; gap:.5rem; background:#fff; color:#1A1A1A; font-size:.75rem; font-weight:600; padding:.5rem 1rem; border-radius:.625rem; text-decoration:none; border:1.5px solid #D1D5DB; transition:background .15s; }
+    .pdf-btn-outline:hover { background:#F9FAFB; }
+
+    /* Person chip */
+    .person-chip { display:inline-flex; align-items:center; gap:.35rem; background:#F3F4F6; border-radius:99px; padding:.25rem .75rem; font-size:.72rem; font-weight:600; color:#374151; }
+    .person-chip .dot { width:6px; height:6px; border-radius:50%; background:#22C55E; }
+
+    /* Stat pill */
+    .stat { display:inline-block; background:#FFF7ED; color:#C2410C; font-size:.7rem; font-weight:700; padding:.2rem .6rem; border-radius:.375rem; }
+
+    /* Related card links */
+    .related-section { border-top:1px solid #E5E7EB; margin-top:1rem; padding-top:.875rem; }
+    .related-chip { display:inline-flex; align-items:center; gap:.35rem; background:#fff; border:1.5px solid #E5E7EB; color:#374151; font-size:.72rem; font-weight:600; padding:.3rem .75rem; border-radius:99px; cursor:pointer; transition:all .15s; text-decoration:none; }
+    .related-chip:hover { border-color:#1A1A1A; color:#1A1A1A; background:#F9FAFB; }
+    .related-chip svg { flex-shrink:0; }
+
+    /* Jump highlight */
+    @keyframes cardFlash { 0%,100%{box-shadow:0 0 0 0 rgba(99,102,241,0)} 30%{box-shadow:0 0 0 4px rgba(99,102,241,.35)} }
+    .card-flash { animation: cardFlash .8s ease; }
+
+    /* Community skill badge */
+    .badge-community { background:#FFFBEB; color:#92400E; }
+
+    /* Skill submit button */
+    .submit-skill-btn { display:inline-flex; align-items:center; gap:.4rem; padding:.45rem 1rem; border-radius:99px; border:1.5px dashed #D1D5DB; background:#fff; font-size:.75rem; font-weight:600; color:#6B7280; cursor:pointer; transition:all .15s; }
+    .submit-skill-btn:hover { border-color:#1A1A1A; color:#1A1A1A; background:#F9FAFB; }
+
+    /* Skill submit modal */
+    .skill-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:100; display:flex; align-items:flex-end; justify-content:center; padding:0; }
+    @media(min-width:640px){ .skill-modal-overlay { align-items:center; padding:1rem; } }
+    .skill-modal { background:#fff; border-radius:1.5rem 1.5rem 0 0; padding:1.75rem 1.5rem 2rem; width:100%; max-width:520px; box-shadow:0 -8px 40px rgba(0,0,0,.12); max-height:90vh; overflow-y:auto; }
+    @media(min-width:640px){ .skill-modal { border-radius:1.5rem; } }
+    .skill-modal h3 { font-size:1.05rem; font-weight:700; margin-bottom:.25rem; }
+    .skill-modal .sub { font-size:.78rem; color:#6B7280; margin-bottom:1.25rem; line-height:1.55; }
+    .form-row { display:flex; flex-direction:column; gap:.35rem; margin-bottom:.875rem; }
+    .form-row label { font-size:.75rem; font-weight:600; color:#374151; }
+    .form-row .hint { font-size:.68rem; color:#9CA3AF; }
+    .form-control { padding:.6rem .875rem; border:1.5px solid #E5E7EB; border-radius:.75rem; font-size:.82rem; outline:none; font-family:inherit; transition:border .15s; width:100%; box-sizing:border-box; }
+    .form-control:focus { border-color:#1A1A1A; }
+    textarea.form-control { resize:none; height:80px; line-height:1.55; }
+    .tag-checkboxes { display:flex; flex-wrap:wrap; gap:.4rem; }
+    .tag-check { display:none; }
+    .tag-check + label { display:inline-block; padding:.25rem .75rem; border-radius:99px; border:1.5px solid #E5E7EB; font-size:.72rem; font-weight:600; color:#6B7280; cursor:pointer; transition:all .15s; }
+    .tag-check:checked + label { background:#1A1A1A; color:#fff; border-color:#1A1A1A; }
+    .modal-footer { display:flex; gap:.5rem; justify-content:flex-end; margin-top:1.25rem; border-top:1px solid #F3F4F6; padding-top:1.25rem; }
+    .btn-cancel-lg { padding:.6rem 1.25rem; border-radius:.75rem; border:1.5px solid #E5E7EB; background:#fff; font-size:.82rem; font-weight:600; cursor:pointer; }
+    .btn-submit-lg { padding:.6rem 1.5rem; border-radius:.75rem; background:#1A1A1A; color:#fff; font-size:.82rem; font-weight:600; border:none; cursor:pointer; }
+    .btn-submit-lg:hover { opacity:.85; }
+    .btn-submit-lg:disabled { opacity:.4; cursor:not-allowed; }
+
+    /* Reaction bar */
+    .reaction-bar { display:flex; align-items:center; gap:.625rem; padding:.625rem 1.25rem; border-top:1px solid #F3F4F6; flex-wrap:wrap; }
+    .reaction-btn { display:inline-flex; align-items:center; gap:.375rem; padding:.3rem .75rem; border-radius:99px; border:1.5px solid #E5E7EB; background:#fff; font-size:.75rem; font-weight:600; cursor:pointer; transition:all .15s; color:#6B7280; white-space:nowrap; }
+    .reaction-btn:hover { border-color:#22C55E; color:#15803D; background:#F0FDF4; }
+    .reaction-btn.reacted { border-color:#22C55E; background:#F0FDF4; color:#15803D; }
+    .reaction-btn .count { font-weight:700; }
+    .reaction-members { font-size:.72rem; color:#9CA3AF; line-height:1.4; }
+
+    /* Name setup modal */
+    .name-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:100; display:flex; align-items:center; justify-content:center; padding:1rem; }
+    .name-modal { background:#fff; border-radius:1.25rem; padding:1.75rem; width:100%; max-width:360px; box-shadow:0 20px 60px rgba(0,0,0,.15); }
+    .name-modal h3 { font-size:1rem; font-weight:700; margin-bottom:.375rem; }
+    .name-modal p { font-size:.8rem; color:#6B7280; margin-bottom:1rem; line-height:1.55; }
+    .name-modal input { width:100%; padding:.625rem .875rem; border:1.5px solid #E5E7EB; border-radius:.75rem; font-size:.875rem; outline:none; font-family:inherit; margin-bottom:.875rem; }
+    .name-modal input:focus { border-color:#1A1A1A; }
+    .name-modal .modal-btns { display:flex; gap:.5rem; justify-content:flex-end; }
+    .name-modal .btn-cancel { padding:.5rem 1rem; border-radius:.625rem; border:1.5px solid #E5E7EB; background:#fff; font-size:.8rem; font-weight:600; cursor:pointer; }
+    .name-modal .btn-ok { padding:.5rem 1.25rem; border-radius:.625rem; background:#1A1A1A; color:#fff; font-size:.8rem; font-weight:600; border:none; cursor:pointer; }
+    .name-modal .btn-ok:hover { opacity:.85; }
+
+    /* Comment section */
+    .comment-toggle { width:100%; display:flex; align-items:center; gap:.5rem; padding:.75rem 1.25rem; font-size:.75rem; font-weight:600; color:#6B7280; background:#fff; border:none; border-top:1px solid #F3F4F6; cursor:pointer; transition:background .15s; text-align:left; }
+    .comment-toggle:hover { background:#F9FAFB; color:#374151; }
+    .comment-toggle .count-badge { background:#F3F4F6; color:#6B7280; font-size:.68rem; padding:.1rem .5rem; border-radius:99px; }
+    .comment-panel { border-top:1px solid #F3F4F6; background:#FAFAFA; }
+    .comment-list { padding:.75rem 1.25rem; display:flex; flex-direction:column; gap:.75rem; }
+    .comment-item { background:#fff; border:1px solid #F3F4F6; border-radius:.75rem; padding:.75rem 1rem; }
+    .comment-meta { display:flex; align-items:center; gap:.5rem; margin-bottom:.35rem; }
+    .comment-author { font-size:.75rem; font-weight:700; color:#374151; }
+    .comment-time { font-size:.68rem; color:#9CA3AF; }
+    .comment-text { font-size:.78rem; color:#4B5563; line-height:1.6; white-space:pre-wrap; }
+    .comment-empty { font-size:.75rem; color:#9CA3AF; text-align:center; padding:1rem; }
+    .comment-form { padding:.75rem 1.25rem 1rem; display:flex; flex-direction:column; gap:.5rem; border-top:1px solid #F3F4F6; }
+    .comment-name { padding:.5rem .75rem; border:1.5px solid #E5E7EB; border-radius:.625rem; font-size:.78rem; outline:none; transition:border .15s; font-family:inherit; }
+    .comment-name:focus { border-color:#1A1A1A; }
+    .comment-textarea { padding:.5rem .75rem; border:1.5px solid #E5E7EB; border-radius:.625rem; font-size:.78rem; outline:none; resize:none; height:72px; line-height:1.55; transition:border .15s; font-family:inherit; }
+    .comment-textarea:focus { border-color:#1A1A1A; }
+    .comment-submit { align-self:flex-end; background:#1A1A1A; color:#fff; font-size:.75rem; font-weight:600; padding:.5rem 1.25rem; border-radius:.625rem; border:none; cursor:pointer; transition:opacity .15s; }
+    .comment-submit:hover { opacity:.8; }
+    .comment-submit:disabled { opacity:.4; cursor:not-allowed; }
+
+    /* Copy link button */
+    .copy-link-btn { position:relative; display:flex; align-items:center; justify-content:center; width:1.75rem; height:1.75rem; border-radius:.5rem; color:#D1D5DB; background:transparent; border:none; cursor:pointer; transition:all .15s; }
+    .copy-link-btn:hover { background:#F3F4F6; color:#6B7280; }
+    .copy-link-btn .tooltip { position:absolute; bottom:calc(100% + 6px); right:0; background:#1A1A1A; color:#fff; font-size:.68rem; font-weight:600; white-space:nowrap; padding:.25rem .6rem; border-radius:.375rem; opacity:0; pointer-events:none; transition:opacity .15s; }
+    .copy-link-btn.copied .tooltip { opacity:1; }
+    .copy-link-btn.copied { color:#22C55E; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased">
+
+<!-- SKILL SUBMIT MODAL -->
+<div id="skillModal" class="skill-modal-overlay hidden" onclick="if(event.target===this)closeSkillModal()">
+  <div class="skill-modal">
+    <h3>💡 みんなのスキルを投稿</h3>
+    <p class="sub">全社定例などで「こんな使い方してる！」を共有しよう。投稿するとすぐにカードとして表示されます。</p>
+    <div class="form-row">
+      <label>あなたの名前 <span style="color:#EF4444">*</span></label>
+      <input id="skill-name" class="form-control" type="text" placeholder="例：Hiro" maxlength="30" />
+    </div>
+    <div class="form-row">
+      <label>スキル名・タイトル <span style="color:#EF4444">*</span></label>
+      <input id="skill-title" class="form-control" type="text" placeholder="例：請求書メールを30秒で返信" maxlength="60" />
+    </div>
+    <div class="form-row">
+      <label>一言説明 <span style="color:#EF4444">*</span></label>
+      <textarea id="skill-desc" class="form-control" placeholder="何をどう使っているか、ひとことで説明してください"></textarea>
+    </div>
+    <div class="form-row">
+      <label>何が変わった？<span class="hint">（任意）</span></label>
+      <input id="skill-stat" class="form-control" type="text" placeholder="例：作業時間が1時間→15分に" maxlength="50" />
+    </div>
+    <div class="form-row">
+      <label>プロンプト例<span class="hint">（任意）実際に使っているプロンプトや手順</span></label>
+      <textarea id="skill-prompt" class="form-control" placeholder="コピペで使えるプロンプトがあれば貼ってください"></textarea>
+    </div>
+    <div class="form-row">
+      <label>カテゴリ<span class="hint">（複数選択OK）</span></label>
+      <div class="tag-checkboxes">
+        <input class="tag-check" type="checkbox" id="sc-自動化" value="自動化"><label for="sc-自動化">⚡ 自動化</label>
+        <input class="tag-check" type="checkbox" id="sc-初心者向け" value="初心者向け"><label for="sc-初心者向け">🌱 初心者向け</label>
+        <input class="tag-check" type="checkbox" id="sc-Shopify" value="Shopify"><label for="sc-Shopify">🛍 Shopify</label>
+        <input class="tag-check" type="checkbox" id="sc-Slack" value="Slack"><label for="sc-Slack">💬 Slack</label>
+        <input class="tag-check" type="checkbox" id="sc-Notion" value="Notion"><label for="sc-Notion">📋 Notion</label>
+        <input class="tag-check" type="checkbox" id="sc-デザイン" value="デザイン"><label for="sc-デザイン">🎨 デザイン</label>
+        <input class="tag-check" type="checkbox" id="sc-メール" value="メール"><label for="sc-メール">✉️ メール</label>
+        <input class="tag-check" type="checkbox" id="sc-資料作成" value="資料作成"><label for="sc-資料作成">📄 資料作成</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel-lg" onclick="closeSkillModal()">キャンセル</button>
+      <button class="btn-submit-lg" onclick="submitSkill()">投稿する</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAME MODAL -->
+<div id="nameModal" class="name-modal-overlay hidden">
+  <div class="name-modal">
+    <h3>あなたの名前を教えて 👋</h3>
+    <p>「実行済み」スタンプに名前が表示されます。一度設定すれば次回から不要です。</p>
+    <input id="nameInput" type="text" placeholder="例：Hiro" maxlength="20" />
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeNameModal()">キャンセル</button>
+      <button class="btn-ok" onclick="confirmName()">決定</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="bg-white border-b border-gray-100 sticky top-0 z-50">
+  <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+      </div>
+      <span class="font-semibold text-gray-900 text-sm">Cowork 活用ガイド</span>
+    </div>
+    <span class="text-xs text-gray-400 font-medium">KONNEKT INTERNATIONAL 社内限定</span>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="bg-white border-b border-gray-100">
+  <div class="max-w-5xl mx-auto px-6 py-14 text-center">
+    <p class="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-4">KONNEKT × Cowork</p>
+    <h1 class="text-4xl font-bold text-gray-900 mb-3 tracking-tight">まず、1つだけ試してみて。</h1>
+    <p class="text-gray-500 text-base mb-3 max-w-lg mx-auto leading-relaxed">
+      むずかしいことは何もない。<br>同僚たちが毎日使っている方法を、そのまま真似するだけでOK。
+    </p>
+
+    <!-- 実績 pills -->
+    <div class="flex flex-wrap justify-center gap-2 mb-10 text-sm">
+      <span class="bg-orange-50 text-orange-700 font-semibold px-3 py-1 rounded-full text-xs">Hiro：月10.5時間節約</span>
+      <span class="bg-orange-50 text-orange-700 font-semibold px-3 py-1 rounded-full text-xs">Nishijima：手動→5分で完了</span>
+      <span class="bg-orange-50 text-orange-700 font-semibold px-3 py-1 rounded-full text-xs">Mizuki：資料作成2時間→1時間</span>
+    </div>
+
+    <!-- Search -->
+    <div class="relative max-w-lg mx-auto">
+      <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+      </svg>
+      <input id="search" type="text" placeholder="「Shopify」「メール」「自動化」で検索…"
+        class="w-full pl-11 pr-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50" />
+    </div>
+  </div>
+</section>
+
+<!-- GETTING STARTED -->
+<section class="max-w-5xl mx-auto px-6 py-12">
+  <details open>
+    <summary class="flex items-center justify-between cursor-pointer mb-7 group select-none">
+      <div>
+        <p class="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-1.5">はじめての方へ</p>
+        <h2 class="text-2xl font-bold text-gray-900">最初の4ステップ</h2>
+        <p class="text-gray-500 text-sm mt-1">セットアップは1回だけ。あとは話しかけるだけ。</p>
+      </div>
+      <div class="flex items-center gap-1.5 text-xs text-gray-400 font-medium shrink-0 ml-4">
+        <span class="group-open:hidden">開く</span>
+        <span class="hidden group-open:inline">閉じる</span>
+        <svg class="w-4 h-4 transition-transform duration-200 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </div>
+    </summary>
+    <div class="grid md:grid-cols-4 gap-4 mb-4">
+      <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <div class="w-8 h-8 rounded-xl bg-gray-900 text-white flex items-center justify-center text-xs font-bold mb-3">1</div>
+        <h3 class="font-semibold text-sm mb-1">アプリをDL</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">claude.ai/download からインストール。Mac・Windows対応。</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <div class="w-8 h-8 rounded-xl bg-gray-900 text-white flex items-center justify-center text-xs font-bold mb-3">2</div>
+        <h3 class="font-semibold text-sm mb-1">会社メールでログイン</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">@konnekt-i.com のアドレスでサインイン。管理者から招待が届きます。</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <div class="w-8 h-8 rounded-xl bg-gray-900 text-white flex items-center justify-center text-xs font-bold mb-3">3</div>
+        <h3 class="font-semibold text-sm mb-1">ツールを接続する</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">サイドバー「Connectors」からSlack・Notion・Googleを接続。</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <div class="w-8 h-8 rounded-xl bg-gray-900 text-white flex items-center justify-center text-xs font-bold mb-3">4</div>
+        <h3 class="font-semibold text-sm mb-1">話しかけてみる</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">「今日の予定を教えて」「Slackのメンションまとめて」—それだけ。</p>
+      </div>
+    </div>
+    <div class="flex justify-center">
+      <a href="./docs/cowork-onboarding.pdf" target="_blank" class="pdf-btn">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        全社員向け導入資料を見る（PDF）
+      </a>
+    </div>
+  </details>
+</section>
+
+<!-- CARDS -->
+<section class="max-w-5xl mx-auto px-6 pb-20">
+  <div class="mb-7">
+    <p class="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-1.5">逆引きリファレンス</p>
+    <h2 class="text-2xl font-bold text-gray-900 mb-1">やりたいこと・社員事例・連携設定</h2>
+    <p class="text-gray-500 text-sm">カテゴリで絞り込むか、キーワードで検索してください。</p>
+  </div>
+
+  <!-- Filter Buttons + Skill Submit Button -->
+  <div class="flex flex-wrap items-center gap-2 mb-7">
+    <div class="flex flex-wrap gap-2 flex-1" id="filters">
+      <button class="filter-btn active text-xs px-3.5 py-2 rounded-full border border-gray-200 font-semibold" data-filter="all">すべて</button>
+      <button class="filter-btn text-xs px-3.5 py-2 rounded-full border border-gray-200 font-semibold text-gray-600" data-filter="初心者向け">🌱 初心者向け</button>
+      <button class="filter-btn text-xs px-3.5 py-2 rounded-full border border-gray-200 font-semibold text-gray-600" data-filter="自動化">⚡ 自動化</button>
+      <button class="filter-btn text-xs px-3.5 py-2 rounded-full border border-gray-200 font-semibold text-gray-600" data-filter="Shopify">🛍 Shopify</button>
+      <button class="filter-btn text-xs px-3.5 py-2 rounded-full border border-gray-200 font-semibold text-gray-600" data-filter="Slack">💬 Slack</button>
+      <button class="filter-btn text-xs px-3.5 py-2 rounded-full border border-gray-200 font-semibold text-gray-600" data-filter="Notion">📋 Notion</button>
+      <button class="filter-btn text-xs px-3.5 py-2 rounded-full border border-gray-200 font-semibold text-gray-600" data-filter="デザイン">🎨 デザイン</button>
+      <button class="filter-btn text-xs px-3.5 py-2 rounded-full border border-gray-200 font-semibold text-gray-600" data-filter="連携">🔗 連携設定</button>
+    </div>
+    <button class="submit-skill-btn shrink-0" onclick="openSkillModal()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      スキルを投稿
+    </button>
+  </div>
+
+  <div class="card-grid" id="cardGrid"></div>
+  <div id="emptyState" class="hidden text-center py-16 text-gray-400">
+    <p class="text-sm">該当するカードが見つかりませんでした</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t border-gray-100 bg-white">
+  <div class="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between text-xs text-gray-400">
+    <span>KONNEKT INTERNATIONAL 社内限定</span>
+    <span>事例・資料の追加は藤本まで 📬</span>
+  </div>
+</footer>
+
+<script>
+// ─── Card Data ────────────────────────────────────────────────────────────────
+const cards = [
+
+  // ══ 手順 ═══════════════════════════════════════════════════════════════════
+
+  {
+    id: 'morning-briefing',
+    type: 'step',
+    title: '毎朝ブリーフィングを自動化したい',
+    tags: ['スケジュール', '自動化', '初心者向け'],
+    desc: 'Slackのメンション・Notionタスク・カレンダー予定を毎朝まとめて確認。1回設定すれば毎日自動で動きます。',
+    detail: `
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>左サイドバー「Scheduled」をクリック</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>「+ New task」をクリック</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>タスク名・頻度を設定</strong>
+            <p>タスク名：朝のブリーフィング　/　頻度：平日のみ 09:00</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>プロンプトを入力して保存</strong>
+          </div>
+        </div>
+      </div>
+      <div class="cmd-box mb-3">Slackのメンションを確認して、Notionタスクから今週期限のものをリストアップして。今日のカレンダー予定もまとめて教えて。</div>
+      <div class="tip-box"><p>✅ これを設定するだけで、毎朝自動でまとめが届きます。</p></div>
+    `
+  },
+
+  {
+    id: 'schedule-manage',
+    type: 'step',
+    title: 'スケジュールを登録・管理したい',
+    tags: ['スケジュール', '初心者向け'],
+    desc: '毎日・毎週・平日のみなど細かく設定できます。一度設定したら放置でOK。',
+    detail: `
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>サイドバー「Scheduled」→「+ New task」</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>頻度を選ぶ</strong><p>毎日・毎週・平日のみ・手動など</p></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>実行したいことを日本語で書いて保存</strong></div>
+        </div>
+      </div>
+      <div class="note-box"><p>⚠️ スケジュールが動かない場合は、使用するコネクタが接続されているか確認してください。</p></div>
+    `
+  },
+
+  {
+    type: 'step',
+    title: 'スキルを使いたい',
+    tags: ['スキル', '初心者向け'],
+    desc: 'スキルは「定型プロンプトのショートカット」。/と打つだけで複雑な作業を1クリックで実行できます。',
+    detail: `
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>チャット欄に <code style="background:#F3F4F6;padding:1px 6px;border-radius:4px;">/</code> と入力</strong><p>使えるスキル一覧がポップアップで表示されます</p></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>スキル名を選んで Enter</strong><p>例：<code style="background:#F3F4F6;padding:1px 6px;border-radius:4px;">/shopify-report</code> で売上レポートを自動実行</p></div>
+        </div>
+      </div>
+      <div class="tip-box"><p>✅ 新しいスキルの追加・共有は藤本まで連絡してください。</p></div>
+    `
+  },
+
+  {
+    type: 'step',
+    title: 'メールの返信下書きを作りたい',
+    tags: ['メール', '自動化', '初心者向け'],
+    desc: 'メール文章をCoworkに貼り付けるだけで、返信文を自動で生成してくれます。',
+    detail: `
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>受信メールの本文をコピー</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>Coworkに貼り付けて指示を追加</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>生成された文章をメールにコピペ</strong></div>
+        </div>
+      </div>
+      <div class="cmd-box mb-3">このメールに丁寧にお断りする返信を書いて：<br>[ここにメール本文をペースト]</div>
+      <div class="cmd-box">このメールを読んで、要点を3行でまとめて返信案を作って：<br>[ここにメール本文をペースト]</div>
+    `
+  },
+
+  {
+    type: 'step',
+    title: '音声入力でメールを自動作成したい',
+    tags: ['メール', '自動化', '初心者向け'],
+    desc: '話した内容をテキスト化して、そのままメール文に整形。タイピング不要で返信が完成します。',
+    detail: `
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>マイクアイコン（または Fn 長押し）で音声入力開始</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>話しかける</strong>
+            <p>例：「〇〇さんに、来週の打ち合わせ日程を確認するメールを書いて」</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>生成された文章をメールアプリにコピペ</strong></div>
+        </div>
+      </div>
+      <div class="tip-box"><p>✅ PMの Aさんが実践中。スケジュール調整メールの作成時間が半分以下になったとのこと。</p></div>
+    `
+  },
+
+  // ══ 連携 ═══════════════════════════════════════════════════════════════════
+
+  {
+    id: 'shopify-connect',
+    type: 'link',
+    title: 'Shopify を Cowork に接続する',
+    tags: ['Shopify', '連携'],
+    desc: '接続すると、ストアの売上・注文・在庫をCoworkから直接確認・分析できるようになります。',
+    pdf: { label: 'Shopify接続ガイドを見る', href: './docs/shopify-connection.pdf' },
+    related: [{ id: 'shopify-report', label: '接続後：売上レポートを自動化する' }],
+    detail: `
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>左サイドバー「Connectors」をクリック</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>Shopify を選択して「Connect」</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>ストアのドメインを入力</strong><p>例：yourstore.myshopify.com</p></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">4</div>
+          <div class="step-body"><strong>Shopify管理画面でアクセスを許可</strong><p>ブラウザが開くので「許可する」をクリック</p></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">5</div>
+          <div class="step-body"><strong>Coworkに戻って接続完了を確認</strong></div>
+        </div>
+      </div>
+      <div class="tip-box mb-3"><p>✅ 接続後は「今週の売上を教えて」「在庫が少ない商品は？」と話しかけるだけでOK。</p></div>
+    `
+  },
+
+  {
+    id: 'shopify-report',
+    type: 'link',
+    title: 'Shopify 売上レポートを自動化する',
+    tags: ['Shopify', '自動化', '連携'],
+    desc: '毎週月曜に売上・注文数・在庫アラートを自動でまとめてSlackに投稿。毎回手動で確認する必要がなくなります。',
+    pdf: { label: 'Shopify売上レポート導入ガイドを見る', href: './docs/shopify-report-guide.pdf' },
+    related: [{ id: 'shopify-connect', label: '先に：Shopify を接続する' }, { id: 'slack-connect', label: '先に：Slack を接続する' }],
+    detail: `
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>Shopify と Slack を接続済みにする</strong><p>まだの場合は「Shopifyを接続する」カードを先に確認</p></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>スケジュール「毎週月曜 9:00」を作成</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>プロンプトを設定</strong></div>
+        </div>
+      </div>
+      <div class="cmd-box mb-3">先週のShopify売上・注文数・在庫切れ商品をまとめて、Slack の #general に投稿して。</div>
+      <div class="tip-box"><p>✅ 設定は1回だけ。毎週自動で動きます。</p></div>
+    `
+  },
+
+  {
+    id: 'slack-connect',
+    type: 'link',
+    title: 'Slack を Cowork に接続する',
+    tags: ['Slack', '連携'],
+    desc: 'Slackのメンション確認・チャンネル検索・メッセージ送信がCoworkから可能になります。',
+    related: [{ id: 'morning-briefing', label: '朝のブリーフィングを自動化する' }, { id: 'shopify-report', label: 'Shopify売上レポートを自動化する' }],
+    detail: `
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>左サイドバー「Connectors」をクリック</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>Slack を選択して「Connect」</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>会社のSlackワークスペースでログイン・許可</strong></div>
+        </div>
+      </div>
+      <div class="cmd-box mb-3">自分宛のSlackメンションを今週分まとめて教えて。</div>
+      <div class="note-box"><p>⚠️ 現在、コネクト社内のSlackはドメイン制限により接続不可（2026年4月時点）。社外クライアントのSlackは接続可能。</p></div>
+    `
+  },
+
+  {
+    id: 'notion-connect',
+    type: 'link',
+    title: 'Notion を Cowork に接続する',
+    tags: ['Notion', '連携'],
+    desc: 'Notionのタスク・ページ・DBをCoworkから読み書きできます。タスク管理が劇的に楽になります。',
+    related: [{ id: 'morning-briefing', label: '朝のブリーフィングを自動化する' }, { id: 'google-meet', label: 'Google Meet議事録を自動保存する' }],
+    detail: `
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>左サイドバー「Connectors」→ Notion を選択</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>Notionアカウントでログイン・許可</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>接続完了。話しかけてみる</strong></div>
+        </div>
+      </div>
+      <div class="cmd-box mb-3">今週期限のNotionタスクを全部リストアップして、優先度順に並べて。</div>
+      <div class="note-box"><p>⚠️ ゲストアカウントではNotion AI機能が使えない場合があります。詳しくは藤本まで。</p></div>
+    `
+  },
+
+  {
+    id: 'calendar-connect',
+    type: 'link',
+    title: 'Google Calendar を Cowork に接続する',
+    tags: ['カレンダー', '連携', '初心者向け'],
+    desc: '予定確認・新規登録・スケジュール調整が会話でできるようになります。',
+    related: [{ id: 'morning-briefing', label: '朝のブリーフィングを自動化する' }, { id: 'nishijima-calendar', label: '祝日・誕生日を一括登録（Nishijima事例）' }],
+    detail: `
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>左サイドバー「Connectors」→ Google Calendar</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>会社Googleアカウント（@konnekt-i.com）で認証</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>接続完了。予定を確認してみる</strong></div>
+        </div>
+      </div>
+      <div class="cmd-box">明日の予定を全部教えて。空き時間はどこ？</div>
+    `
+  },
+
+  {
+    id: 'google-meet',
+    type: 'link',
+    title: 'Google Meet の議事録を自動生成する',
+    related: [{ id: 'notion-connect', label: 'Notion を接続して自動保存する' }],
+    tags: ['議事録', '自動化'],
+    desc: 'Google Meet の文字起こし機能を使って、会議が終わったら自動で議事録をNotionに保存できます。',
+    pdf: { label: 'Google Meet議事録ガイドを見る', href: './docs/google-meet-guide.pdf' },
+    detail: `
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>Google Meetで会議を開始</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>「…」→「文字起こしを開始」をオン</strong><p>Workspace Business Standard以上のプランが必要</p></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>会議終了後、文字起こしテキストをCoworkに貼り付け</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">4</div>
+          <div class="step-body"><strong>Notionに保存するよう指示</strong></div>
+        </div>
+      </div>
+      <div class="cmd-box">この文字起こしから議事録を作って、決定事項・アクションアイテム・次回日程を抽出してNotionに保存して。<br>[文字起こしをペースト]</div>
+    `
+  },
+
+  // ══ 社員事例 ═══════════════════════════════════════════════════════════════
+
+  {
+    type: 'case',
+    title: '商品画像・打ち合わせ資料を 2時間 → 40分に',
+    tags: ['デザイン', '自動化'],
+    person: 'Hiro',
+    stat: '月10.5時間の削減',
+    desc: '打ち合わせ用の商品画像作成と資料まとめをAIで高速化。ひと月で10時間以上を取り戻した。',
+    detail: `
+      <div class="person-chip mb-4"><span class="dot"></span>Hiro（デザイン担当）</div>
+      <p class="text-xs text-gray-500 mb-4">打ち合わせ用・商品画像作成にAI活用で2時間→約40分。1ヶ月で10.5時間節約を実現。</p>
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>商品のイメージをCoworkに伝える</strong><p>「こんな雰囲気の画像を使いたい」「カラーは黒ベースで」など</p></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>AI画像生成ツール用プロンプトを出力させる</strong><p>ChatGPTやFireflyで画像生成</p></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>キャプション・説明文もCoworkで自動生成</strong></div>
+        </div>
+      </div>
+      <div class="tip-box"><p>✅ 画像生成はChatGPT、文章・資料まとめはCoworkと使い分けるのがコツ。</p></div>
+    `
+  },
+
+  {
+    type: 'case',
+    title: 'キャラクター版下PDFを 20秒で生成',
+    tags: ['デザイン'],
+    person: 'Hiro',
+    stat: '作業時間ほぼゼロ',
+    desc: 'キャラクターのカットラインや高さを指定するだけで入稿用PDFが完成。手作業での版下作りがなくなった。',
+    detail: `
+      <div class="person-chip mb-4"><span class="dot"></span>Hiro（デザイン担当）</div>
+      <div class="cmd-box mb-3">このキャラクター画像をカットラインつき、高さ100mm、解像度350dpiでPDF出力して。</div>
+      <div class="tip-box"><p>✅ Illustratorからスクリプトで自動出力する方法も対応可。詳しくはHiroまで。</p></div>
+    `
+  },
+
+  {
+    id: 'nishijima-calendar',
+    type: 'case',
+    title: 'カレンダーの祝日・誕生日を一括登録',
+    tags: ['カレンダー', '自動化', '初心者向け'],
+    person: 'Nishijima',
+    stat: '手動→5分で完了',
+    desc: '毎年手作業でやっていた祝日・スタッフ誕生日の登録を、一括でお願いしたら5分で全件完了した。',
+    detail: `
+      <div class="person-chip mb-4"><span class="dot"></span>Nishijima</div>
+      <div class="cmd-box mb-3">2026年の日本の祝日を全部カレンダーに追加して。</div>
+      <div class="cmd-box mb-3">このリストのメンバーの誕生日をカレンダーに登録して：<br>田中：3/15、鈴木：7/22、…</div>
+      <div class="tip-box"><p>✅ Google Calendar を接続しておくだけで、Coworkが直接登録してくれます。</p></div>
+    `
+  },
+
+  {
+    type: 'case',
+    title: '定例資料作成を 2時間 → 1時間に削減',
+    tags: ['資料作成', '自動化'],
+    person: 'Mizuki',
+    stat: '作業時間が半分に',
+    desc: '案件の経緯・Slack・メールのやり取りをAIに読み込ませると、説明資料を自動で作ってくれる。',
+    detail: `
+      <div class="person-chip mb-4"><span class="dot"></span>Mizuki</div>
+      <p class="text-xs text-gray-500 mb-3">過去のSlack・メールのやり取りをコピペして渡すだけで、複雑な案件の説明資料が自動生成される。</p>
+      <div class="cmd-box mb-3">このSlackのやり取りから、クライアントへの説明資料（A4 1枚）を作って。決定事項・課題・次のステップを含めて。<br>[Slackログをペースト]</div>
+      <div class="tip-box"><p>✅ 下書きが出たら「もっと簡潔に」「箇条書きで」など追加指示で調整できます。</p></div>
+    `
+  },
+
+  {
+    type: 'case',
+    title: 'Illustratorデータ → AI が自動で内容を判定',
+    tags: ['デザイン', '自動化'],
+    person: 'Mizuki',
+    stat: '手動確認ゼロに',
+    desc: '申請書の絵型・アート番号確認をAIに委託。PDFに書き出すだけで自動判定してくれる。',
+    detail: `
+      <div class="person-chip mb-4"><span class="dot"></span>Mizuki</div>
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>IllustratorからPDFに書き出す</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>Coworkに添付して指示</strong></div>
+        </div>
+      </div>
+      <div class="cmd-box">このPDFの絵型番号とアート番号を読み取って、申請フォームに入力する形式で出力して。</div>
+    `
+  },
+
+  {
+    type: 'case',
+    title: 'レシート写真 → スプレッドシートに自動データ化',
+    tags: ['自動化'],
+    person: 'Wataru',
+    stat: '手入力ゼロに',
+    desc: '顧客注文のレシートを写真で撮ってCoworkに渡すと、スプレッドシート用のデータに自動変換してくれる。',
+    detail: `
+      <div class="person-chip mb-4"><span class="dot"></span>Wataru</div>
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>レシートの写真をCoworkにドラッグ＆ドロップ</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>指示を入力</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>出力されたデータをスプレッドシートにコピペ</strong></div>
+        </div>
+      </div>
+      <div class="cmd-box">このレシートの日付・品目・金額・数量を表形式で出力して。</div>
+    `
+  },
+
+  {
+    type: 'case',
+    title: 'シフト管理・集計を自動化',
+    tags: ['自動化'],
+    person: 'Wataru',
+    stat: '集計作業がほぼ不要に',
+    desc: 'シフト表の集計・調整・過不足チェックをCoworkに任せることで、手作業の時間が大幅に減った。',
+    detail: `
+      <div class="person-chip mb-4"><span class="dot"></span>Wataru</div>
+      <div class="cmd-box mb-3">このシフト表から各メンバーの週の合計時間を計算して、○○さんが不足している日を教えて。<br>[シフト表をペースト]</div>
+      <div class="tip-box"><p>✅ Excelでシフト表を管理している場合は、表をそのままコピペして渡せます。</p></div>
+    `
+  },
+
+  {
+    type: 'case',
+    title: '経費申請をスキルで自動化',
+    tags: ['経費', '自動化'],
+    person: 'Fujimoto',
+    stat: '申請作業が数分に',
+    desc: 'マネーフォワード経費とCoworkをカスタム連携。明細取得→科目確定→申請まで自動でできるようになった。',
+    detail: `
+      <div class="person-chip mb-4"><span class="dot"></span>Fujimoto</div>
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong><code style="background:#F3F4F6;padding:1px 6px;border-radius:4px;">/keihi</code> スキルを実行</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>カード明細を自動取得・科目を自動判定</strong></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>確認して申請ボタンを押すだけ</strong></div>
+        </div>
+      </div>
+      <div class="tip-box"><p>✅ 導入希望の方は藤本まで。設定をサポートします。</p></div>
+    `
+  },
+
+  {
+    type: 'case',
+    title: 'SNSスケジュール策定を半分の時間に',
+    tags: ['SNS', '自動化'],
+    person: 'PM担当',
+    stat: 'スケジュール策定が半分に',
+    desc: 'ブランド方向性だけ伝えると、投稿内容・タイミング・ハッシュタグまで提案してくれる。固定観念を外したアイデアも出てくる。',
+    detail: `
+      <div class="person-chip mb-4"><span class="dot"></span>PM担当</div>
+      <div class="cmd-box mb-3">来月の[ブランド名]のInstagram投稿スケジュール（週3回）を提案して。ターゲットは20代女性、カジュアルでおしゃれなトーンで。</div>
+      <div class="tip-box"><p>✅ 「もっと攻めた内容で」「競合とは違うアプローチで」と追加指示するとアイデアが広がります。</p></div>
+    `
+  },
+
+  {
+    type: 'case',
+    title: '韓国語ブランド翻訳・企画書を自動作成',
+    tags: ['デザイン', '自動化'],
+    person: 'Hiro',
+    stat: '翻訳コストほぼゼロに',
+    desc: 'ブランド事業の企画書・PLをCoworkで作成。韓国語翻訳もそのまま依頼できるので多言語対応が一気に楽になった。',
+    detail: `
+      <div class="person-chip mb-4"><span class="dot"></span>Hiro</div>
+      <div class="cmd-box mb-3">この日本語の企画書をビジネス文体の韓国語に翻訳して。ブランド名はそのまま英語で残して。</div>
+      <div class="cmd-box">来期のブランド事業PL（売上・原価・利益）の骨子を作って。数値はプレースホルダーでOK。</div>
+    `
+  },
+
+];
+
+// ─── Render ──────────────────────────────────────────────────────────────────
+const BADGE_HTML = {
+  step:      '<span class="badge-step      text-xs font-semibold px-2.5 py-1 rounded-full">手順</span>',
+  case:      '<span class="badge-case      text-xs font-semibold px-2.5 py-1 rounded-full">社員事例</span>',
+  link:      '<span class="badge-link      text-xs font-semibold px-2.5 py-1 rounded-full">連携</span>',
+  community: '<span class="badge-community text-xs font-semibold px-2.5 py-1 rounded-full">社員スキル</span>',
+};
+
+function renderCards(list) {
+  const grid = document.getElementById('cardGrid');
+  const empty = document.getElementById('emptyState');
+  grid.innerHTML = '';
+  if (!list.length) { empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  list.forEach(c => {
+    const badge = BADGE_HTML[c.type];
+    const tags = c.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+    const pdfBtn = c.pdf
+      ? `<a href="${c.pdf.href}" target="_blank" class="pdf-btn mt-4 w-full justify-center">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+          </svg>
+          ${c.pdf.label}
+        </a>`
+      : '';
+
+    const statHtml = c.stat
+      ? `<span class="stat">${c.stat}</span>` : '';
+
+    const relatedHtml = (c.related && c.related.length)
+      ? `<div class="related-section">
+          <p class="text-xs text-gray-400 font-semibold mb-2">関連カード</p>
+          <div class="flex flex-wrap gap-2">
+            ${c.related.map(r => `
+              <button class="related-chip" onclick="jumpToCard('${r.id}')">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5-5 5M6 12h12"/></svg>
+                ${r.label}
+              </button>`).join('')}
+          </div>
+        </div>`
+      : '';
+
+    const cardId = c.id || c.title.replace(/[^\w぀-鿿]/g, '-').replace(/-+/g,'-').toLowerCase().slice(0,40);
+    const copyBtn = `
+      <button class="copy-link-btn" onclick="copyCardLink('${cardId}', this)" title="このカードのリンクをコピー">
+        <span class="tooltip">コピーしました！</span>
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+        </svg>
+      </button>`;
+
+    const el = document.createElement('div');
+    el.className = 'card bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden';
+    el.id = cardId;
+    el.dataset.cardId = cardId;
+    el.dataset.tags = c.tags.join(',');
+    el.dataset.text = (c.title + ' ' + c.desc + ' ' + c.tags.join(' ') + ' ' + (c.person||'')).toLowerCase();
+
+    el.innerHTML = `
+      <div class="p-5">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">${badge}${statHtml}</div>
+          ${copyBtn}
+        </div>
+        <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-2">${c.title}</h3>
+        <p class="text-xs text-gray-500 leading-relaxed mb-4">${c.desc}</p>
+        <div class="flex flex-wrap gap-1.5">${tags}</div>
+      </div>
+      ${c.detail ? `
+      <details class="border-t border-gray-100">
+        <summary class="flex items-center justify-between px-5 py-3 text-xs text-gray-400 hover:bg-gray-50 transition-colors">
+          <span>詳しく見る</span>
+          <svg class="chevron w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </summary>
+        <div class="px-5 pb-5 pt-3 bg-gray-50">
+          ${c.detail}
+          ${pdfBtn}
+          ${relatedHtml}
+        </div>
+      </details>` : pdfBtn ? `<div class="px-5 pb-5">${pdfBtn}${relatedHtml}</div>` : ''}
+      <div class="reaction-bar" id="reaction-bar-${cardId}">
+        <button class="reaction-btn" id="reaction-btn-${cardId}" onclick="handleReaction('${cardId}')">
+          ✅ <span class="count" id="reaction-count-${cardId}">0</span>
+        </button>
+        <span class="reaction-members" id="reaction-members-${cardId}"></span>
+      </div>
+      <button class="comment-toggle" onclick="toggleComments('${cardId}', this)">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        補足・コメント
+        <span class="count-badge" id="count-${cardId}">…</span>
+      </button>
+      <div class="comment-panel hidden" id="panel-${cardId}">
+        <div class="comment-list" id="list-${cardId}">
+          <p class="comment-empty">読み込み中…</p>
+        </div>
+        <div class="comment-form">
+          <input id="name-${cardId}" class="comment-name" type="text" placeholder="名前を入力" maxlength="30" />
+          <textarea id="text-${cardId}" class="comment-textarea" placeholder="補足・コメントを入力…" maxlength="500"></textarea>
+          <button class="comment-submit" onclick="submitComment('${cardId}', this)">送信</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(el);
+    if (!reactionListeners[cardId]) loadReactions(cardId);
+  });
+}
+
+// ─── Firebase ────────────────────────────────────────────────────────────────
+// TODO: Firebaseコンソールからコピーした設定値に差し替えてください
+const firebaseConfig = {
+  apiKey:            "AIzaSyCmF0baMh0bUncwWnOHY0N40Ztu87mf6AA",
+  authDomain:        "konnekt-263dd.firebaseapp.com",
+  projectId:         "konnekt-263dd",
+  storageBucket:     "konnekt-263dd.firebasestorage.app",
+  messagingSenderId: "218892189563",
+  appId:             "1:218892189563:web:a3ee2e5f1a198e4003c7de",
+  measurementId:     "G-CWG5SNHWE0"
+};
+
+let db = null;
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+} catch(e) { /* Firebase未設定時はコメント機能を無効化 */ }
+
+const commentListeners = {}; // cardId → unsubscribe
+
+function toggleComments(cardId, btn) {
+  const panel = document.getElementById(`panel-${cardId}`);
+  const isOpen = !panel.classList.contains('hidden');
+  if (isOpen) {
+    panel.classList.add('hidden');
+    return;
+  }
+  panel.classList.remove('hidden');
+  if (!commentListeners[cardId]) loadComments(cardId);
+}
+
+function loadComments(cardId) {
+  if (!db) return;
+  const listEl = document.getElementById(`list-${cardId}`);
+  const countEl = document.getElementById(`count-${cardId}`);
+  const ref = db.collection('comments').doc(cardId).collection('items')
+               .orderBy('createdAt', 'asc');
+
+  commentListeners[cardId] = ref.onSnapshot(snapshot => {
+    countEl.textContent = snapshot.size > 0 ? `${snapshot.size}件` : '0件';
+    if (snapshot.empty) {
+      listEl.innerHTML = '<p class="comment-empty">まだコメントはありません。最初の補足を書いてみて！</p>';
+      return;
+    }
+    listEl.innerHTML = snapshot.docs.map(doc => {
+      const d = doc.data();
+      const date = d.createdAt?.toDate();
+      const timeStr = date
+        ? `${date.getMonth()+1}/${date.getDate()} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`
+        : '';
+      return `
+        <div class="comment-item">
+          <div class="comment-meta">
+            <span class="comment-author">${escHtml(d.author)}</span>
+            <span class="comment-time">${timeStr}</span>
+          </div>
+          <p class="comment-text">${escHtml(d.text)}</p>
+        </div>`;
+    }).join('');
+  });
+}
+
+function submitComment(cardId, btn) {
+  if (!db) return;
+  const nameEl = document.getElementById(`name-${cardId}`);
+  const textEl = document.getElementById(`text-${cardId}`);
+  const author = nameEl.value.trim();
+  const text   = textEl.value.trim();
+  if (!author || !text) {
+    alert('名前とコメントを入力してください');
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = '送信中…';
+  db.collection('comments').doc(cardId).collection('items').add({
+    author, text, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    textEl.value = '';
+    btn.disabled = false;
+    btn.textContent = '送信';
+  }).catch(() => {
+    btn.disabled = false;
+    btn.textContent = '送信';
+    alert('送信に失敗しました。もう一度お試しください。');
+  });
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── Reactions ───────────────────────────────────────────────────────────────
+const reactionListeners = {};
+let _pendingReactionCardId = null;
+
+function getMyName() { return localStorage.getItem('cowork_member_name') || ''; }
+function setMyName(name) { localStorage.setItem('cowork_member_name', name); }
+
+function handleReaction(cardId) {
+  const name = getMyName();
+  if (!name) {
+    _pendingReactionCardId = cardId;
+    document.getElementById('nameModal').classList.remove('hidden');
+    document.getElementById('nameInput').value = '';
+    setTimeout(() => document.getElementById('nameInput').focus(), 50);
+    return;
+  }
+  toggleReaction(cardId, name);
+}
+
+function closeNameModal() {
+  _pendingReactionCardId = null;
+  document.getElementById('nameModal').classList.add('hidden');
+}
+
+function confirmName() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) return;
+  setMyName(name);
+  document.getElementById('nameModal').classList.add('hidden');
+  if (_pendingReactionCardId) {
+    toggleReaction(_pendingReactionCardId, name);
+    _pendingReactionCardId = null;
+  }
+}
+document.getElementById('nameInput')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmName();
+  if (e.key === 'Escape') closeNameModal();
+});
+
+function toggleReaction(cardId, name) {
+  if (!db) return;
+  const ref = db.collection('reactions').doc(cardId).collection('members').doc(name);
+  ref.get().then(doc => {
+    if (doc.exists) {
+      ref.delete();
+    } else {
+      ref.set({ reactedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    }
+  });
+}
+
+function loadReactions(cardId) {
+  if (!db) return;
+  const ref = db.collection('reactions').doc(cardId).collection('members')
+               .orderBy('reactedAt', 'asc');
+  reactionListeners[cardId] = ref.onSnapshot(snapshot => {
+    const myName = getMyName();
+    const names = snapshot.docs.map(d => d.id);
+    const countEl  = document.getElementById(`reaction-count-${cardId}`);
+    const membersEl = document.getElementById(`reaction-members-${cardId}`);
+    const btnEl    = document.getElementById(`reaction-btn-${cardId}`);
+    if (!countEl) return;
+
+    countEl.textContent = names.length;
+    const isMine = names.includes(myName);
+    btnEl.classList.toggle('reacted', isMine);
+    btnEl.title = isMine ? 'クリックで取り消す' : 'クリックで実行済みにする';
+
+    if (names.length === 0) {
+      membersEl.textContent = '';
+    } else {
+      const display = names.slice(0, 4).join('・') + (names.length > 4 ? ` ほか${names.length - 4}人` : '');
+      membersEl.textContent = display + ' が実行済み';
+    }
+  });
+}
+
+// ─── Copy card link ──────────────────────────────────────────────────────────
+function copyCardLink(id, btn) {
+  const url = `${location.origin}${location.pathname}#${id}`;
+  navigator.clipboard.writeText(url).then(() => {
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 2000);
+  });
+}
+
+// ─── Jump to card ────────────────────────────────────────────────────────────
+function jumpToCard(id) {
+  // Reset filters so the target card is visible
+  activeFilter = 'all';
+  searchQuery = '';
+  document.getElementById('search').value = '';
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-filter="all"]').classList.add('active');
+  renderCards(cards);
+
+  // Scroll to the card and flash it
+  requestAnimationFrame(() => {
+    const el = document.querySelector(`[data-card-id="${id}"]`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.remove('card-flash');
+    void el.offsetWidth; // reflow to restart animation
+    el.classList.add('card-flash');
+    // Open its details panel so related section is visible
+    const det = el.querySelector('details');
+    if (det) det.open = true;
+  });
+}
+
+// ─── Filter & Search ─────────────────────────────────────────────────────────
+let activeFilter = 'all';
+let searchQuery = '';
+
+function applyFilters() {
+  const q = searchQuery.toLowerCase();
+  const allCards = [...cards, ...communityCards];
+  const filtered = allCards.filter(c => {
+    const matchTag = activeFilter === 'all' || c.tags.includes(activeFilter);
+    const matchQ = !q
+      || c.title.toLowerCase().includes(q)
+      || c.desc.toLowerCase().includes(q)
+      || c.tags.some(t => t.toLowerCase().includes(q))
+      || (c.person||'').toLowerCase().includes(q);
+    return matchTag && matchQ;
+  });
+  renderCards(filtered);
+}
+
+document.getElementById('filters').addEventListener('click', e => {
+  const btn = e.target.closest('[data-filter]');
+  if (!btn) return;
+  activeFilter = btn.dataset.filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+});
+
+document.getElementById('search').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  applyFilters();
+});
+
+// ─── Community Skills ─────────────────────────────────────────────────────────
+let communityCards = [];
+let communitySkillListener = null;
+
+function openSkillModal() {
+  const name = getMyName();
+  if (name) document.getElementById('skill-name').value = name;
+  document.getElementById('skillModal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('skill-title').focus(), 50);
+}
+
+function closeSkillModal() {
+  document.getElementById('skillModal').classList.add('hidden');
+  ['skill-name','skill-title','skill-desc','skill-stat','skill-prompt'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.querySelectorAll('.tag-check').forEach(cb => cb.checked = false);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeSkillModal();
+});
+
+function submitSkill() {
+  if (!db) { alert('Firebase が設定されていないため投稿できません。'); return; }
+  const name   = document.getElementById('skill-name').value.trim();
+  const title  = document.getElementById('skill-title').value.trim();
+  const desc   = document.getElementById('skill-desc').value.trim();
+  const stat   = document.getElementById('skill-stat').value.trim();
+  const prompt = document.getElementById('skill-prompt').value.trim();
+  const tags   = Array.from(document.querySelectorAll('.tag-check:checked')).map(cb => cb.value);
+
+  if (!name || !title || !desc) {
+    alert('名前・タイトル・説明は必須です。');
+    return;
+  }
+
+  const btn = document.querySelector('#skillModal .btn-submit-lg');
+  btn.disabled = true;
+  btn.textContent = '投稿中…';
+  setMyName(name);
+
+  db.collection('skills').add({
+    person: name, title, desc,
+    stat:   stat   || null,
+    prompt: prompt || null,
+    tags,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    btn.disabled = false;
+    btn.textContent = '投稿する';
+    closeSkillModal();
+    // Brief success feedback on the button
+    const submitBtn = document.querySelector('.submit-skill-btn');
+    if (submitBtn) {
+      submitBtn.textContent = '✅ 投稿しました！';
+      setTimeout(() => {
+        submitBtn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> スキルを投稿`;
+      }, 2500);
+    }
+  }).catch(() => {
+    btn.disabled = false;
+    btn.textContent = '投稿する';
+    alert('投稿に失敗しました。もう一度お試しください。');
+  });
+}
+
+function loadCommunitySkills() {
+  if (!db) return;
+  if (communitySkillListener) communitySkillListener();
+
+  communitySkillListener = db.collection('skills')
+    .orderBy('createdAt', 'asc')
+    .onSnapshot(snapshot => {
+      communityCards = snapshot.docs.map(doc => {
+        const d = doc.data();
+        const promptHtml = d.prompt
+          ? `<div class="cmd-box mt-3">${escHtml(d.prompt)}</div>` : '';
+        return {
+          id: `community-${doc.id}`,
+          type: 'community',
+          title: d.title,
+          tags: d.tags || [],
+          desc: d.desc,
+          person: d.person,
+          stat: d.stat || null,
+          detail: `<div class="person-chip mb-4"><span class="dot"></span>${escHtml(d.person)}</div>${promptHtml}`
+        };
+      });
+      applyFilters();
+    });
+}
+
+applyFilters();
+loadCommunitySkills();
+
+// ─── Hash-based deep link on page load ───────────────────────────────────────
+if (location.hash) {
+  const id = location.hash.slice(1);
+  requestAnimationFrame(() => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('card-flash');
+    const det = el.querySelector('details');
+    if (det) det.open = true;
+  });
+}
+</script>
+</body>
+</html>
