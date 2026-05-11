@@ -696,25 +696,24 @@ const cards = [
     tags: ['デザイン', '自動化'],
     person: 'Hiro',
     stat: '月10.5時間の削減',
-    desc: '打ち合わせ用の商品画像作成と資料まとめをAIで高速化。ひと月で10時間以上を取り戻した。',
+    desc: 'PinterestやDriveを何十分も探し回っていた打ち合わせ準備が、Coworkに方向性を伝えるだけで40分で終わるようになった。',
     detail: `
       <div class="person-chip mb-4"><span class="dot"></span>Hiro（デザイン担当）</div>
-      <p class="text-xs text-gray-500 mb-4">打ち合わせ用・商品画像作成にAI活用で2時間→約40分。1ヶ月で10.5時間節約を実現。</p>
-      <div class="step-list mb-4">
-        <div class="step-row">
-          <div class="step-num">1</div>
-          <div class="step-body"><strong>商品のイメージをCoworkに伝える</strong><p>「こんな雰囲気の画像を使いたい」「カラーは黒ベースで」など</p></div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">2</div>
-          <div class="step-body"><strong>AI画像生成ツール用プロンプトを出力させる</strong><p>ChatGPTやFireflyで画像生成</p></div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">3</div>
-          <div class="step-body"><strong>キャプション・説明文もCoworkで自動生成</strong></div>
-        </div>
+      <div style="background:#FFF7ED;border-left:3px solid #FB923C;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:11.5px;">
+        <strong style="color:#92400E;">😓 Before</strong>
+        <p style="margin:4px 0 0;color:#7C2D12;">打ち合わせ前に参考画像をPinterestで探し回り、雰囲気に合うものが見つからなければまた検索。キャプションも自分で考えて書いて、資料にまとめるまで2時間近くかかっていた。</p>
       </div>
-      <div class="tip-box"><p>✅ 画像生成はChatGPT、文章・資料まとめはCoworkと使い分けるのがコツ。</p></div>
+      <div style="background:#F0FDF4;border-left:3px solid #22C55E;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:11.5px;">
+        <strong style="color:#14532D;">✅ After</strong>
+        <p style="margin:4px 0 0;color:#166534;">ブランドトーンと使いたい雰囲気をCoworkに伝えると、ChatGPT用の画像生成プロンプトを複数パターン出してくれる。それを使って画像生成→キャプションもそのままCoworkで作成。40分で準備完了。</p>
+      </div>
+      <p class="text-xs font-semibold text-gray-600 mb-2">📋 実際に打ったプロンプト（コピーして使える）</p>
+      <div class="cmd-box mb-2">秋冬コレクション向けに、打ち合わせ用の参考画像イメージを作りたい。ChatGPTで画像生成できるプロンプトを3パターン作って。ブランドトーンは黒・グレー・ゴールドベース、ミニマルでラグジュアリーな雰囲気。</div>
+      <div class="cmd-box mb-3">↑で生成した画像に使うキャプションを3パターン作って。20代女性向け、ブランドの世界観を短く表現する文章で（30〜50文字）。</div>
+      <div style="background:#F5F3FF;border-left:3px solid #8B5CF6;padding:10px 14px;border-radius:8px;font-size:11.5px;">
+        <strong style="color:#4C1D95;">💬 Hiroコメント</strong>
+        <p style="margin:4px 0 0;color:#3B0764;">「打ち合わせの準備が終わってもまだ時間が余ってる、という状態になった。最初はびっくりした。画像生成はChatGPT、文章・資料まとめはCoworkと使い分けてる。」</p>
+      </div>
     `
   },
 
@@ -724,11 +723,23 @@ const cards = [
     tags: ['デザイン'],
     person: 'Hiro',
     stat: '作業時間ほぼゼロ',
-    desc: 'キャラクターのカットラインや高さを指定するだけで入稿用PDFが完成。手作業での版下作りがなくなった。',
+    desc: 'Illustratorで毎回手動設定していた版下作業が、スクリプト1本で20秒に。入稿仕様を確認しながら迷う時間がなくなった。',
     detail: `
       <div class="person-chip mb-4"><span class="dot"></span>Hiro（デザイン担当）</div>
-      <div class="cmd-box mb-3">このキャラクター画像をカットラインつき、高さ100mm、解像度350dpiでPDF出力して。</div>
-      <div class="tip-box"><p>✅ Illustratorからスクリプトで自動出力する方法も対応可。詳しくはHiroまで。</p></div>
+      <div style="background:#FFF7ED;border-left:3px solid #FB923C;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:11.5px;">
+        <strong style="color:#92400E;">😓 Before</strong>
+        <p style="margin:4px 0 0;color:#7C2D12;">アクスタや缶バッジの版下をIllustratorで作るとき、カットライン・サイズ・解像度を毎回手動設定。入稿仕様書を見ながら作業するので集中が途切れて、1件あたり15〜20分かかっていた。</p>
+      </div>
+      <div style="background:#F0FDF4;border-left:3px solid #22C55E;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:11.5px;">
+        <strong style="color:#14532D;">✅ After</strong>
+        <p style="margin:4px 0 0;color:#166534;">Coworkにスペックを伝えてIllustratorスクリプトを作ってもらい、ボタン1つで出力。設定ミスもなくなって、20秒で版下PDFが完成する。</p>
+      </div>
+      <p class="text-xs font-semibold text-gray-600 mb-2">📋 実際に打ったプロンプト（コピーして使える）</p>
+      <div class="cmd-box mb-3">Illustratorで使えるスクリプトを作って。キャラクター画像にカットラインをつけて、高さ100mm・解像度350dpi・トンボつきでPDF出力する処理。初心者でもそのまま実行できるよう手順も書いて。</div>
+      <div style="background:#F5F3FF;border-left:3px solid #8B5CF6;padding:10px 14px;border-radius:8px;font-size:11.5px;">
+        <strong style="color:#4C1D95;">💬 Hiroコメント</strong>
+        <p style="margin:4px 0 0;color:#3B0764;">「作業自体がなくなったわけじゃないけど、"迷う時間"が消えた。スクリプトを一度作れば次からはボタン1つ。件数が多い日ほど効いてくる。」</p>
+      </div>
     `
   },
 
@@ -739,12 +750,24 @@ const cards = [
     tags: ['カレンダー', '自動化', '初心者向け'],
     person: 'Nishijima',
     stat: '手動→5分で完了',
-    desc: '毎年手作業でやっていた祝日・スタッフ誕生日の登録を、一括でお願いしたら5分で全件完了した。',
+    desc: '毎年年始に30〜40分かけて手入力していた祝日・スタッフ誕生日の登録が、Coworkに頼んで5分で全件完了した。',
     detail: `
       <div class="person-chip mb-4"><span class="dot"></span>Nishijima</div>
-      <div class="cmd-box mb-3">2026年の日本の祝日を全部カレンダーに追加して。</div>
-      <div class="cmd-box mb-3">このリストのメンバーの誕生日をカレンダーに登録して：<br>田中：3/15、鈴木：7/22、…</div>
-      <div class="tip-box"><p>✅ Google Calendar を接続しておくだけで、Coworkが直接登録してくれます。</p></div>
+      <div style="background:#FFF7ED;border-left:3px solid #FB923C;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:11.5px;">
+        <strong style="color:#92400E;">😓 Before</strong>
+        <p style="margin:4px 0 0;color:#7C2D12;">毎年1月に日本の祝日をGoogle Calendarに手動で1件ずつ入力。スタッフの誕生日も同様に手入力。毎年30〜40分かかる地味な作業で、入力漏れや日付ミスも起きていた。</p>
+      </div>
+      <div style="background:#F0FDF4;border-left:3px solid #22C55E;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:11.5px;">
+        <strong style="color:#14532D;">✅ After</strong>
+        <p style="margin:4px 0 0;color:#166534;">Google Calendarを接続したCoworkに頼むだけ。祝日は自動で全件登録、誕生日リストを渡せばそのまま登録してくれる。5分で完了、ミスもゼロ。</p>
+      </div>
+      <p class="text-xs font-semibold text-gray-600 mb-2">📋 実際に打ったプロンプト（コピーして使える）</p>
+      <div class="cmd-box mb-2">2026年の日本の祝日を全部、私のGoogle Calendarに追加して。イベント名は「【祝】〇〇の日」の形式で。</div>
+      <div class="cmd-box mb-3">このメンバーの誕生日をGoogle Calendarに毎年繰り返しで登録して。イベント名は「🎂 [名前]さん誕生日」で：<br>田中：3/15、鈴木：7/22、山田：11/3</div>
+      <div style="background:#F5F3FF;border-left:3px solid #8B5CF6;padding:10px 14px;border-radius:8px;font-size:11.5px;">
+        <strong style="color:#4C1D95;">💬 Nishijimaコメント</strong>
+        <p style="margin:4px 0 0;color:#3B0764;">「最初はどう頼めばいいかわからなくて。でも試したら一発でやってくれた。毎年やってた作業がなくなったのが地味に嬉しかった。」</p>
+      </div>
     `
   },
 
@@ -754,12 +777,24 @@ const cards = [
     tags: ['資料作成', '自動化'],
     person: 'Mizuki',
     stat: '作業時間が半分に',
-    desc: '案件の経緯・Slack・メールのやり取りをAIに読み込ませると、説明資料を自動で作ってくれる。',
+    desc: 'SlackやメールのやりとりをCoworkに渡すだけで説明資料の下書きが3〜5分で完成。週1〜2回の定例準備が劇的に楽になった。',
     detail: `
-      <div class="person-chip mb-4"><span class="dot"></span>Mizuki</div>
-      <p class="text-xs text-gray-500 mb-3">過去のSlack・メールのやり取りをコピペして渡すだけで、複雑な案件の説明資料が自動生成される。</p>
-      <div class="cmd-box mb-3">このSlackのやり取りから、クライアントへの説明資料（A4 1枚）を作って。決定事項・課題・次のステップを含めて。<br>[Slackログをペースト]</div>
-      <div class="tip-box"><p>✅ 下書きが出たら「もっと簡潔に」「箇条書きで」など追加指示で調整できます。</p></div>
+      <div class="person-chip mb-4"><span class="dot"></span>Mizuki（PM担当）</div>
+      <div style="background:#FFF7ED;border-left:3px solid #FB923C;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:11.5px;">
+        <strong style="color:#92400E;">😓 Before</strong>
+        <p style="margin:4px 0 0;color:#7C2D12;">定例の説明資料を作るとき、Slackやメールの過去のやりとりを読み返して頭の中で整理して、Googleドキュメントで一から構成を考えて文章を書く。週1〜2回あって毎回2時間近くかかっていた。</p>
+      </div>
+      <div style="background:#F0FDF4;border-left:3px solid #22C55E;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:11.5px;">
+        <strong style="color:#14532D;">✅ After</strong>
+        <p style="margin:4px 0 0;color:#166534;">SlackログをCoworkに貼り付けて指示するだけで、3〜5分で説明資料の下書きが出てくる。数字確認と細部の修正だけで完成。1時間以内に終わるようになった。</p>
+      </div>
+      <p class="text-xs font-semibold text-gray-600 mb-2">📋 実際に打ったプロンプト（コピーして使える）</p>
+      <div class="cmd-box mb-2">このSlackのやり取りから、クライアントへの進捗共有資料を作って。「決定事項」「現状の課題」「次のアクション」を箇条書きで、A4 1枚に収まるくらい簡潔に。<br><br>[ここにSlackログをペースト]</div>
+      <div class="cmd-box mb-3">↑で出た資料をもっと簡潔にして。一文の長さを20文字以内に絞って、読む時間30秒以内を目指して。</div>
+      <div style="background:#F5F3FF;border-left:3px solid #8B5CF6;padding:10px 14px;border-radius:8px;font-size:11.5px;">
+        <strong style="color:#4C1D95;">💬 Mizukiコメント</strong>
+        <p style="margin:4px 0 0;color:#3B0764;">「最初の草稿を作る作業がほぼなくなった。あとは自分で確認・調整するだけ。資料作成が一番しんどかったので、これが一番助かってる。」</p>
+      </div>
     `
   },
 
@@ -769,20 +804,23 @@ const cards = [
     tags: ['デザイン', '自動化'],
     person: 'Mizuki',
     stat: '手動確認ゼロに',
-    desc: '申請書の絵型・アート番号確認をAIに委託。PDFに書き出すだけで自動判定してくれる。',
+    desc: 'メーカーからの申請書PDFを添付するだけで、絵型・アート番号を自動で読み取ってフォーム入力用に整形。ヒューマンエラーもなくなった。',
     detail: `
-      <div class="person-chip mb-4"><span class="dot"></span>Mizuki</div>
-      <div class="step-list mb-4">
-        <div class="step-row">
-          <div class="step-num">1</div>
-          <div class="step-body"><strong>IllustratorからPDFに書き出す</strong></div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">2</div>
-          <div class="step-body"><strong>Coworkに添付して指示</strong></div>
-        </div>
+      <div class="person-chip mb-4"><span class="dot"></span>Mizuki（PM担当）</div>
+      <div style="background:#FFF7ED;border-left:3px solid #FB923C;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:11.5px;">
+        <strong style="color:#92400E;">😓 Before</strong>
+        <p style="margin:4px 0 0;color:#7C2D12;">メーカーから届くアクスタ等の申請書（PDF）を開いて、絵型番号・アート番号・サイズを目視で確認して申請フォームに手入力。件数が多いとミスが起きる上に、1件あたり5〜10分かかっていた。</p>
       </div>
-      <div class="cmd-box">このPDFの絵型番号とアート番号を読み取って、申請フォームに入力する形式で出力して。</div>
+      <div style="background:#F0FDF4;border-left:3px solid #22C55E;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:11.5px;">
+        <strong style="color:#14532D;">✅ After</strong>
+        <p style="margin:4px 0 0;color:#166534;">PDFをCoworkに添付して指示するだけで、全件の番号・品名・サイズが表形式で出力される。そのままコピペで申請フォームに貼るだけ。読み取りミスもなし。</p>
+      </div>
+      <p class="text-xs font-semibold text-gray-600 mb-2">📋 実際に打ったプロンプト（コピーして使える）</p>
+      <div class="cmd-box mb-3">このPDFから、絵型番号・アート番号・品名・サイズを全件読み取って、申請フォームに入力しやすいよう「番号｜品名｜サイズ」の表形式で出力して。</div>
+      <div style="background:#F5F3FF;border-left:3px solid #8B5CF6;padding:10px 14px;border-radius:8px;font-size:11.5px;">
+        <strong style="color:#4C1D95;">💬 Mizukiコメント</strong>
+        <p style="margin:4px 0 0;color:#3B0764;">「ヒューマンエラーがなくなったのが一番助かった。PDFを渡すだけなので、確認作業という概念が消えた感じ。」</p>
+      </div>
     `
   },
 
@@ -792,24 +830,23 @@ const cards = [
     tags: ['自動化'],
     person: 'Wataru',
     stat: '手入力ゼロに',
-    desc: '顧客注文のレシートを写真で撮ってCoworkに渡すと、スプレッドシート用のデータに自動変換してくれる。',
+    desc: 'イベント・催事で溜まった顧客注文レシートを写真で撮ってCoworkに渡すと、スプレッドシートに貼れる形のデータが即完成。手入力が丸ごとなくなった。',
     detail: `
-      <div class="person-chip mb-4"><span class="dot"></span>Wataru</div>
-      <div class="step-list mb-4">
-        <div class="step-row">
-          <div class="step-num">1</div>
-          <div class="step-body"><strong>レシートの写真をCoworkにドラッグ＆ドロップ</strong></div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">2</div>
-          <div class="step-body"><strong>指示を入力</strong></div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">3</div>
-          <div class="step-body"><strong>出力されたデータをスプレッドシートにコピペ</strong></div>
-        </div>
+      <div class="person-chip mb-4"><span class="dot"></span>Wataru（オペレーション担当）</div>
+      <div style="background:#FFF7ED;border-left:3px solid #FB923C;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:11.5px;">
+        <strong style="color:#92400E;">😓 Before</strong>
+        <p style="margin:4px 0 0;color:#7C2D12;">イベントや催事が終わった後、顧客注文のレシートを手書き台帳に転記してからExcelに入力。枚数が多いと1〜2時間かかることも。入力ミスで後から修正が発生することもあった。</p>
       </div>
-      <div class="cmd-box">このレシートの日付・品目・金額・数量を表形式で出力して。</div>
+      <div style="background:#F0FDF4;border-left:3px solid #22C55E;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:11.5px;">
+        <strong style="color:#14532D;">✅ After</strong>
+        <p style="margin:4px 0 0;color:#166534;">レシートをスマホで撮ってCoworkに添付するだけ。表形式で出力されたデータをコピペでスプレッドシートに貼り付けて完了。複数枚まとめて処理もできる。</p>
+      </div>
+      <p class="text-xs font-semibold text-gray-600 mb-2">📋 実際に打ったプロンプト（コピーして使える）</p>
+      <div class="cmd-box mb-3">このレシートの写真から、日付・商品名・数量・金額・備考を読み取って表形式で出力して。複数枚あるので順番に処理して、最後に全件まとめた表を作って。</div>
+      <div style="background:#F5F3FF;border-left:3px solid #8B5CF6;padding:10px 14px;border-radius:8px;font-size:11.5px;">
+        <strong style="color:#4C1D95;">💬 Wataruコメント</strong>
+        <p style="margin:4px 0 0;color:#3B0764;">「手入力が一番嫌いな作業だった。写真を渡すだけで終わるのは正直びっくりした。イベント後の後処理が全然苦じゃなくなった。」</p>
+      </div>
     `
   },
 
@@ -819,11 +856,23 @@ const cards = [
     tags: ['自動化'],
     person: 'Wataru',
     stat: '集計作業がほぼ不要に',
-    desc: 'シフト表の集計・調整・過不足チェックをCoworkに任せることで、手作業の時間が大幅に減った。',
+    desc: 'スタッフの希望シフトを集計して欠員日を見つける作業をCoworkに任せると、毎週1時間近くかかっていた調整作業が数分に。',
     detail: `
-      <div class="person-chip mb-4"><span class="dot"></span>Wataru</div>
-      <div class="cmd-box mb-3">このシフト表から各メンバーの週の合計時間を計算して、○○さんが不足している日を教えて。<br>[シフト表をペースト]</div>
-      <div class="tip-box"><p>✅ Excelでシフト表を管理している場合は、表をそのままコピペして渡せます。</p></div>
+      <div class="person-chip mb-4"><span class="dot"></span>Wataru（オペレーション担当）</div>
+      <div style="background:#FFF7ED;border-left:3px solid #FB923C;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:11.5px;">
+        <strong style="color:#92400E;">😓 Before</strong>
+        <p style="margin:4px 0 0;color:#7C2D12;">各スタッフの希望シフトを集計して、必要人数と比較して欠員日を探す作業を手動で毎週やっていた。Excelで集計ミスが起きることもあり、確認の往復が発生して1時間近くかかることも。</p>
+      </div>
+      <div style="background:#F0FDF4;border-left:3px solid #22C55E;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:11.5px;">
+        <strong style="color:#14532D;">✅ After</strong>
+        <p style="margin:4px 0 0;color:#166534;">シフト表をCoworkに貼り付けて条件を伝えるだけで、合計時間・欠員日・充足確認がまとめて出てくる。あとは担当者に声をかけるだけ。集計ミスもゼロ。</p>
+      </div>
+      <p class="text-xs font-semibold text-gray-600 mb-2">📋 実際に打ったプロンプト（コピーして使える）</p>
+      <div class="cmd-box mb-3">このシフト希望表から、各メンバーの週の合計時間を計算して。人数が不足している日時を教えて。土曜は最低3人・日曜は最低2人必要なので、充足しているか確認して。<br><br>[シフト表をここにペースト]</div>
+      <div style="background:#F5F3FF;border-left:3px solid #8B5CF6;padding:10px 14px;border-radius:8px;font-size:11.5px;">
+        <strong style="color:#4C1D95;">💬 Wataruコメント</strong>
+        <p style="margin:4px 0 0;color:#3B0764;">「集計ミスがなくなって、確認の往復もなくなった。自分の仕事が"計算する人"から"判断する人"に変わった感覚。」</p>
+      </div>
     `
   },
 
@@ -833,24 +882,36 @@ const cards = [
     tags: ['経費', '自動化'],
     person: 'Fujimoto',
     stat: '申請作業が数分に',
-    desc: 'マネーフォワード経費とCoworkをカスタム連携。明細取得→科目確定→申請まで自動でできるようになった。',
+    desc: '毎月末に30〜40分かけていたマネーフォワード経費への手入力が、/keihiスキルで数分に。明細取得・科目判定・申請まで自動化した。',
     detail: `
-      <div class="person-chip mb-4"><span class="dot"></span>Fujimoto</div>
+      <div class="person-chip mb-4"><span class="dot"></span>Fujimoto（AI推進担当）</div>
+      <div style="background:#FFF7ED;border-left:3px solid #FB923C;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:11.5px;">
+        <strong style="color:#92400E;">😓 Before</strong>
+        <p style="margin:4px 0 0;color:#7C2D12;">毎月末にクレジットカードの明細を見ながら、マネーフォワード経費に1件ずつ手入力。勘定科目の判断に迷うことも多く、30〜40分かかっていた。月末の一番億劫な作業だった。</p>
+      </div>
+      <div style="background:#F0FDF4;border-left:3px solid #22C55E;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:11.5px;">
+        <strong style="color:#14532D;">✅ After</strong>
+        <p style="margin:4px 0 0;color:#166534;">/keihiスキルを実行するだけで、カード明細を自動取得→科目を自動判定→申請フォームに入力。内容を確認して申請ボタンを押すだけで完了。数分で終わる。</p>
+      </div>
       <div class="step-list mb-4">
         <div class="step-row">
           <div class="step-num">1</div>
-          <div class="step-body"><strong><code style="background:#F3F4F6;padding:1px 6px;border-radius:4px;">/keihi</code> スキルを実行</strong></div>
+          <div class="step-body"><strong>チャット欄に <code style="background:#F3F4F6;padding:1px 6px;border-radius:4px;">/keihi</code> と入力して実行</strong></div>
         </div>
         <div class="step-row">
           <div class="step-num">2</div>
-          <div class="step-body"><strong>カード明細を自動取得・科目を自動判定</strong></div>
+          <div class="step-body"><strong>カード明細の自動取得・科目判定が走る</strong></div>
         </div>
         <div class="step-row">
           <div class="step-num">3</div>
-          <div class="step-body"><strong>確認して申請ボタンを押すだけ</strong></div>
+          <div class="step-body"><strong>内容を確認して申請ボタンを押すだけ</strong></div>
         </div>
       </div>
-      <div class="tip-box"><p>✅ 導入希望の方は藤本まで。設定をサポートします。</p></div>
+      <div style="background:#F5F3FF;border-left:3px solid #8B5CF6;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:11.5px;">
+        <strong style="color:#4C1D95;">💬 Fujimotoコメント</strong>
+        <p style="margin:4px 0 0;color:#3B0764;">「設定は少し大変だったけど、毎月のことなのでトータルでは絶対プラス。月末の一番億劫な作業がなくなった。」</p>
+      </div>
+      <div class="note-box"><p>⚠️ /keihiスキルの設定サポートは藤本まで。個人ごとに初期設定が必要です。</p></div>
     `
   },
 
@@ -860,11 +921,24 @@ const cards = [
     tags: ['SNS', '自動化'],
     person: 'PM担当',
     stat: 'スケジュール策定が半分に',
-    desc: 'ブランド方向性だけ伝えると、投稿内容・タイミング・ハッシュタグまで提案してくれる。固定観念を外したアイデアも出てくる。',
+    desc: '月次のInstagram投稿スケジュール作成に4〜5時間かけていたのが、Coworkに叩き台を出させることで2時間以内に。アイデアで詰まることもなくなった。',
     detail: `
       <div class="person-chip mb-4"><span class="dot"></span>PM担当</div>
-      <div class="cmd-box mb-3">来月の[ブランド名]のInstagram投稿スケジュール（週3回）を提案して。ターゲットは20代女性、カジュアルでおしゃれなトーンで。</div>
-      <div class="tip-box"><p>✅ 「もっと攻めた内容で」「競合とは違うアプローチで」と追加指示するとアイデアが広がります。</p></div>
+      <div style="background:#FFF7ED;border-left:3px solid #FB923C;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:11.5px;">
+        <strong style="color:#92400E;">😓 Before</strong>
+        <p style="margin:4px 0 0;color:#7C2D12;">月次のInstagram投稿スケジュールを作るとき、過去の投稿を振り返りながら内容・タイミング・ハッシュタグを手動で企画。ネタ切れで詰まることも多く、毎月4〜5時間かかっていた。</p>
+      </div>
+      <div style="background:#F0FDF4;border-left:3px solid #22C55E;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:11.5px;">
+        <strong style="color:#14532D;">✅ After</strong>
+        <p style="margin:4px 0 0;color:#166534;">ブランドのターゲットとトーンを伝えるだけで、30分以内に月次スケジュールの叩き台が出てくる。自分の仕事が「考える」から「選んで調整する」に変わった。</p>
+      </div>
+      <p class="text-xs font-semibold text-gray-600 mb-2">📋 実際に打ったプロンプト（コピーして使える）</p>
+      <div class="cmd-box mb-2">来月の[ブランド名]のInstagram投稿スケジュール（週3回）を提案して。ターゲットは20代女性、カジュアルでおしゃれなトーン。各投稿の「テーマ・投稿タイミング・ハッシュタグ案5個」をセットで出して。</div>
+      <div class="cmd-box mb-3">↑の内容で、もっと競合と差別化した攻めた案を3本追加して。「これは見たことない」と思えるような切り口で。</div>
+      <div style="background:#F5F3FF;border-left:3px solid #8B5CF6;padding:10px 14px;border-radius:8px;font-size:11.5px;">
+        <strong style="color:#4C1D95;">💬 PM担当コメント</strong>
+        <p style="margin:4px 0 0;color:#3B0764;">「アイデア出しで詰まることがなくなった。出てきた案の中から選ぶ作業になったので、むしろ質が上がった気がする。」</p>
+      </div>
     `
   },
 
@@ -874,11 +948,24 @@ const cards = [
     tags: ['デザイン', '自動化'],
     person: 'Hiro',
     stat: '翻訳コストほぼゼロに',
-    desc: 'ブランド事業の企画書・PLをCoworkで作成。韓国語翻訳もそのまま依頼できるので多言語対応が一気に楽になった。',
+    desc: '韓国系取引先向けの資料作成で翻訳業者への外注が不要に。日本語で作った企画書をその場で韓国語に翻訳＋PLの骨子まで一度に完成。',
     detail: `
-      <div class="person-chip mb-4"><span class="dot"></span>Hiro</div>
-      <div class="cmd-box mb-3">この日本語の企画書をビジネス文体の韓国語に翻訳して。ブランド名はそのまま英語で残して。</div>
-      <div class="cmd-box">来期のブランド事業PL（売上・原価・利益）の骨子を作って。数値はプレースホルダーでOK。</div>
+      <div class="person-chip mb-4"><span class="dot"></span>Hiro（デザイン担当）</div>
+      <div style="background:#FFF7ED;border-left:3px solid #FB923C;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:11.5px;">
+        <strong style="color:#92400E;">😓 Before</strong>
+        <p style="margin:4px 0 0;color:#7C2D12;">韓国系ブランドや取引先向けの資料は、日本語で作ってから翻訳サービスに外注。往復のやり取りと確認作業で数日かかることも。コストも毎回発生していた。</p>
+      </div>
+      <div style="background:#F0FDF4;border-left:3px solid #22C55E;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:11.5px;">
+        <strong style="color:#14532D;">✅ After</strong>
+        <p style="margin:4px 0 0;color:#166534;">日本語の企画書をCoworkに渡すと、ビジネス文体の韓国語に即翻訳。PLの骨子もその場で作成できる。翻訳の外注が丸ごとなくなった。</p>
+      </div>
+      <p class="text-xs font-semibold text-gray-600 mb-2">📋 実際に打ったプロンプト（コピーして使える）</p>
+      <div class="cmd-box mb-2">この日本語の企画書をビジネス文体の韓国語に翻訳して。ブランド名・商品名はそのまま英語で残して。翻訳後に不自然な表現があれば指摘して。</div>
+      <div class="cmd-box mb-3">来期の[ブランド名]事業のPL骨子を作って。「売上・原価・粗利・販管費・営業利益」の構成で、数値はプレースホルダーでOK。韓国市場向けの備考欄もつけて。</div>
+      <div style="background:#F5F3FF;border-left:3px solid #8B5CF6;padding:10px 14px;border-radius:8px;font-size:11.5px;">
+        <strong style="color:#4C1D95;">💬 Hiroコメント</strong>
+        <p style="margin:4px 0 0;color:#3B0764;">「韓国語で資料を作ること自体のハードルがなくなった。提案できる相手の幅が広がって、仕事の選択肢が増えた感じ。」</p>
+      </div>
     `
   },
 
