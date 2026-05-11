@@ -369,8 +369,9 @@ const cards = [
           </div>
         </div>
       </div>
-      <div class="cmd-box mb-3">Slackのメンションを確認して、Notionタスクから今週期限のものをリストアップして。今日のカレンダー予定もまとめて教えて。</div>
-      <div class="tip-box"><p>✅ これを設定するだけで、毎朝自動でまとめが届きます。</p></div>
+      <div class="cmd-box mb-3">Slackで自分宛のメンションを確認して、Notionのタスクから今週期限のものを読んで、Googleカレンダーの今日の予定も確認して。「今日やること」「返信すべきもの」「注意すべき予定」の3つに整理して</div>
+      <div class="tip-box mb-2"><p>✅ これを設定するだけで、毎朝自動でまとめが届きます。</p></div>
+      <div class="note-box"><p>⚠️ <strong>Desktopアプリが起動している間だけ動作します。スリープ中・終了中は動きません。</strong>スケジュール実行時はアプリを起動したままにしてください。</p></div>
     `
   },
 
@@ -379,23 +380,34 @@ const cards = [
     type: 'step',
     title: 'スケジュールを登録・管理したい',
     tags: ['スケジュール', '初心者向け'],
-    desc: '毎日・毎週・平日のみなど細かく設定できます。一度設定したら放置でOK。',
+    desc: '毎日・毎週・平日のみなど細かく設定できます。2つの方法で登録可能。一度設定したら放置でOK。',
     detail: `
+      <p class="text-xs font-semibold text-gray-600 mb-2">📌 設定方法は2つあります</p>
       <div class="step-list mb-4">
         <div class="step-row">
-          <div class="step-num">1</div>
-          <div class="step-body"><strong>サイドバー「Scheduled」→「+ New task」</strong></div>
+          <div class="step-num">A</div>
+          <div class="step-body"><strong>チャット欄に <code style="background:#F3F4F6;padding:1px 6px;border-radius:4px;">/schedule</code> と入力</strong><p>コマンド入力→ガイドに沿って設定</p></div>
         </div>
         <div class="step-row">
-          <div class="step-num">2</div>
-          <div class="step-body"><strong>頻度を選ぶ</strong><p>毎日・毎週・平日のみ・手動など</p></div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">3</div>
-          <div class="step-body"><strong>実行したいことを日本語で書いて保存</strong></div>
+          <div class="step-num">B</div>
+          <div class="step-body"><strong>サイドバー「Scheduled」→「+ New task」をクリック</strong><p>フォームに直接入力して保存</p></div>
         </div>
       </div>
-      <div class="note-box"><p>⚠️ スケジュールが動かない場合は、使用するコネクタが接続されているか確認してください。</p></div>
+      <p class="text-xs font-semibold text-gray-600 mb-2">⏱ 頻度の選択肢</p>
+      <table style="width:100%;font-size:11px;border-collapse:collapse;margin-bottom:16px;">
+        <thead><tr style="background:#F3F4F6;"><th style="padding:5px 8px;text-align:left;border:1px solid #E5E7EB;">頻度</th><th style="padding:5px 8px;text-align:left;border:1px solid #E5E7EB;">設定例</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:5px 8px;border:1px solid #E5E7EB;">毎時</td><td style="padding:5px 8px;border:1px solid #E5E7EB;">1時間ごとに実行</td></tr>
+          <tr style="background:#FAFAFA;"><td style="padding:5px 8px;border:1px solid #E5E7EB;">毎日</td><td style="padding:5px 8px;border:1px solid #E5E7EB;">毎日 09:00 など時刻指定</td></tr>
+          <tr><td style="padding:5px 8px;border:1px solid #E5E7EB;">毎週</td><td style="padding:5px 8px;border:1px solid #E5E7EB;">毎週月曜 09:00 など曜日＋時刻</td></tr>
+          <tr style="background:#FAFAFA;"><td style="padding:5px 8px;border:1px solid #E5E7EB;">平日のみ</td><td style="padding:5px 8px;border:1px solid #E5E7EB;">月〜金に毎日 09:00</td></tr>
+          <tr><td style="padding:5px 8px;border:1px solid #E5E7EB;">手動</td><td style="padding:5px 8px;border:1px solid #E5E7EB;">実行ボタンを押したときだけ動作</td></tr>
+        </tbody>
+      </table>
+      <p class="text-xs font-semibold text-gray-600 mb-2">📝 プロンプト例（コピーして使えます）</p>
+      <div class="cmd-box mb-2">【朝のブリーフィング / 平日 09:00】<br>Slackで自分宛のメンションを確認して、Notionのタスクから今週期限のものを読んで、Googleカレンダーの今日の予定も確認して。「今日やること」「返信すべきもの」「注意すべき予定」の3つに整理して</div>
+      <div class="cmd-box mb-3">【Shopify週次レポート / 毎週月曜 09:00】<br>先週のShopify売上・注文数・在庫切れ商品をまとめて、Slackの#コネクト-売上-週次に投稿して</div>
+      <div class="note-box"><p>⚠️ <strong>Desktopアプリが起動している間だけ動作します。スリープ中・終了中は動きません。</strong><br>また、使用するコネクタ（Slack・Notion等）が接続済みであることを確認してください。</p></div>
     `
   },
 
@@ -440,7 +452,12 @@ const cards = [
         </div>
       </div>
       <div class="cmd-box mb-3">このメールに丁寧にお断りする返信を書いて：<br>[ここにメール本文をペースト]</div>
-      <div class="cmd-box">このメールを読んで、要点を3行でまとめて返信案を作って：<br>[ここにメール本文をペースト]</div>
+      <div class="cmd-box mb-4">このメールを読んで、要点を3行でまとめて返信案を作って：<br>[ここにメール本文をペースト]</div>
+      <p class="text-xs font-semibold text-gray-600 mb-2">🚀 発展版：文体プロファイル設定（Gmail接続後）</p>
+      <p class="text-xs text-gray-500 mb-2">Gmailを接続すると、自分の送信メールを読み込んで文体を学習させられます。一度設定すれば、以降はメール本文を貼らなくてもOK。</p>
+      <div class="cmd-box mb-2">【初回1回だけ実行】<br>Gmailの送信済みメール20通読んで、私の文体を分析して。今後のメール下書きは常にこのスタイルで</div>
+      <div class="cmd-box mb-3">【2回目以降の普段使い】<br>〇〇さんのメールに返信したいので下書きを作って</div>
+      <div class="tip-box"><p>✅ 文体プロファイルを設定すると、毎回スタイルを指定しなくても自分らしい文章で下書きが生成されます。</p></div>
     `
   },
 
@@ -531,7 +548,7 @@ const cards = [
           <div class="step-body"><strong>プロンプトを設定</strong></div>
         </div>
       </div>
-      <div class="cmd-box mb-3">先週のShopify売上・注文数・在庫切れ商品をまとめて、Slack の #general に投稿して。</div>
+      <div class="cmd-box mb-3">先週のShopify売上・注文数・在庫切れ商品をまとめて、Slackの#コネクト-売上-週次に投稿して。</div>
       <div class="tip-box"><p>✅ 設定は1回だけ。毎週自動で動きます。</p></div>
     `
   },
@@ -644,6 +661,30 @@ const cards = [
         </div>
       </div>
       <div class="cmd-box">この文字起こしから議事録を作って、決定事項・アクションアイテム・次回日程を抽出してNotionに保存して。<br>[文字起こしをペースト]</div>
+    `
+  },
+
+  {
+    id: 'minutes-to-slack',
+    type: 'step',
+    title: '議事録の要点をSlackに自動共有したい',
+    tags: ['Notion', 'Slack', '自動化'],
+    related: [{ id: 'google-meet', label: '先に：Google Meetの議事録を作る' }, { id: 'notion-connect', label: 'Notionを接続する' }, { id: 'slack-connect', label: 'Slackを接続する' }],
+    desc: 'Notionに保存された議事録を読んで、決定事項とアクションをSlackに自動投稿。会議参加者への共有が一瞬で完了します。',
+    detail: `
+      <div class="step-list mb-4">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>NotionとSlackの両方を接続済みにする</strong><p>まだの場合は「関連カード」から先に設定</p></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>会議終了後、Coworkに指示を入力</strong></div>
+        </div>
+      </div>
+      <div class="cmd-box mb-3">Notionの今日の〇〇定例の議事録を読んで、「決定事項」と「みんなに関係あるアクション」を3〜5行にまとめて、Slackの#〇〇チャンネルに投稿して。</div>
+      <div class="tip-box mb-2"><p>✅ 議事録のNotion URLを直接貼って指定することもできます。</p></div>
+      <div class="tip-box"><p>✅ スケジュール機能と組み合わせると、定例会議の翌日朝に自動で共有することも可能です。</p></div>
     `
   },
 
