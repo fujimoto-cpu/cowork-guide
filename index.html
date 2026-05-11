@@ -106,12 +106,15 @@
     .btn-submit-lg:disabled { opacity:.4; cursor:not-allowed; }
 
     /* Reaction bar */
-    .reaction-bar { display:flex; align-items:center; gap:.5rem; padding:.5rem 1rem; border-top:1px solid #F3F4F6; flex-wrap:wrap; }
-    .reaction-btn { display:inline-flex; align-items:center; gap:.375rem; padding:.3rem .75rem; border-radius:99px; border:1.5px solid #E5E7EB; background:#fff; font-size:.75rem; font-weight:600; cursor:pointer; transition:all .15s; color:#6B7280; white-space:nowrap; }
-    .reaction-btn:hover { border-color:#22C55E; color:#15803D; background:#F0FDF4; }
-    .reaction-btn.reacted { border-color:#22C55E; background:#F0FDF4; color:#15803D; }
-    .reaction-btn .count { font-weight:700; }
-    .reaction-members { font-size:.72rem; color:#9CA3AF; line-height:1.4; }
+    .reaction-bar { display:flex; align-items:center; gap:.5rem; padding:.65rem 1rem; border-top:1px solid #F3F4F6; flex-wrap:wrap; }
+    .reaction-bar-label { font-size:11px; color:#9CA3AF; white-space:nowrap; }
+    .reaction-btn { display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .85rem; border-radius:8px; border:1.5px dashed #D1D5DB; background:#fff; font-size:.75rem; font-weight:600; cursor:pointer; transition:all .15s; color:#9CA3AF; white-space:nowrap; }
+    .reaction-btn:hover { border-color:#22C55E; border-style:solid; color:#15803D; background:#F0FDF4; }
+    .reaction-btn.reacted { border-color:#22C55E; border-style:solid; background:#DCFCE7; color:#15803D; }
+    .reaction-btn .check-on { display:none; }
+    .reaction-btn.reacted .check-off { display:none; }
+    .reaction-btn.reacted .check-on { display:inline-block; }
+    .reaction-members { font-size:.72rem; color:#6B7280; line-height:1.4; }
 
     /* Name setup modal */
     .name-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:100; display:flex; align-items:center; justify-content:center; padding:1rem; }
@@ -1056,8 +1059,11 @@ function renderCards(list) {
         </div>
       </details>` : pdfBtn ? `<div class="px-5 pb-5">${pdfBtn}${relatedHtml}</div>` : ''}
       <div class="reaction-bar" id="reaction-bar-${cardId}">
+        <span class="reaction-bar-label">試しましたか？</span>
         <button class="reaction-btn" id="reaction-btn-${cardId}" onclick="handleReaction('${cardId}')">
-          ✅ <span class="count" id="reaction-count-${cardId}">0</span>
+          <svg class="check-off" width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x=".75" y=".75" width="12.5" height="12.5" rx="3" stroke="#D1D5DB" stroke-width="1.5"/></svg>
+          <svg class="check-on" width="13" height="13" viewBox="0 0 14 14" fill="none"><rect width="14" height="14" rx="3.5" fill="#22C55E"/><path d="M3.5 7l2.5 2.5L10.5 4.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="reaction-label-${cardId}">試した！</span>
         </button>
         <span class="reaction-members" id="reaction-members-${cardId}"></span>
       </div>
@@ -1236,16 +1242,18 @@ function loadReactions(cardId) {
     const btnEl    = document.getElementById(`reaction-btn-${cardId}`);
     if (!countEl) return;
 
-    countEl.textContent = names.length;
     const isMine = names.includes(myName);
     btnEl.classList.toggle('reacted', isMine);
-    btnEl.title = isMine ? 'クリックで取り消す' : 'クリックで実行済みにする';
+    btnEl.title = isMine ? 'クリックで取り消す' : '試したらチェック！';
+
+    const labelEl = document.getElementById(`reaction-label-${cardId}`);
+    if (labelEl) labelEl.textContent = isMine ? 'チェック済み ✓' : '試した！';
 
     if (names.length === 0) {
       membersEl.textContent = '';
     } else {
-      const display = names.slice(0, 4).join('・') + (names.length > 4 ? ` ほか${names.length - 4}人` : '');
-      membersEl.textContent = display + ' が実行済み';
+      const display = names.slice(0, 4).join('・') + (names.length > 4 ? ` ほか${names.length - 4}名` : '');
+      membersEl.textContent = `${display} が試しました`;
     }
   });
 }
