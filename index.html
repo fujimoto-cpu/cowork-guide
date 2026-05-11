@@ -106,7 +106,7 @@
     .btn-submit-lg:disabled { opacity:.4; cursor:not-allowed; }
 
     /* Reaction bar */
-    .reaction-bar { display:flex; align-items:center; gap:.625rem; padding:.625rem 1.25rem; border-top:1px solid #F3F4F6; flex-wrap:wrap; }
+    .reaction-bar { display:flex; align-items:center; gap:.5rem; padding:.5rem 1rem; border-top:1px solid #F3F4F6; flex-wrap:wrap; }
     .reaction-btn { display:inline-flex; align-items:center; gap:.375rem; padding:.3rem .75rem; border-radius:99px; border:1.5px solid #E5E7EB; background:#fff; font-size:.75rem; font-weight:600; cursor:pointer; transition:all .15s; color:#6B7280; white-space:nowrap; }
     .reaction-btn:hover { border-color:#22C55E; color:#15803D; background:#F0FDF4; }
     .reaction-btn.reacted { border-color:#22C55E; background:#F0FDF4; color:#15803D; }
@@ -126,7 +126,7 @@
     .name-modal .btn-ok:hover { opacity:.85; }
 
     /* Comment section */
-    .comment-toggle { width:100%; display:flex; align-items:center; gap:.5rem; padding:.75rem 1.25rem; font-size:.75rem; font-weight:600; color:#6B7280; background:#fff; border:none; border-top:1px solid #F3F4F6; cursor:pointer; transition:background .15s; text-align:left; }
+    .comment-toggle { width:100%; display:flex; align-items:center; gap:.5rem; padding:.5rem 1rem; font-size:.75rem; font-weight:600; color:#6B7280; background:#fff; border:none; border-top:1px solid #F3F4F6; cursor:pointer; transition:background .15s; text-align:left; }
     .comment-toggle:hover { background:#F9FAFB; color:#374151; }
     .comment-toggle .count-badge { background:#F3F4F6; color:#6B7280; font-size:.68rem; padding:.1rem .5rem; border-radius:99px; }
     .comment-panel { border-top:1px solid #F3F4F6; background:#FAFAFA; }
@@ -904,14 +904,14 @@ function renderCards(list) {
     el.dataset.text = (c.title + ' ' + c.desc + ' ' + c.tags.join(' ') + ' ' + (c.person||'')).toLowerCase();
 
     el.innerHTML = `
-      <div class="p-5">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">${badge}${statHtml}</div>
+      <div class="px-4 pt-4 pb-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">${badge}${statHtml}</div>
           ${copyBtn}
         </div>
-        <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-2">${c.title}</h3>
-        <p class="text-xs text-gray-500 leading-relaxed mb-4">${c.desc}</p>
-        <div class="flex flex-wrap gap-1.5">${tags}</div>
+        <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-1.5">${c.title}</h3>
+        <p class="text-xs text-gray-500 leading-relaxed mb-2.5 line-clamp-2">${c.desc}</p>
+        <div class="flex flex-wrap gap-1">${tags}</div>
       </div>
       ${c.detail ? `
       <details class="border-t border-gray-100">
