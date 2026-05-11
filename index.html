@@ -114,6 +114,10 @@
     .reaction-btn .check-on { display:none; }
     .reaction-btn.reacted .check-off { display:none; }
     .reaction-btn.reacted .check-on { display:inline-block; }
+    .like-btn { display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .75rem; border-radius:8px; border:1.5px solid #E5E7EB; background:#fff; font-size:.75rem; font-weight:600; cursor:pointer; transition:all .15s; color:#9CA3AF; white-space:nowrap; }
+    .like-btn:hover { border-color:#F59E0B; color:#B45309; background:#FFFBEB; }
+    .like-btn.liked { border-color:#F59E0B; background:#FEF3C7; color:#B45309; }
+    .like-count { font-weight:700; font-size:.72rem; }
     .reaction-members { font-size:.72rem; color:#6B7280; line-height:1.4; }
 
     /* Name setup modal */
@@ -1059,6 +1063,9 @@ function renderCards(list) {
         </div>
       </details>` : pdfBtn ? `<div class="px-5 pb-5">${pdfBtn}${relatedHtml}</div>` : ''}
       <div class="reaction-bar" id="reaction-bar-${cardId}">
+        <button class="like-btn" id="like-btn-${cardId}" onclick="handleLike('${cardId}')">
+          👍 <span class="like-count" id="like-count-${cardId}">0</span>
+        </button>
         <span class="reaction-bar-label">試しましたか？</span>
         <button class="reaction-btn" id="reaction-btn-${cardId}" onclick="handleReaction('${cardId}')">
           <svg class="check-off" width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x=".75" y=".75" width="12.5" height="12.5" rx="3" stroke="#D1D5DB" stroke-width="1.5"/></svg>
@@ -1085,6 +1092,7 @@ function renderCards(list) {
     `;
     grid.appendChild(el);
     if (!reactionListeners[cardId]) loadReactions(cardId);
+    if (!likeListeners[cardId]) loadLikes(cardId);
   });
 }
 
@@ -1181,6 +1189,7 @@ function escHtml(str) {
 
 // ─── Reactions ───────────────────────────────────────────────────────────────
 const reactionListeners = {};
+const likeListeners    = {};
 let _pendingReactionCardId = null;
 
 function getMyName() { return localStorage.getItem('cowork_member_name') || ''; }
@@ -1255,6 +1264,47 @@ function loadReactions(cardId) {
       const display = names.slice(0, 4).join('・') + (names.length > 4 ? ` ほか${names.length - 4}名` : '');
       membersEl.textContent = `${display} が試しました`;
     }
+  });
+}
+
+// ─── Likes ───────────────────────────────────────────────────────────────────
+function handleLike(cardId) {
+  const name = getMyName();
+  if (!name) {
+    _pendingReactionCardId = cardId; // 名前モーダルを流用
+    openNameModal();
+    return;
+  }
+  toggleLike(cardId, name);
+}
+
+function toggleLike(cardId, name) {
+  if (!db) return;
+  const ref = db.collection('likes').doc(cardId).collection('members').doc(name);
+  ref.get().then(doc => {
+    if (doc.exists) {
+      ref.delete();
+    } else {
+      ref.set({ likedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    }
+  });
+}
+
+function loadLikes(cardId) {
+  if (!db) return;
+  const ref = db.collection('likes').doc(cardId).collection('members')
+               .orderBy('likedAt', 'asc');
+  likeListeners[cardId] = ref.onSnapshot(snapshot => {
+    const myName   = getMyName();
+    const names    = snapshot.docs.map(d => d.id);
+    const countEl  = document.getElementById(`like-count-${cardId}`);
+    const btnEl    = document.getElementById(`like-btn-${cardId}`);
+    if (!countEl) return;
+
+    countEl.textContent = names.length || '';
+    const isLiked = names.includes(myName);
+    btnEl.classList.toggle('liked', isLiked);
+    btnEl.title = isLiked ? 'いいね済み（クリックで取り消す）' : 'いいね！';
   });
 }
 
