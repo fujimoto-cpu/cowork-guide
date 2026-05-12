@@ -1007,12 +1007,8 @@ function renderCards(list) {
     const statHtml = c.stat
       ? `<span class="stat">${c.stat}</span>` : '';
 
-    const orderBadge = c.postOrder
-      ? (() => {
-          const medals = ['🥇','🥈','🥉'];
-          const icon = medals[c.postOrder - 1] || `#${c.postOrder}`;
-          return `<span style="font-size:.68rem;font-weight:700;color:#92400E;background:#FFFBEB;padding:.15rem .5rem;border-radius:99px;border:1px solid #FDE68A;">${icon} 先着${c.postOrder}番</span>`;
-        })()
+    const newBadge = c.isNew
+      ? `<span style="font-size:.68rem;font-weight:700;color:#fff;background:#EF4444;padding:.15rem .5rem;border-radius:99px;letter-spacing:.04em;">NEW</span>`
       : '';
 
     const relatedHtml = (c.related && c.related.length)
@@ -1053,7 +1049,7 @@ function renderCards(list) {
         <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-1.5">${c.title}</h3>
         <p class="text-xs text-gray-500 leading-relaxed mb-2.5 line-clamp-2">${c.desc}</p>
         <div class="flex flex-wrap gap-1">${tags}</div>
-        ${(c.postOrder || c.postedAt) ? `<div class="flex items-center gap-2 mt-2">${orderBadge}${c.postedAt ? `<span class="text-xs text-gray-400">📅 ${c.postedAt}</span>` : ''}</div>` : ''}
+        ${(c.isNew || c.postedAt) ? `<div class="flex items-center gap-2 mt-2">${newBadge}${c.postedAt ? `<span class="text-xs text-gray-400">📅 ${c.postedAt}</span>` : ''}</div>` : ''}
       </div>
       ${c.detail ? `
       <details class="border-t border-gray-100">
@@ -1569,6 +1565,7 @@ function loadCommunitySkills() {
         const postedAt = postedDate
           ? `${postedDate.getFullYear()}/${postedDate.getMonth()+1}/${postedDate.getDate()}`
           : null;
+        const postedAtMs = postedDate ? postedDate.getTime() : null;
         return {
           id: `community-${doc.id}`,
           type: 'community',
@@ -1577,10 +1574,14 @@ function loadCommunitySkills() {
           desc: shortDesc,
           person: d.person,
           postedAt,
+          postedAtMs,
           stat: (!hasBeforeAfter && d.stat) ? d.stat : null,
           detail: `<div class="person-chip mb-3"><span class="dot"></span>${escHtml(d.person)}</div>${toolsHtml}${beforeHtml}${afterHtml}${descHtml}${statHtml}${promptHtml}${imageHtml}`
         };
-      }).map((card, i) => ({ ...card, postOrder: i + 1 }));
+      }).map(card => {
+        const isNew = card.postedAtMs && (Date.now() - card.postedAtMs) < 7 * 24 * 60 * 60 * 1000;
+        return { ...card, isNew };
+      });
       applyFilters();
     });
 }
