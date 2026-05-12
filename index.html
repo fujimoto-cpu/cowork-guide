@@ -152,6 +152,8 @@
     .comment-submit { align-self:flex-end; background:#1A1A1A; color:#fff; font-size:.75rem; font-weight:600; padding:.5rem 1.25rem; border-radius:.625rem; border:none; cursor:pointer; transition:opacity .15s; }
     .comment-submit:hover { opacity:.8; }
     .comment-submit:disabled { opacity:.4; cursor:not-allowed; }
+    .comment-delete { background:none; border:none; cursor:pointer; color:#D1D5DB; font-size:.68rem; padding:.1rem .4rem; border-radius:.375rem; transition:color .15s; margin-left:auto; }
+    .comment-delete:hover { color:#EF4444; }
 
     /* Copy link button */
     .copy-link-btn { position:relative; display:flex; align-items:center; justify-content:center; width:1.75rem; height:1.75rem; border-radius:.5rem; color:#D1D5DB; background:transparent; border:none; cursor:pointer; transition:all .15s; }
@@ -1098,22 +1100,33 @@ function loadComments(cardId) {
       listEl.innerHTML = '<p class="comment-empty">まだコメントはありません。最初の補足を書いてみて！</p>';
       return;
     }
+    const myName = getMyName();
     listEl.innerHTML = snapshot.docs.map(doc => {
       const d = doc.data();
       const date = d.createdAt?.toDate();
       const timeStr = date
         ? `${date.getMonth()+1}/${date.getDate()} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`
         : '';
+      const deleteBtn = (myName && myName === d.author)
+        ? `<button class="comment-delete" onclick="deleteComment('${cardId}','${doc.id}')" title="削除">🗑</button>`
+        : '';
       return `
         <div class="comment-item">
           <div class="comment-meta">
             <span class="comment-author">${escHtml(d.author)}</span>
             <span class="comment-time">${timeStr}</span>
+            ${deleteBtn}
           </div>
           <p class="comment-text">${escHtml(d.text)}</p>
         </div>`;
     }).join('');
   });
+}
+
+function deleteComment(cardId, docId) {
+  if (!db) return;
+  if (!confirm('このコメントを削除しますか？')) return;
+  db.collection('comments').doc(cardId).collection('items').doc(docId).delete();
 }
 
 function submitComment(cardId, btn) {
