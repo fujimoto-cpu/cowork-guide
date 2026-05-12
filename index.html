@@ -1007,6 +1007,14 @@ function renderCards(list) {
     const statHtml = c.stat
       ? `<span class="stat">${c.stat}</span>` : '';
 
+    const orderBadge = c.postOrder
+      ? (() => {
+          const medals = ['🥇','🥈','🥉'];
+          const icon = medals[c.postOrder - 1] || `#${c.postOrder}`;
+          return `<span style="font-size:.68rem;font-weight:700;color:#92400E;background:#FFFBEB;padding:.15rem .5rem;border-radius:99px;border:1px solid #FDE68A;">${icon} 先着${c.postOrder}番</span>`;
+        })()
+      : '';
+
     const relatedHtml = (c.related && c.related.length)
       ? `<div class="related-section">
           <p class="text-xs text-gray-400 font-semibold mb-2">関連カード</p>
@@ -1045,7 +1053,7 @@ function renderCards(list) {
         <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-1.5">${c.title}</h3>
         <p class="text-xs text-gray-500 leading-relaxed mb-2.5 line-clamp-2">${c.desc}</p>
         <div class="flex flex-wrap gap-1">${tags}</div>
-        ${c.postedAt ? `<p class="text-xs text-gray-400 mt-2">📅 ${c.postedAt}</p>` : ''}
+        ${(c.postOrder || c.postedAt) ? `<div class="flex items-center gap-2 mt-2">${orderBadge}${c.postedAt ? `<span class="text-xs text-gray-400">📅 ${c.postedAt}</span>` : ''}</div>` : ''}
       </div>
       ${c.detail ? `
       <details class="border-t border-gray-100">
@@ -1572,7 +1580,7 @@ function loadCommunitySkills() {
           stat: (!hasBeforeAfter && d.stat) ? d.stat : null,
           detail: `<div class="person-chip mb-3"><span class="dot"></span>${escHtml(d.person)}</div>${toolsHtml}${beforeHtml}${afterHtml}${descHtml}${statHtml}${promptHtml}${imageHtml}`
         };
-      });
+      }).map((card, i) => ({ ...card, postOrder: i + 1 }));
       applyFilters();
     });
 }
