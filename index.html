@@ -1045,6 +1045,7 @@ function renderCards(list) {
         <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-1.5">${c.title}</h3>
         <p class="text-xs text-gray-500 leading-relaxed mb-2.5 line-clamp-2">${c.desc}</p>
         <div class="flex flex-wrap gap-1">${tags}</div>
+        ${c.postedAt ? `<p class="text-xs text-gray-400 mt-2">📅 ${c.postedAt}</p>` : ''}
       </div>
       ${c.detail ? `
       <details class="border-t border-gray-100">
@@ -1554,6 +1555,11 @@ function loadCommunitySkills() {
         const shortDesc = hasBeforeAfter
           ? (d.before ? d.before.slice(0, 60) + (d.before.length > 60 ? '…' : '') : '')
           : (d.desc || '');
+        // Format posted date
+        const postedDate = d.createdAt?.toDate();
+        const postedAt = postedDate
+          ? `${postedDate.getFullYear()}/${postedDate.getMonth()+1}/${postedDate.getDate()}`
+          : null;
         return {
           id: `community-${doc.id}`,
           type: 'community',
@@ -1561,6 +1567,7 @@ function loadCommunitySkills() {
           tags: d.tags || [],
           desc: shortDesc,
           person: d.person,
+          postedAt,
           stat: (!hasBeforeAfter && d.stat) ? d.stat : null,
           detail: `<div class="person-chip mb-3"><span class="dot"></span>${escHtml(d.person)}</div>${toolsHtml}${beforeHtml}${afterHtml}${descHtml}${statHtml}${promptHtml}${imageHtml}`
         };
