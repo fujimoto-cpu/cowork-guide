@@ -1269,8 +1269,9 @@ function loadReactions(cardId) {
     if (names.length === 0) {
       membersEl.textContent = '';
     } else {
-      const display = names.slice(0, 4).join('・') + (names.length > 4 ? ` ほか${names.length - 4}名` : '');
-      membersEl.textContent = `${display} が試しました`;
+      const circled = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
+      const display = names.slice(0, 10).map((n, i) => `${circled[i]} ${n}`).join('  ');
+      membersEl.textContent = display + (names.length > 10 ? `  ほか${names.length - 10}名` : '');
     }
   });
 }
