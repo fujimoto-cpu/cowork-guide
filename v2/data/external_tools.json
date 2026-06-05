@@ -1,0 +1,22 @@
+[
+  {
+    "id": "konnekt-gantt",
+    "title": "KONNEKT 全社共通ガントチャート",
+    "url": "https://konnekt-b6a72.web.app/",
+    "owner": "コバさん",
+    "stations": ["ops", "plan"],
+    "is_common_tool": true,
+    "icon": "📊",
+    "desc": "プロジェクト進行を一元管理。全社員が使う公式ツール。"
+  },
+  {
+    "id": "pantone-ref",
+    "title": "Pantone Solid Coated 一覧",
+    "url": "https://fujimoto-cpu.github.io/pantone/",
+    "owner": "Yuriko",
+    "stations": ["create"],
+    "is_common_tool": false,
+    "icon": "🎨",
+    "desc": "Pantone 3,219色の色見本ホスティング。デザイン版下の色指定に。"
+  }
+]

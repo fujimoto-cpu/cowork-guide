@@ -1,0 +1,29 @@
+[
+  {
+    "id": "res-pantone-ref",
+    "type": "link",
+    "role": ["creative"],
+    "category": "色見本",
+    "title": "Pantone Solid Coated 一覧（社内ホスティング）",
+    "url": "https://fujimoto-cpu.github.io/pantone/",
+    "tags": ["Pantone", "デザイン", "色"],
+    "desc": "Pantone Solid Coated 3,219色の一覧。色指定の参考に。",
+    "contributor": "Yuriko",
+    "attachments": [],
+    "added_at": "2026-06-04"
+  },
+  {
+    "id": "res-amcopy-prompt",
+    "type": "prompt",
+    "role": ["creative"],
+    "category": "プロンプト",
+    "title": "ECサイト商品コピー作成プロンプト（Armillary 用テンプレ）",
+    "url": null,
+    "tags": ["EC", "コピー", "Armillary"],
+    "desc": "/amcopy スキルベース。商品画像・デザインポイント・生地情報からブランド文体に沿った商品説明文を生成。",
+    "contributor": "Yuriko",
+    "skill_link": "/amcopy",
+    "attachments": [],
+    "added_at": "2026-06-04"
+  }
+]

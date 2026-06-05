@@ -1,0 +1,27 @@
+{
+  "next": {
+    "date": "2026-06-16",
+    "day_label": "月曜",
+    "title": "AIワークショップ #1",
+    "place": "10F MTG Room",
+    "operator": "ひきぢさん（運用担当）",
+    "presenters": [
+      { "slot": 1, "name": "（依頼前）", "status": "tbd", "case_ids": [] },
+      { "slot": 2, "name": "（依頼前）", "status": "tbd", "case_ids": [] },
+      { "slot": 3, "name": "（依頼前）", "status": "tbd", "case_ids": [] },
+      { "slot": 4, "name": "（依頼前）", "status": "tbd", "case_ids": [] },
+      { "slot": 5, "name": "（依頼前）", "status": "tbd", "case_ids": [] }
+    ]
+  },
+  "upcoming": [
+    { "date": "2026-06-30", "title": "AIワークショップ #2", "presenters": [] },
+    { "date": "2026-07-14", "title": "AIワークショップ #3", "presenters": [] },
+    { "date": "2026-07-28", "title": "AIワークショップ #4", "presenters": [] }
+  ],
+  "rules": {
+    "interval": "隔週月曜",
+    "presenter_per_session": 5,
+    "rotation_cycle_months": 2,
+    "registration_deadline_days": 3
+  }
+}

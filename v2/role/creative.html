@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>企画・デザイン — KONNEKT AI ナレッジハブ v2</title>
+  <link rel="stylesheet" href="../assets/common.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+</head>
+<body>
+  <div class="top-nav">
+    <div class="logo">🔷 KONNEKT AI ナレッジハブ<span class="v2-badge">v2 β</span></div>
+    <a class="nav-pill" href="../index.html">ホーム</a>
+    <a class="nav-pill active" href="./creative.html">🎨 企画・デザイン</a>
+    <a class="nav-pill" href="./pm.html">📊 PM・管理</a>
+    <a class="nav-pill" href="../dashboard.html">📈 ダッシュボード</a>
+    <a class="nav-pill" href="../register.html">➕ 事例を登録</a>
+  </div>
+
+  <section class="role-hero creative">
+    <h1 data-aos="fade-up">🎨 企画・デザイン向け AIナレッジ</h1>
+    <p data-aos="fade-up" data-aos-delay="100">
+      商品コピー、ブランド分析、版下、Pantone、トレンドリサーチ、参考素材まで。<br>
+      クリエイティブ職のためのAI事例とリファレンス集。
+    </p>
+    <div id="cori-host"></div>
+  </section>
+
+  <main class="container">
+    <div class="tabs">
+      <button class="tab creative-tab active" data-tab="cases">💡 事例</button>
+      <button class="tab creative-tab" data-tab="prompts">📝 プロンプト集</button>
+      <button class="tab creative-tab" data-tab="links">🔗 参考サイト</button>
+      <button class="tab creative-tab" data-tab="skills">🛠 スキル定義</button>
+      <button class="tab creative-tab" data-tab="common">⭐ 共通ツール</button>
+    </div>
+
+    <div id="tab-content">
+      <div class="card-grid" id="cards"></div>
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="card-modal" onclick="if(event.target===this)closeCardModal()">
+    <div class="modal">
+      <div class="modal-close"><button onclick="closeCardModal()">×</button></div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <footer class="v2-footer">KONNEKT INTERNATIONAL · AI活用ナレッジハブ v2 β</footer>
+
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="../assets/common.js"></script>
+  <script src="../assets/cori.js"></script>
+  <script>
+    let allCards = [], allResources = [];
+    const ROLE = "creative";
+    window.ROLE_LABELS = ROLE_LABELS;
+
+    function render(tab) {
+      const el = document.getElementById("tab-content");
+      if (tab === "cases") {
+        const filtered = allCards.filter((c) => (c.role || []).includes(ROLE));
+        el.innerHTML = filtered.length
+          ? '<div class="card-grid">' + filtered.map(renderCard).join("") + "</div>"
+          : '<div class="empty-state">まだ事例が登録されていません。<br>Phase 2 完了後、登録フォームから追加できるようになります。</div>';
+      } else if (tab === "prompts") {
+        const filtered = allResources.filter((r) => r.type === "prompt" && (r.role || []).includes(ROLE));
+        el.innerHTML = filtered.length
+          ? filtered.map(renderResource).join("")
+          : '<div class="empty-state">プロンプト集は Phase 3 で本格展開予定。<br>当面 /amcopy 等の Claude Code スキルを参照してください。</div>';
+      } else if (tab === "links") {
+        const filtered = allResources.filter((r) => r.type === "link" && (r.role || []).includes(ROLE));
+        el.innerHTML = filtered.length
+          ? filtered.map(renderResource).join("")
+          : '<div class="empty-state">参考サイト集は Phase 3 で本格展開予定。</div>';
+      } else if (tab === "skills") {
+        el.innerHTML = '<div class="empty-state">スキル定義リンク集は Phase 3 で実装予定。</div>';
+      } else if (tab === "common") {
+        const filtered = allCards.filter((c) => c.is_common_tool && (c.role || []).includes(ROLE));
+        el.innerHTML = filtered.length
+          ? '<div class="card-grid">' + filtered.map(renderCard).join("") + "</div>"
+          : '<div class="empty-state">⭐ 全社共通ツール認定は Phase 4 で運用開始予定。</div>';
+      }
+    }
+
+    function renderResource(r) {
+      return `<div class="card" style="cursor:default;" data-role="${ROLE}">
+        <div style="font-size:11px;color:#6B7280;margin-bottom:4px;">${escapeHtml(r.category || "")}</div>
+        <h3 class="card-title">${escapeHtml(r.title)}</h3>
+        <p class="card-desc">${escapeHtml(r.desc || "")}</p>
+        ${r.url ? `<a href="${r.url}" target="_blank" style="font-size:12px;color:#EC4899;font-weight:600;">${r.url} →</a>` : ""}
+        <div style="margin-top:10px;">${renderTags(r.tags || [])}</div>
+      </div>`;
+    }
+
+    document.querySelectorAll(".tab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        render(btn.dataset.tab);
+      });
+    });
+
+    async function init() {
+      allCards = await loadJSON("../data/cards.json");
+      allResources = await loadJSON("../data/resources.json");
+      window._cardsCache = allCards;
+
+      const coriHost = document.getElementById("cori-host");
+      await CORI.load(coriHost, { size: 100 });
+      const n = allCards.filter((c) => (c.role || []).includes(ROLE)).length;
+      CORI.say(coriHost, `クリエイティブ向けに ${n} 件あるよ🎨`);
+
+      render("cases");
+      if (window.AOS) AOS.init({ duration: 600, once: true });
+    }
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
+._*
+
+# Editor
+.vscode/
+.idea/
+
+# Local server logs
+*.log
+
+# Firebase local config (含めると secret 漏れるリスク)
+.firebaserc
+firebase-debug.log

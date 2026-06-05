@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>ダッシュボード — KONNEKT AI ナレッジハブ v2</title>
+  <link rel="stylesheet" href="./assets/common.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+  <style>
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 720px) { .charts-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="top-nav">
+    <div class="logo">🔷 KONNEKT AI ナレッジハブ<span class="v2-badge">v2 β</span></div>
+    <a class="nav-pill" href="./index.html">ホーム</a>
+    <a class="nav-pill" href="./role/creative.html">🎨 企画・デザイン</a>
+    <a class="nav-pill" href="./role/pm.html">📊 PM・管理</a>
+    <a class="nav-pill active" href="./dashboard.html">📈 ダッシュボード</a>
+    <a class="nav-pill" href="./register.html">➕ 事例を登録</a>
+  </div>
+
+  <main class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:8px;">
+      <div>
+        <h1 style="font-size:26px;font-weight:800;margin:0 0 6px;letter-spacing:-0.01em;">📈 AI活用ダッシュボード</h1>
+        <p style="color:#6B7280;font-size:13px;margin:0;">月次・個人別の削減時間、GMOベンチマーク、共通ツール状況。</p>
+      </div>
+      <div id="cori-host" style="width:120px;"></div>
+    </div>
+
+    <div class="summary-row" id="summary"></div>
+
+    <div class="charts-grid">
+      <div class="chart-card" data-aos="fade-up">
+        <h2>🎯 GMOベンチマーク達成率</h2>
+        <p style="font-size:11.5px;color:#6B7280;margin:0 0 6px;">1人あたり月削減 / GMO基準 50h（目標：超え）</p>
+        <canvas id="chart-gauge" height="220"></canvas>
+      </div>
+      <div class="chart-card" data-aos="fade-up" data-aos-delay="100">
+        <h2>🎨 役割別 月間削減時間</h2>
+        <p style="font-size:11.5px;color:#6B7280;margin:0 0 6px;">どの職種に AI が浸透しているか</p>
+        <canvas id="chart-donut" height="220"></canvas>
+      </div>
+      <div class="chart-card" data-aos="fade-up">
+        <h2>🏆 個人ランキング</h2>
+        <p style="font-size:11.5px;color:#6B7280;margin:0 0 6px;">月間削減時間 推定値</p>
+        <canvas id="chart-bar" height="240"></canvas>
+        <div id="ranking-list" style="margin-top:12px;"></div>
+      </div>
+      <div class="chart-card" data-aos="fade-up" data-aos-delay="100">
+        <h2>🏷 人気タグ TOP 10</h2>
+        <p style="font-size:11.5px;color:#6B7280;margin:0 0 6px;">登録件数の多いカテゴリ</p>
+        <canvas id="chart-tags" height="240"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card" data-aos="fade-up">
+      <h2>🎖 アチーブメント</h2>
+      <div class="achievement-grid" id="achievements"></div>
+    </div>
+
+    <div class="chart-card" data-aos="fade-up">
+      <h2>⭐ 全社共通ツール候補</h2>
+      <div style="font-size:12.5px;color:#4B5563;line-height:1.8;">
+        Phase 4 で is_common_tool=true 認定フローを運用開始予定。<br>
+        議事録での確定候補：ガントチャート（コバさん）／PL作成ツール／アルバイト管理（活用事例自動収集）
+      </div>
+    </div>
+
+    <p style="font-size:11px;color:#9CA3AF;text-align:center;margin-top:24px;">
+      ⚠ 削減時間は v1 マイグレーション時の CORIN 推測値を含みます。本人レビューで上書き予定。
+    </p>
+  </main>
+
+  <footer class="v2-footer">
+    KONNEKT INTERNATIONAL · AI活用ナレッジハブ v2 β
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="./assets/common.js"></script>
+  <script src="./assets/cori.js"></script>
+  <script src="./assets/charts.js"></script>
+  <script>
+    async function init() {
+      window.ROLE_LABELS = ROLE_LABELS;
+      const cards = await loadJSON("./data/cards.json");
+      const total = cards.length;
+      const monthlyTotal = cards.reduce((s, c) => s + (c.monthly_saved_minutes || 0), 0);
+      const peopleSet = new Set(cards.map((c) => c.person).filter(Boolean));
+      const commonCount = cards.filter((c) => c.is_common_tool).length;
+      const perH = peopleSet.size ? (monthlyTotal / peopleSet.size) / 60 : 0;
+      const totalH = monthlyTotal / 60;
+      const gmoPct = (perH / 50) * 100;
+
+      document.getElementById("summary").innerHTML = `
+        <div class="summary-card"><div class="num"><span data-count="${total}">0</span></div><div class="label">登録事例</div></div>
+        <div class="summary-card"><div class="num"><span data-count="${totalH.toFixed(1)}" data-decimals="1" data-suffix="h">0</span></div><div class="label">月間削減合計</div></div>
+        <div class="summary-card"><div class="num"><span data-count="${peopleSet.size}">0</span></div><div class="label">活用社員</div></div>
+        <div class="summary-card"><div class="num"><span data-count="${perH.toFixed(1)}" data-decimals="1" data-suffix="h">0</span></div><div class="label">1人あたり月削減</div></div>
+        <div class="summary-card"><div class="num"><span data-count="${commonCount}">0</span></div><div class="label">共通ツール</div></div>
+      `;
+      observeCountUps();
+
+      // CORI
+      const coriHost = document.getElementById("cori-host");
+      await CORI.load(coriHost, { size: 110, wave: true, bubble: false });
+
+      // チャート
+      V2Charts.setChartDefaults();
+      V2Charts.gaugeBenchmark(document.getElementById("chart-gauge"), perH, 50);
+      V2Charts.donutByRole(document.getElementById("chart-donut"), cards);
+      V2Charts.barRanking(document.getElementById("chart-bar"), cards);
+      V2Charts.tagCloud(document.getElementById("chart-tags"), cards);
+
+      // ランキングメダル付きリスト
+      const ranking = {};
+      for (const c of cards) {
+        if (!c.person) continue;
+        ranking[c.person] = (ranking[c.person] || 0) + (c.monthly_saved_minutes || 0);
+      }
+      const sorted = Object.entries(ranking).sort((a, b) => b[1] - a[1]);
+      document.getElementById("ranking-list").innerHTML = sorted
+        .map(([p, m], i) => {
+          const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "▫️";
+          return `<div class="rank-row"><span><span class="rank-medal">${medal}</span><strong>${escapeHtml(p)}</strong></span><span>月 ${(m/60).toFixed(1)} 時間</span></div>`;
+        })
+        .join("");
+
+      // アチーブメント
+      const ach = [
+        { id: "first", icon: "🎯", name: "初登録", sub: "1件登録", got: total >= 1 },
+        { id: "ten", icon: "🔟", name: "10件達成", sub: "登録10件", got: total >= 10 },
+        { id: "h10", icon: "⏱", name: "10時間達成", sub: "月10h削減", got: totalH >= 10 },
+        { id: "h50", icon: "💎", name: "GMO並み", sub: "1人月50h", got: perH >= 50 },
+        { id: "h100", icon: "🚀", name: "全社100h", sub: "月100h削減", got: totalH >= 100 },
+        { id: "common", icon: "🏆", name: "共通ツール認定", sub: "1つ認定", got: commonCount >= 1 },
+      ];
+      document.getElementById("achievements").innerHTML = ach
+        .map((a) => `
+          <div class="achievement ${a.got ? '' : 'locked'}">
+            <span class="ach-icon">${a.icon}</span>
+            <div class="ach-name">${a.name}</div>
+            <div class="ach-sub">${a.sub}</div>
+            ${a.got ? '<div style="position:absolute;top:6px;right:8px;color:#10B981;font-size:14px;">✓</div>' : ''}
+          </div>
+        `)
+        .join("");
+
+      if (window.AOS) AOS.init({ duration: 600, once: true, offset: 50 });
+
+      // 達成時のお祝い
+      if (totalH >= 100 || perH >= 50) {
+        setTimeout(() => {
+          if (window.confetti) {
+            window.confetti({
+              particleCount: 120,
+              spread: 80,
+              origin: { y: 0.6 },
+              colors: ["#EC4899", "#8B5CF6", "#3B82F6", "#FCD34D", "#10B981"],
+            });
+          }
+        }, 1500);
+      }
+    }
+    init();
+  </script>
+</body>
+</html>

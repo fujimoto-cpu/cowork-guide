@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>ワークショップ運用 — KONNEKT AI ナレッジハブ v2</title>
+  <link rel="stylesheet" href="./assets/common.css" />
+  <style>
+    body { background: linear-gradient(135deg, #FFFBEB 0%, #FFF7E6 100%); }
+    .ws-page { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    .ws-hero {
+      background: #fff;
+      border-radius: 24px;
+      padding: 40px 32px;
+      text-align: center;
+      box-shadow: 0 14px 40px -18px rgba(0,0,0,.15);
+      margin-bottom: 28px;
+    }
+    .ws-hero h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.01em; margin: 0 0 6px; }
+    .ws-hero .date {
+      font-size: 56px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #F59E0B, #EC4899);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+      margin: 12px 0 4px;
+    }
+    .ws-hero .countdown-big {
+      display: inline-block;
+      font-size: 22px;
+      font-weight: 800;
+      padding: 8px 24px;
+      background: #FEF3C7;
+      color: #92400E;
+      border-radius: 999px;
+      margin-top: 10px;
+    }
+    .ws-hero .countdown-big.urgent {
+      background: #FEE2E2;
+      color: #B91C1C;
+      animation: ws-pulse 2s ease-in-out infinite;
+    }
+    .ws-hero .meta { font-size: 14px; color: #6B7280; margin-top: 8px; }
+    .big-slot-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin: 28px 0;
+    }
+    @media (max-width: 900px) { .big-slot-grid { grid-template-columns: repeat(2, 1fr); } }
+    .big-slot {
+      background: #fff;
+      border-radius: 20px;
+      padding: 22px 18px;
+      text-align: center;
+      box-shadow: 0 6px 20px -12px rgba(0,0,0,.12);
+      position: relative;
+      transition: transform .2s ease;
+    }
+    .big-slot:hover { transform: translateY(-4px); }
+    .big-slot.tbd { background: repeating-linear-gradient(45deg, #fff, #fff 8px, #FEF3C7 8px, #FEF3C7 16px); opacity: 0.85; }
+    .big-slot-num {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1F2937;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .big-slot .name {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 14px 0 8px;
+      letter-spacing: -0.01em;
+    }
+    .big-slot .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .big-slot .badge.done    { background: #D1FAE5; color: #047857; }
+    .big-slot .badge.warning { background: #FEE2E2; color: #B91C1C; }
+    .big-slot .badge.tbd     { background: #F3F4F6; color: #6B7280; }
+    .big-slot .case-title {
+      font-size: 11.5px;
+      color: #6B7280;
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+    .upcoming-list {
+      background: #fff;
+      border-radius: 20px;
+      padding: 22px 24px;
+      box-shadow: 0 6px 20px -14px rgba(0,0,0,.1);
+    }
+    .upcoming-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #F3F4F6;
+      font-size: 14px;
+    }
+    .upcoming-row:last-child { border: none; }
+    .ws-page .ws-actions {
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .fullscreen-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1F2937;
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 20px -8px rgba(0,0,0,.25);
+      z-index: 50;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-nav">
+    <div class="logo">🔷 KONNEKT AI ナレッジハブ<span class="v2-badge">v2 β</span></div>
+    <a class="nav-pill" href="./index.html">ホーム</a>
+    <a class="nav-pill" href="./role/creative.html">🎨 企画・デザイン</a>
+    <a class="nav-pill" href="./role/pm.html">📊 PM・管理</a>
+    <a class="nav-pill" href="./dashboard.html">📈 ダッシュボード</a>
+    <a class="nav-pill active" href="./workshop.html">📣 ワークショップ</a>
+    <a class="nav-pill" href="./register.html">➕ 事例を登録</a>
+  </div>
+
+  <main class="ws-page">
+    <div class="ws-hero">
+      <h1 id="ws-title">📣 次回 AI ワークショップ</h1>
+      <div class="date" id="ws-date">YYYY-MM-DD</div>
+      <div class="countdown-big" id="ws-countdown">あと — 日</div>
+      <div class="meta" id="ws-meta"></div>
+    </div>
+
+    <h2 class="section-title" style="justify-content:center;">🎤 今回の発表者 5名</h2>
+    <div class="big-slot-grid" id="big-slots"></div>
+
+    <div class="ws-actions">
+      <button class="ws-btn primary" onclick="copyInvite()">💬 依頼文をコピー</button>
+      <a class="ws-btn ghost" href="./register.html">➕ 事例を登録</a>
+      <a class="ws-btn ghost" href="./index.html">⏮ 一覧に戻る</a>
+    </div>
+
+    <h2 class="section-title" style="justify-content:center;margin-top:40px;">📅 これから先のサイクル</h2>
+    <div class="upcoming-list" id="upcoming"></div>
+
+    <div style="margin-top:20px;font-size:11px;color:#9CA3AF;text-align:center;">
+      ⚠ 発表者は <code>v2/data/workshop_schedule.json</code> で管理。<br>編集はゆりこ or AI推進担当が手動更新。
+    </div>
+  </main>
+
+  <button class="fullscreen-btn" onclick="document.documentElement.requestFullscreen?.()">📺 投影モード</button>
+
+  <script src="./assets/common.js"></script>
+  <script>
+    let workshop = null;
+    let allCards = [];
+
+    function daysUntil(dateStr) {
+      const target = new Date(dateStr + "T09:00:00+09:00");
+      const now = new Date();
+      const diff = target.getTime() - now.getTime();
+      return Math.ceil(diff / (1000 * 60 * 60 * 24));
+    }
+
+    async function init() {
+      workshop = await loadJSON("./data/workshop_schedule.json");
+      allCards = await loadJSON("./data/cards.json");
+
+      const w = workshop.next;
+      document.getElementById("ws-title").textContent = `📣 ${w.title}`;
+      document.getElementById("ws-date").textContent = `${w.date} (${w.day_label})`;
+      const days = daysUntil(w.date);
+      const cdEl = document.getElementById("ws-countdown");
+      cdEl.textContent = days > 0 ? `あと ${days} 日` : days === 0 ? "🔥 今日開催！" : `${-days} 日前に開催`;
+      if (days <= 3 && days >= 0) cdEl.classList.add("urgent");
+      document.getElementById("ws-meta").textContent = `📍 ${w.place}　·　運用: ${w.operator}`;
+
+      const slotsEl = document.getElementById("big-slots");
+      slotsEl.innerHTML = w.presenters.map((p) => {
+        const isTbd = p.status === "tbd";
+        const hasCase = (p.case_ids || []).length > 0;
+        const badge = isTbd
+          ? '<div class="badge tbd">⏳ 依頼前</div>'
+          : hasCase
+          ? '<div class="badge done">✅ 事例登録済</div>'
+          : '<div class="badge warning">⚠️ 事例未登録</div>';
+        const caseTitle = hasCase
+          ? (p.case_ids.map(id => allCards.find(c => c.id === id)?.title).filter(Boolean).join(" / ")) || "—"
+          : isTbd ? "発表者をアサインしてください" : "登録待ち";
+        return `
+          <div class="big-slot ${isTbd ? "tbd" : ""}">
+            <div class="big-slot-num">${p.slot}</div>
+            <div class="name">${escapeHtml(p.name)}</div>
+            ${badge}
+            <div class="case-title">${escapeHtml(caseTitle)}</div>
+          </div>
+        `;
+      }).join("");
+
+      document.getElementById("upcoming").innerHTML = (workshop.upcoming || []).map((u) => `
+        <div class="upcoming-row">
+          <span>📅 <strong>${escapeHtml(u.date)}</strong> · ${escapeHtml(u.title)}</span>
+          <span style="color:#9CA3AF;">発表者：未確定</span>
+        </div>
+      `).join("");
+    }
+
+    window.copyInvite = function () {
+      const w = workshop.next;
+      const text = `📣 次回 AI ワークショップのお知らせ\n\n📅 ${w.date}（${w.day_label}）\n📍 ${w.place}\n\nあなたが発表者にアサインされました！\n\n📝 事前準備：\n1. 普段やってる AI 活用事例を1つ選んで、こちらに登録してください\n   ${location.origin}${location.pathname.replace("workshop.html","")}register.html\n2. 当日はその登録内容をベースに 5分でシェア\n\n⚠️ 登録は前日まで（運用ルール）\n\nわからないことあれば藤本まで！`;
+      navigator.clipboard?.writeText(text);
+      alert("💬 依頼文をコピーしたよ。Slack DMに貼って使って。");
+    };
+
+    init();
+  </script>
+</body>
+</html>

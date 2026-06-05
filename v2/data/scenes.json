@@ -1,0 +1,22 @@
+[
+  { "id": "morning-brief",   "emoji": "⏰", "label": "朝のブリーフィング", "desc": "Slack/Notion/カレンダーを朝まとめて確認", "station": "morning" },
+  { "id": "calendar-add",    "emoji": "📅", "label": "カレンダー登録",     "desc": "祝日・誕生日・予定の一括登録",          "station": "morning" },
+  { "id": "mail-reply",      "emoji": "📩", "label": "メール返信",         "desc": "受信メールから返信下書きを自動生成",     "station": "share" },
+  { "id": "minutes",         "emoji": "📝", "label": "議事録",             "desc": "会議の文字起こし→要約→Notion保存",      "station": "share" },
+  { "id": "slack-share",     "emoji": "✉️", "label": "Slack共有",          "desc": "議事録要点をSlackに自動投稿",            "station": "share" },
+  { "id": "research",        "emoji": "🔍", "label": "リサーチ",           "desc": "競合分析・トレンド調査",                 "station": "research" },
+  { "id": "brand-analysis",  "emoji": "🏷",  "label": "ブランド分析",       "desc": "ブランドの世界観・歴史・特徴を整理",     "station": "research" },
+  { "id": "trend-collect",   "emoji": "📰", "label": "トレンド収集",       "desc": "ファッション・AIニュースの自動収集",      "station": "research" },
+  { "id": "document",        "emoji": "📋", "label": "資料作成",           "desc": "定例資料・進捗共有資料の自動作成",       "station": "create" },
+  { "id": "proposal",        "emoji": "🤝", "label": "提案資料",           "desc": "クライアント向け提案書・企画書",         "station": "create" },
+  { "id": "product-image",   "emoji": "🎨", "label": "商品画像作成",       "desc": "打ち合わせ用ビジュアル・参考画像",       "station": "create" },
+  { "id": "design-template", "emoji": "🖌",  "label": "デザイン版下",       "desc": "Illustrator版下・カットライン・PDF出力", "station": "create" },
+  { "id": "translation",     "emoji": "🌐", "label": "韓国語翻訳",         "desc": "企画書・コピーの多言語化",               "station": "plan" },
+  { "id": "sns-schedule",    "emoji": "📊", "label": "SNSスケジュール",    "desc": "投稿スケジュール・ハッシュタグ提案",     "station": "plan" },
+  { "id": "auto-check",      "emoji": "✅", "label": "AI自動判定",         "desc": "申請書の絵型・アート番号を自動読み取り",  "station": "check" },
+  { "id": "video-caption",   "emoji": "🎬", "label": "動画字幕・編集",     "desc": "動画から字幕生成・キャプション作成",     "station": "create" },
+  { "id": "expense",         "emoji": "💰", "label": "経費申請",           "desc": "カード明細→マネフォ自動入力",            "station": "ops" },
+  { "id": "receipt",         "emoji": "🛒", "label": "レシート読取",       "desc": "写真→スプレッドシート自動データ化",      "station": "ops" },
+  { "id": "shift",           "emoji": "📦", "label": "シフト・人事",       "desc": "バイトシフト集計・充足確認",             "station": "ops" },
+  { "id": "pl",              "emoji": "📈", "label": "PL・予算",          "desc": "売上・原価・予算達成状況の可視化",       "station": "ops" }
+]

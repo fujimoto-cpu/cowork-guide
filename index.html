@@ -176,6 +176,15 @@
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased">
 
+<!-- v2 移行バナー（2026-06-04 追加・Phase 0 足場） -->
+<div style="background:linear-gradient(90deg,#EC4899,#8B5CF6);color:#fff;padding:14px 20px;text-align:center;font-size:13px;font-weight:600;">
+  🆕 新しい AI ナレッジハブ <strong>v2 β</strong> を公開しました（検索・役割別ページ・添付機能対応）
+  &nbsp;→&nbsp;
+  <a href="./v2/" style="color:#fff;text-decoration:underline;font-weight:700;">v2 を見る</a>
+  &nbsp;|&nbsp;
+  <span style="opacity:.85;font-weight:400;">この旧版（v1）は読み取り専用として保管されます</span>
+</div>
+
 <!-- SKILL SUBMIT MODAL -->
 <div id="skillModal" class="skill-modal-overlay hidden" onclick="if(event.target===this)closeSkillModal()">
   <div class="skill-modal">
@@ -270,7 +279,16 @@
       </div>
       <span class="font-semibold text-gray-900 text-sm">Cowork 活用ガイド</span>
     </div>
-    <span class="text-xs text-gray-400 font-medium">KONNEKT INTERNATIONAL 社内限定</span>
+    <div class="flex items-center gap-4">
+      <a href="https://www.notion.so/3667f11c9bd08107beeed62c4f24d4a1" target="_blank"
+         class="text-xs text-gray-700 font-medium hover:text-gray-900 flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 rounded-md transition">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        <span>Notion版（事例を投稿する）</span>
+      </a>
+      <span class="text-xs text-gray-400 font-medium hidden sm:inline">KONNEKT INTERNATIONAL 社内限定</span>
+    </div>
   </div>
 </header>
 

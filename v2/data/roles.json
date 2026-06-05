@@ -1,0 +1,42 @@
+{
+  "creative": {
+    "label": "企画・デザイン",
+    "icon": "🎨",
+    "color": "#EC4899",
+    "description": "企画・デザイン・クリエイティブ職向け。商品コピー作成、ブランド分析、デザイン版下、参考素材集め、トレンドリサーチなど。",
+    "members": [],
+    "common_resources": ["Pantone", "色見本", "ブランドガイドライン"]
+  },
+  "pm": {
+    "label": "PM・管理",
+    "icon": "📊",
+    "color": "#3B82F6",
+    "description": "プロジェクト管理・進行・タスク管理職向け。ガントチャート、PL管理、議事録自動化、SNSスケジュール、進捗共有資料など。",
+    "members": [],
+    "common_resources": ["ガントチャート", "PL作成ツール", "議事録自動化"]
+  },
+  "backoffice": {
+    "label": "バックオフィス",
+    "icon": "📋",
+    "color": "#10B981",
+    "description": "経費・勤怠・シフト管理・アルバイト管理など総務系業務向け。",
+    "members": [],
+    "common_resources": ["アルバイト管理", "経費申請", "勤怠"]
+  },
+  "sales": {
+    "label": "営業",
+    "icon": "💼",
+    "color": "#F59E0B",
+    "description": "営業・クライアント対応・提案資料作成・メール返信文体プロファイル等。",
+    "members": [],
+    "common_resources": ["提案資料テンプレ", "返信文体プロファイル"]
+  },
+  "cross": {
+    "label": "横断・共通",
+    "icon": "🔗",
+    "color": "#8B5CF6",
+    "description": "複数役割をまたぐ事例。Slack/Notion/カレンダー連携、ブリーフィング、文字起こしなど。",
+    "members": [],
+    "common_resources": []
+  }
+}
