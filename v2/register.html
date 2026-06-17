@@ -7,21 +7,119 @@
   <title>事例を登録 — KONNEKT AI ナレッジハブ v2</title>
   <link rel="stylesheet" href="./assets/common.css" />
   <style>
-    .container { max-width: 720px; margin: 0 auto; padding: 32px 24px; }
-    .placeholder-box {
+    body { background: var(--color-bg, #FAF6ED); }
+    .container { max-width: 680px; margin: 0 auto; padding: 32px 20px 80px; }
+
+    .page-head { margin-bottom: 28px; }
+    .page-head h1 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .page-head p  { font-size: 13px; color: #6B7280; }
+
+    /* カード */
+    .card {
       background: #fff;
-      border: 2px dashed #E5E7EB;
+      border: 1px solid #E7E2D5;
       border-radius: 16px;
-      padding: 48px 32px;
-      text-align: center;
+      padding: 28px 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.04);
     }
-    .placeholder-box .icon { font-size: 40px; }
-    .placeholder-box h2 { margin: 12px 0 8px; font-size: 18px; }
-    .placeholder-box p { color: #6B7280; font-size: 13px; margin: 6px 0; }
-    .phase-list { text-align: left; max-width: 480px; margin: 24px auto 0; }
-    .phase-list li { margin: 6px 0; font-size: 12.5px; color: #4B5563; }
-    .top-nav { background: #fff; border-bottom: 1px solid #E5E7EB; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-    .top-nav .logo { font-weight: 800; font-size: 15px; margin-right: 12px; }
+    .section-label {
+      font-size: 11px; font-weight: 800; letter-spacing: .08em;
+      text-transform: uppercase; color: #9CA3AF; margin-bottom: 14px;
+    }
+
+    /* フォーム部品 */
+    .field { margin-bottom: 18px; }
+    .field:last-child { margin-bottom: 0; }
+    label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; color: #374151; }
+    label .req { color: #EF4444; margin-left: 3px; }
+    label .opt { font-size: 11px; font-weight: 400; color: #9CA3AF; margin-left: 6px; }
+
+    input[type=text], input[type=number], select, textarea {
+      width: 100%; padding: 10px 13px;
+      border: 1.5px solid #E7E2D5; border-radius: 10px;
+      font-size: 14px; font-family: inherit; background: #FAFAFA;
+      transition: border-color .15s; box-sizing: border-box;
+    }
+    input[type=text]:focus, input[type=number]:focus, select:focus, textarea:focus {
+      outline: none; border-color: #F59E0B; background: #fff;
+    }
+    textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+    /* before/after グリッド */
+    .time-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .time-grid .field { margin-bottom: 0; }
+    .time-unit { font-size: 12px; color: #9CA3AF; margin-top: 4px; }
+
+    /* 役割チェックボックス */
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .role-opt {
+      display: flex; align-items: center; gap: 8px;
+      background: #FAFAFA; border: 1.5px solid #E7E2D5; border-radius: 10px;
+      padding: 10px 13px; cursor: pointer; transition: .15s;
+      font-size: 13px; font-weight: 600;
+    }
+    .role-opt:hover { border-color: #F59E0B; }
+    .role-opt input[type=checkbox] { width: 16px; height: 16px; accent-color: #F59E0B; }
+    .role-opt.checked { border-color: #F59E0B; background: #FFFBEB; }
+
+    /* ファイル添付 */
+    .file-drop {
+      border: 2px dashed #E7E2D5; border-radius: 12px;
+      padding: 22px; text-align: center; cursor: pointer;
+      transition: .15s; background: #FAFAFA;
+    }
+    .file-drop:hover, .file-drop.drag-over { border-color: #F59E0B; background: #FFFBEB; }
+    .file-drop .icon { font-size: 28px; margin-bottom: 6px; }
+    .file-drop p { font-size: 13px; color: #6B7280; margin: 0; }
+    .file-drop small { font-size: 11px; color: #9CA3AF; }
+    .file-name { margin-top: 8px; font-size: 12px; color: #374151; font-weight: 600; }
+    #file-input { display: none; }
+
+    /* AI判定バッジ */
+    .ai-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #EDE9FE; color: #7C3AED; border-radius: 20px;
+      font-size: 11px; font-weight: 700; padding: 3px 10px; margin-bottom: 10px;
+    }
+
+    /* 送信ボタン */
+    .submit-btn {
+      width: 100%; padding: 15px;
+      background: #1F2937; color: #fff;
+      border: none; border-radius: 12px;
+      font-size: 15px; font-weight: 800; cursor: pointer;
+      transition: background .15s; letter-spacing: .02em;
+    }
+    .submit-btn:hover:not(:disabled) { background: #111827; }
+    .submit-btn:disabled { background: #9CA3AF; cursor: not-allowed; }
+
+    /* 送信中スピナー */
+    .spinner {
+      display: none; width: 20px; height: 20px;
+      border: 3px solid rgba(255,255,255,.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin .7s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 完了メッセージ */
+    .success-box {
+      display: none; text-align: center;
+      background: #ECFDF5; border: 1.5px solid #6EE7B7;
+      border-radius: 16px; padding: 36px 24px;
+    }
+    .success-box .check { font-size: 48px; margin-bottom: 12px; }
+    .success-box h2 { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #065F46; }
+    .success-box p { font-size: 14px; color: #047857; margin: 0 0 20px; }
+    .success-box a {
+      display: inline-block; padding: 10px 24px;
+      background: #1F2937; color: #fff; border-radius: 10px;
+      text-decoration: none; font-size: 13px; font-weight: 700;
+    }
+
+    /* エラー */
+    .error-msg { color: #EF4444; font-size: 12px; margin-top: 4px; display: none; }
   </style>
 </head>
 <body>
@@ -35,24 +133,275 @@
   </div>
 
   <main class="container">
-    <div class="placeholder-box">
-      <div class="icon">➕</div>
-      <h2>事例登録フォーム — Phase 2 で実装予定</h2>
-      <p>このページは Phase 0（足場）として配置しています。</p>
-      <p>Phase 2 完了後、社員はブラウザから直接事例を登録できるようになります。</p>
-      <ul class="phase-list">
-        <li>📝 タイトル / 役割 / ツール / before分・after分・頻度</li>
-        <li>🏷 タグ / 説明 / 詳細（リッチエディタ）</li>
-        <li>📎 ファイル添付（画像PNG/JPG, PDF, PPTX, MP4 動画）</li>
-        <li>🔍 重複チェック（既存ツール候補3件提示）</li>
-        <li>💬 登録完了 → Slack #ai-share 自動投稿</li>
-      </ul>
-      <p style="margin-top:24px;font-size:11.5px;">それまでは Notion 議事録 or Slack #ai-share に直接共有してください。</p>
+    <div class="page-head">
+      <h1>➕ 活用事例を登録する</h1>
+      <p>あなたのAI活用事例をシェアしてください。カテゴリはAIが自動で判定します。</p>
     </div>
+
+    <!-- 完了メッセージ -->
+    <div class="success-box" id="success-box">
+      <div class="check">🎉</div>
+      <h2>登録完了！</h2>
+      <p>ありがとうございます。事例がナレッジハブに追加されました。<br>Slack #ai-share にも自動投稿されています。</p>
+      <a href="./index.html">ホームで確認する →</a>
+    </div>
+
+    <form id="register-form">
+      <!-- 基本情報 -->
+      <div class="card">
+        <div class="section-label">📝 基本情報</div>
+
+        <div class="field">
+          <label>お名前<span class="req">*</span></label>
+          <input type="text" id="person" placeholder="例：Hiro" required />
+        </div>
+
+        <div class="field">
+          <label>役割<span class="req">*</span></label>
+          <div class="role-grid">
+            <label class="role-opt" id="role-creative">
+              <input type="checkbox" name="role" value="企画・デザイン" />
+              🎨 企画・デザイン
+            </label>
+            <label class="role-opt" id="role-pm">
+              <input type="checkbox" name="role" value="PM・管理" />
+              📊 PM・管理
+            </label>
+            <label class="role-opt" id="role-backoffice">
+              <input type="checkbox" name="role" value="バックオフィス" />
+              🏢 バックオフィス
+            </label>
+            <label class="role-opt" id="role-sales">
+              <input type="checkbox" name="role" value="営業" />
+              💼 営業
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 事例内容 -->
+      <div class="card">
+        <div class="section-label">💡 事例内容</div>
+
+        <div class="field">
+          <label>タイトル<span class="req">*</span>
+            <span class="opt">何をAIで効率化したか一言で</span>
+          </label>
+          <input type="text" id="title" placeholder="例：議事録を5分で作成できるようになった" required />
+        </div>
+
+        <div class="field">
+          <label>使ったAIツール<span class="req">*</span></label>
+          <input type="text" id="tool" placeholder="例：Claude Cowork / ChatGPT / Notion AI" required />
+        </div>
+
+        <div class="field">
+          <label>説明<span class="req">*</span>
+            <span class="opt">どんな作業にどう使ったか 1〜2文</span>
+          </label>
+          <textarea id="desc" rows="3" placeholder="例：毎週の定例会議の録音をWhisperで文字起こしし、Claudeで要約・アクションリスト化。手作業30分が5分に。" required></textarea>
+        </div>
+
+        <div class="field">
+          <label>詳細・プロンプト例<span class="opt">任意</span></label>
+          <textarea id="detail" rows="4" placeholder="使ったプロンプト、手順、コツなど自由に"></textarea>
+        </div>
+      </div>
+
+      <!-- 時間削減効果 -->
+      <div class="card">
+        <div class="section-label">⏱ 時間削減効果<span class="opt" style="font-size:12px;font-weight:400;color:#9CA3AF;margin-left:8px;">任意・入力すると削減時間が自動計算されます</span></div>
+        <div class="time-grid">
+          <div class="field">
+            <label>Before（分）</label>
+            <input type="number" id="before_minutes" placeholder="30" min="0" />
+            <div class="time-unit">AI導入前の所要時間</div>
+          </div>
+          <div class="field">
+            <label>After（分）</label>
+            <input type="number" id="after_minutes" placeholder="5" min="0" />
+            <div class="time-unit">AI導入後の所要時間</div>
+          </div>
+          <div class="field">
+            <label>月の頻度（回）</label>
+            <input type="number" id="monthly_frequency" placeholder="4" min="0" />
+            <div class="time-unit">月に何回やる作業か</div>
+          </div>
+        </div>
+        <!-- 自動計算プレビュー -->
+        <div id="savings-preview" style="display:none;margin-top:14px;padding:12px 14px;background:#FFFBEB;border-radius:10px;font-size:13px;font-weight:700;color:#92400E;">
+          📊 月 <span id="savings-val">—</span> 分（<span id="savings-h">—</span>時間）の削減
+        </div>
+      </div>
+
+      <!-- ファイル添付 -->
+      <div class="card">
+        <div class="section-label">📎 ファイル添付<span class="opt" style="font-size:12px;font-weight:400;color:#9CA3AF;margin-left:8px;">任意</span></div>
+        <div class="file-drop" id="file-drop" onclick="document.getElementById('file-input').click()">
+          <div class="icon">📁</div>
+          <p>クリックまたはドラッグ＆ドロップ</p>
+          <small>PNG / JPG / PDF / PPTX / MP4（最大50MB）</small>
+          <div class="file-name" id="file-name"></div>
+        </div>
+        <input type="file" id="file-input" accept=".png,.jpg,.jpeg,.pdf,.pptx,.mp4" />
+      </div>
+
+      <!-- AIカテゴリ（説明） -->
+      <div class="card" style="background:#F5F3FF;border-color:#DDD6FE;">
+        <div class="ai-badge">✨ AI自動判定</div>
+        <p style="font-size:13px;color:#5B21B6;margin:0;">
+          カテゴリ（業務シーン・タグ）は送信後に Claude が自動で判定します。入力不要です。
+        </p>
+      </div>
+
+      <!-- 送信 -->
+      <button type="submit" class="submit-btn" id="submit-btn">
+        <span id="btn-text">事例を登録する →</span>
+        <div class="spinner" id="spinner"></div>
+      </button>
+      <div class="error-msg" id="error-msg">送信に失敗しました。時間をおいて再度お試しください。</div>
+    </form>
   </main>
 
   <footer style="text-align:center;padding:40px 20px;color:#9CA3AF;font-size:11px;">
     KONNEKT INTERNATIONAL · AI活用ナレッジハブ v2 β
   </footer>
+
+  <script>
+    // ============================================================
+    // GAS エンドポイント（デプロイ後に差し替える）
+    // ============================================================
+    const GAS_ENDPOINT = 'YOUR_GAS_ENDPOINT_URL';
+
+    // ------------------------------------------------------------
+    // 役割チェックボックスのスタイル
+    // ------------------------------------------------------------
+    document.querySelectorAll('.role-opt input[type=checkbox]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        cb.closest('.role-opt').classList.toggle('checked', cb.checked);
+      });
+    });
+
+    // ------------------------------------------------------------
+    // ファイル添付
+    // ------------------------------------------------------------
+    const fileInput = document.getElementById('file-input');
+    const fileDrop  = document.getElementById('file-drop');
+    const fileName  = document.getElementById('file-name');
+    let selectedFile = null;
+
+    fileInput.addEventListener('change', () => {
+      selectedFile = fileInput.files[0] || null;
+      fileName.textContent = selectedFile ? `✓ ${selectedFile.name}` : '';
+    });
+    fileDrop.addEventListener('dragover', e => { e.preventDefault(); fileDrop.classList.add('drag-over'); });
+    fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('drag-over'));
+    fileDrop.addEventListener('drop', e => {
+      e.preventDefault();
+      fileDrop.classList.remove('drag-over');
+      selectedFile = e.dataTransfer.files[0] || null;
+      if (selectedFile) {
+        fileInput.files = e.dataTransfer.files;
+        fileName.textContent = `✓ ${selectedFile.name}`;
+      }
+    });
+
+    // ------------------------------------------------------------
+    // 削減時間プレビュー
+    // ------------------------------------------------------------
+    ['before_minutes', 'after_minutes', 'monthly_frequency'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateSavings);
+    });
+    function updateSavings() {
+      const b = Number(document.getElementById('before_minutes').value) || 0;
+      const a = Number(document.getElementById('after_minutes').value) || 0;
+      const f = Number(document.getElementById('monthly_frequency').value) || 0;
+      const saved = (b - a) * f;
+      const preview = document.getElementById('savings-preview');
+      if (b > 0 && a >= 0 && f > 0 && b > a) {
+        document.getElementById('savings-val').textContent = saved;
+        document.getElementById('savings-h').textContent = Math.round(saved / 60 * 10) / 10;
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+      }
+    }
+
+    // ------------------------------------------------------------
+    // フォーム送信
+    // ------------------------------------------------------------
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const btn     = document.getElementById('submit-btn');
+      const btnText = document.getElementById('btn-text');
+      const spinner = document.getElementById('spinner');
+      const errMsg  = document.getElementById('error-msg');
+
+      btn.disabled = true;
+      btnText.style.display = 'none';
+      spinner.style.display = 'block';
+      errMsg.style.display  = 'none';
+
+      try {
+        // 役割チェック
+        const roles = [...document.querySelectorAll('input[name=role]:checked')].map(c => c.value);
+
+        // ファイルを base64 化
+        let file_base64 = null, file_name = null, file_type = null;
+        if (selectedFile) {
+          file_base64 = await toBase64(selectedFile);
+          file_name   = selectedFile.name;
+          file_type   = selectedFile.type;
+        }
+
+        const payload = {
+          person:            document.getElementById('person').value.trim(),
+          role:              roles,
+          title:             document.getElementById('title').value.trim(),
+          tool:              document.getElementById('tool').value.trim(),
+          desc:              document.getElementById('desc').value.trim(),
+          detail:            document.getElementById('detail').value.trim(),
+          before_minutes:    Number(document.getElementById('before_minutes').value) || null,
+          after_minutes:     Number(document.getElementById('after_minutes').value) || null,
+          monthly_frequency: Number(document.getElementById('monthly_frequency').value) || null,
+          file_base64,
+          file_name,
+          file_type,
+        };
+
+        const res = await fetch(GAS_ENDPOINT, {
+          method: 'POST',
+          body: JSON.stringify(payload),
+          // Content-Type を指定しない（text/plain扱いでCORSプリフライト不要）
+        });
+
+        const result = await res.json().catch(() => ({ success: true }));
+
+        if (result.success !== false) {
+          document.getElementById('register-form').style.display = 'none';
+          document.getElementById('success-box').style.display = 'block';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          throw new Error(result.error || '送信エラー');
+        }
+      } catch (err) {
+        console.error(err);
+        errMsg.style.display = 'block';
+        btn.disabled = false;
+        btnText.style.display = 'block';
+        spinner.style.display = 'none';
+      }
+    });
+
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
 </body>
 </html>
