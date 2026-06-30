@@ -2,7 +2,7 @@
 // KONNEKT AI ナレッジハブ v2 — 事例登録 GAS エンドポイント
 // ============================================================
 // Script Properties に以下を設定してください:
-//   CLAUDE_API_KEY   — Claude API キー
+//   GEMINI_API_KEY   — Google AI Studio の API キー（無料）
 //   NOTION_TOKEN     — Notion Integration Token
 //   SLACK_WEBHOOK_URL — Slack #ai-share Incoming Webhook URL
 //   GITHUB_TOKEN     — GitHub PAT (repo スコープ)
@@ -53,10 +53,10 @@ function doPost(e) {
       fileUrl = uploadToDrive_(data.file_base64, data.file_name, data.file_type);
     }
 
-    // 2. Claude Haiku でカテゴリ自動判定
-    const { scenes, tags } = classifyWithClaude_(
+    // 2. Gemini でカテゴリ自動判定
+    const { scenes, tags } = classifyWithGemini_(
       data.title, data.desc, data.tool,
-      props.getProperty('CLAUDE_API_KEY')
+      props.getProperty('GEMINI_API_KEY')
     );
 
     // 3. cards.json 用 ID 生成
@@ -100,9 +100,9 @@ function uploadToDrive_(base64, fileName, mimeType) {
 }
 
 // ------------------------------------------------------------
-// 2. Claude Haiku でカテゴリ判定
+// 2. Gemini でカテゴリ判定（無料枠：1日1500リクエスト）
 // ------------------------------------------------------------
-function classifyWithClaude_(title, desc, tool, apiKey) {
+function classifyWithGemini_(title, desc, tool, apiKey) {
   const scenesList = SCENES.map(s => `${s.id} (${s.label})`).join(', ');
   const tagsList = TAGS.join(', ');
 
@@ -121,27 +121,24 @@ ${tagsList}
 必ず以下のJSON形式のみで返してください（説明不要）:
 {"scenes": ["scene-id"], "tags": ["タグ名"]}`;
 
-  const response = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+  const response = UrlFetchApp.fetch(url, {
     method: 'post',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     payload: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 200,
-      messages: [{ role: 'user', content: prompt }],
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 200, temperature: 0.1 },
     }),
     muteHttpExceptions: true,
   });
 
   try {
     const json = JSON.parse(response.getContentText());
-    const text = json.content[0].text.trim();
+    const text = json.candidates[0].content.parts[0].text.trim()
+      .replace(/```json\n?/g, '').replace(/```/g, '');
     return JSON.parse(text);
   } catch (_) {
-    // パース失敗時のフォールバック
     return { scenes: ['document'], tags: ['その他'] };
   }
 }
