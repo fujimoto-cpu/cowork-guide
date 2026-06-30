@@ -371,5 +371,39 @@
       "proposal",
       "pl"
     ]
+  },
+  {
+    "id": "case-----1782796526733",
+    "version": 2,
+    "type": "case",
+    "title": "テスト太郎",
+    "person": "てすと",
+    "person_slack_id": null,
+    "role": [
+      "企画・デザイン"
+    ],
+    "tool": "ChatGPT",
+    "before_minutes": 30,
+    "after_minutes": 2,
+    "saved_minutes": 28,
+    "monthly_frequency": 5,
+    "monthly_saved_minutes": 140,
+    "tags": [
+      "その他"
+    ],
+    "is_common_tool": false,
+    "common_tool_status": null,
+    "desc": "会議後に音声を貼るだけで議事録が完成する",
+    "detail": "<p>てすと！</p>",
+    "skill_link": null,
+    "github_url": null,
+    "attachments": [],
+    "stat_legacy": "月2.3時間の削減",
+    "created_at": "2026-06-30",
+    "updated_at": "2026-06-30",
+    "presented_at": null,
+    "scenes": [
+      "document"
+    ]
   }
 ]
