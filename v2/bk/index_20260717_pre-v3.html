@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <title>KONNEKT AI情報ハブ｜社内AI活用事例・ナレッジ共有サイト</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="KONNEKT社員のAI活用事例を検索・共有できる社内ナレッジハブ。ChatGPT・Claude・Notion AIなどのツール別、役割別に事例を探せます。" />
+  <link rel="stylesheet" href="./assets/common.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+</head>
+<body>
+  <div class="top-nav">
+    <div class="logo">🔷 KONNEKT AI ナレッジハブ<span class="v2-badge">v2 β</span></div>
+    <a class="nav-pill active" href="./index.html">ホーム</a>
+    <a class="nav-pill" href="./role/creative.html">🎨 企画・デザイン</a>
+    <a class="nav-pill" href="./role/pm.html">📊 PM・管理</a>
+    <a class="nav-pill" href="./dashboard.html">📈 ダッシュボード</a>
+    <a class="nav-pill" href="./workshop.html">📣 ワークショップ</a>
+    <a class="nav-pill" href="./register.html">➕ 事例を登録</a>
+    <a class="nav-pill" href="../">⏮ v1</a>
+  </div>
+
+  <section class="hero-game">
+    <div class="hero-inner">
+      <div class="hero-flex">
+        <div>
+          <h1 class="hero-headline" data-aos="fade-up">
+            <span>あなたのAI活用が、</span><br>
+            <span style="background:linear-gradient(135deg,#EC4899,#8B5CF6);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;">レベルアップする。</span>
+          </h1>
+          <p class="hero-sub" data-aos="fade-up" data-aos-delay="120">
+            社員の AI 活用ナレッジをひとつに。検索して、知見を借りて、共有して。<br>
+            事例登録は会社評価にも繋がります。
+          </p>
+          <div class="step-flow">
+            <div class="step-flow-item" data-aos="zoom-in" data-aos-delay="100">
+              <div class="step-num">1</div>
+              <span class="step-icon">🔍</span>
+              <div class="step-label">探す</div>
+              <div class="step-desc">作りたいツールが<br>既にあるか検索</div>
+              <a class="step-cta" href="#cases">事例を見る</a>
+              <span class="step-arrow">→</span>
+            </div>
+            <div class="step-flow-item" data-aos="zoom-in" data-aos-delay="200">
+              <div class="step-num">2</div>
+              <span class="step-icon">💡</span>
+              <div class="step-label">学ぶ</div>
+              <div class="step-desc">プロンプト・<br>スキルを参照</div>
+              <a class="step-cta" href="./role/creative.html">役割別を見る</a>
+              <span class="step-arrow">→</span>
+            </div>
+            <div class="step-flow-item" data-aos="zoom-in" data-aos-delay="300">
+              <div class="step-num">3</div>
+              <span class="step-icon">🚀</span>
+              <div class="step-label">試す</div>
+              <div class="step-desc">真似して使う<br>or 自分で作る</div>
+              <a class="step-cta" href="#cases">テンプレ取得</a>
+              <span class="step-arrow">→</span>
+            </div>
+            <div class="step-flow-item" data-aos="zoom-in" data-aos-delay="400">
+              <div class="step-num">4</div>
+              <span class="step-icon">📤</span>
+              <div class="step-label">シェア</div>
+              <div class="step-desc">事例を登録して<br>評価アップ</div>
+              <a class="step-cta" href="./register.html">登録する</a>
+            </div>
+          </div>
+        </div>
+        <div data-aos="fade-left" data-aos-delay="200">
+          <div id="cori-host"></div>
+        </div>
+      </div>
+
+      <div class="role-cards" style="margin-top:32px;">
+        <a class="role-card creative" href="./role/creative.html" data-aos="fade-up">
+          <span class="count" id="creative-count">…</span>
+          <span class="icon">🎨</span>
+          <div class="title">企画・デザイン</div>
+          <div class="sub">商品コピー、ブランド分析、版下、Pantone、トレンドリサーチ</div>
+        </a>
+        <a class="role-card pm" href="./role/pm.html" data-aos="fade-up" data-aos-delay="100">
+          <span class="count" id="pm-count">…</span>
+          <span class="icon">📊</span>
+          <div class="title">PM・管理</div>
+          <div class="sub">ガントチャート、PL、議事録、SNSスケジュール、アルバイト管理</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <!-- 📣 次回ワークショップ ウィジェット -->
+    <section id="workshop-widget" data-aos="fade-up"></section>
+
+    <div class="summary-row" id="summary"></div>
+
+    <!-- ✨ できること（このツールの全体像） -->
+    <section class="howto-section" data-aos="fade-up">
+      <h2 class="section-title">✨ このツールでできること</h2>
+      <div class="howto-grid">
+        <div class="howto-tile">
+          <span class="howto-icon">🔍</span>
+          <div class="howto-title">既存ツールを探す</div>
+          <div class="howto-desc">作りたいツールが社内に<br>すでにあるか検索</div>
+        </div>
+        <div class="howto-tile">
+          <span class="howto-icon">📚</span>
+          <div class="howto-title">プロンプトを盗む</div>
+          <div class="howto-desc">他の社員が使う<br>魔法の呪文を真似する</div>
+        </div>
+        <div class="howto-tile">
+          <span class="howto-icon">⭐</span>
+          <div class="howto-title">共通ツールを知る</div>
+          <div class="howto-desc">全社で使う認定ツール<br>（ガント・PL等）</div>
+        </div>
+        <div class="howto-tile">
+          <span class="howto-icon">📝</span>
+          <div class="howto-title">自分の事例を登録</div>
+          <div class="howto-desc">削減時間を記録すると<br>評価アップ📈</div>
+        </div>
+      </div>
+    </section>
+
+    <input type="search" class="search-bar" id="search" placeholder="🔍 事例・ツール・名前で検索（例：シフト / Hiro / 議事録）" />
+    <div id="filters" style="margin:14px 0 24px;"></div>
+
+    <!-- 💡 カードの読み方ガイド -->
+    <section class="card-legend" data-aos="fade-up">
+      <div class="legend-title">📖 <strong>カードの読み方</strong>　— 気になったらクリックで詳細＋添付ファイル</div>
+      <div class="legend-row">
+        <div class="legend-item"><span class="legend-mark">⭐⭐⭐</span> レアリティ（削減時間ランク）</div>
+        <div class="legend-item"><span class="legend-mark" style="background:#EC4899;color:#fff;">🎨</span> 役割タグ</div>
+        <div class="legend-item"><span class="legend-mark" style="background:#ECFDF5;color:#047857;">⏱ -1h</span> 1回あたり削減</div>
+        <div class="legend-item"><span class="legend-mark" style="background:#FEF3C7;color:#92400E;">月 -10h</span> 月の削減合計</div>
+        <div class="legend-item"><span class="legend-mark" style="background:#FEF3C7;">🖼📄🎬</span> 添付ファイル</div>
+      </div>
+    </section>
+
+    <!-- 🎯 業務シーン入り口（メイン窓口） -->
+    <section id="scenes-section" data-aos="fade-up">
+      <h2 class="section-title">🎯 あなたの業務シーンから探す <span style="font-size:12px;color:#9CA3AF;font-weight:500;">— 「あ、これ自分もやってる」から始めよう</span></h2>
+      <p style="font-size:12.5px;color:#6B7280;margin:0 0 14px;">普段の業務シーンをタップ → AI で何分・どれだけ短くなったか・誰が使ってるかが分かる。</p>
+      <div class="scene-grid" id="scenes-grid"></div>
+    </section>
+
+    <!-- 🚇 業務フローマップ（業務全体の俯瞰用・補助） -->
+    <details id="flow-map-section" style="margin-top:32px;">
+      <summary style="cursor:pointer;font-size:14px;font-weight:600;color:#4B5563;padding:10px 14px;background:#fff;border:1px solid var(--color-border);border-radius:12px;">
+        🚇 業務フローマップ（全体像をみる）
+      </summary>
+      <p style="font-size:12px;color:#6B7280;margin:10px 0;">7つの駅（業務工程）の下に、該当する活用事例と関連ツール（コバさんガントチャート等）が並びます。</p>
+      <div class="flow-map" id="flow-map"></div>
+    </details>
+
+    <!-- 🏆 ヒーロー事例 -->
+    <section id="featured-section" data-aos="fade-up" style="margin-top:40px;">
+      <h2 class="section-title">🏆 ヒーロー事例 TOP 3 <span style="font-size:12px;color:#9CA3AF;font-weight:500;">月間削減時間ランキング</span></h2>
+      <div class="featured-grid" id="featured-cards"></div>
+    </section>
+
+    <!-- 💡 役割別 -->
+    <details style="margin-top:36px;">
+      <summary style="cursor:pointer;font-size:14px;font-weight:600;color:#4B5563;padding:8px 0;">📋 役割別に一覧する（クリックで開く）</summary>
+      <div id="grouped-cards" style="margin-top:14px;"></div>
+    </details>
+
+    <div id="cases" style="display:none;"></div>
+  </main>
+
+  <div class="modal-backdrop" id="card-modal" onclick="if(event.target===this)closeCardModal()">
+    <div class="modal">
+      <div class="modal-close"><button onclick="closeCardModal()">×</button></div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <footer class="v2-footer">
+    KONNEKT INTERNATIONAL · AI活用ナレッジハブ v2 β · <a href="../" style="color:#6B7280;">v1 旧版</a>
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="./assets/common.js"></script>
+  <script src="./assets/cori.js"></script>
+  <script>
+    let allCards = [];
+    let activeRoleFilter = null;
+    let activeCommonOnly = false;
+
+    function applyFilters() {
+      const q = document.getElementById("search").value;
+      const filtered = allCards.filter((c) => {
+        if (activeRoleFilter && !(c.role || []).includes(activeRoleFilter)) return false;
+        if (activeCommonOnly && !c.is_common_tool) return false;
+        return matchSearch(c, q);
+      });
+      renderList(filtered);
+    }
+
+    /* ===== 業務フローマップ（鉄道路線図風） ===== */
+    const STATIONS = [
+      { id: "morning",  emoji: "🌅", label: "朝活", desc: "ブリーフィング・スケジュール" },
+      { id: "research", emoji: "🔍", label: "リサーチ", desc: "トレンド・競合・調査" },
+      { id: "plan",     emoji: "💡", label: "企画", desc: "構成・アイデア・翻訳" },
+      { id: "create",   emoji: "🎨", label: "制作", desc: "デザイン・資料・版下" },
+      { id: "check",    emoji: "✅", label: "確認", desc: "レビュー・自動判定" },
+      { id: "share",    emoji: "📤", label: "共有", desc: "Slack・議事録・SNS" },
+      { id: "ops",      emoji: "💼", label: "管理", desc: "経費・シフト・勤怠" },
+    ];
+
+    function stationOf(card) {
+      // 明示マッピング（カードID）
+      const explicit = {
+        "nishijima-calendar": ["morning"],
+      };
+      if (explicit[card.id]) return explicit[card.id];
+      const t = (card.tags || []).map((x) => x.toLowerCase());
+      const text = (card.title + " " + (card.desc || "")).toLowerCase();
+      const out = new Set();
+      if (t.includes("スケジュール") || t.includes("カレンダー")) out.add("morning");
+      if (t.includes("リサーチ") || t.includes("ブランド分析") || text.includes("リサーチ")) out.add("research");
+      if (t.includes("sns") || text.includes("企画") || text.includes("翻訳") || text.includes("スケジュール策定")) out.add("plan");
+      if (t.includes("デザイン") || t.includes("資料作成") || text.includes("画像") || text.includes("版下")) out.add("create");
+      if (text.includes("判定") || text.includes("レビュー") || text.includes("確認")) out.add("check");
+      if (t.includes("議事録") || t.includes("メール") || t.includes("slack") || text.includes("共有") || text.includes("投稿")) out.add("share");
+      if (t.includes("経費") || t.includes("シフト") || t.includes("勤怠") || text.includes("レシート")) out.add("ops");
+      if (!out.size) out.add("create"); // デフォルト
+      return [...out];
+    }
+
+    let externalTools = [];
+    let scenes = [];
+    let workshop = null;
+
+    /* ===== 次回ワークショップ ウィジェット ===== */
+    function daysUntil(dateStr) {
+      const target = new Date(dateStr + "T09:00:00+09:00");
+      const now = new Date();
+      const diff = target.getTime() - now.getTime();
+      return Math.ceil(diff / (1000 * 60 * 60 * 24));
+    }
+
+    function renderWorkshopWidget() {
+      if (!workshop || !workshop.next) return;
+      const w = workshop.next;
+      const days = daysUntil(w.date);
+      const dueLabel = days > 0 ? `あと ${days} 日` : days === 0 ? "今日！" : `${-days} 日前に開催済`;
+      const deadlineDays = (workshop.rules?.registration_deadline_days || 3);
+      const deadlineUrgent = days <= deadlineDays && days >= 0;
+
+      const slotsHtml = w.presenters
+        .map((p) => {
+          const isTbd = p.status === "tbd";
+          const hasCase = (p.case_ids || []).length > 0;
+          const statusBadge = isTbd
+            ? '<span class="slot-badge tbd">⏳ 依頼前</span>'
+            : hasCase
+            ? '<span class="slot-badge done">✅ 事例登録済</span>'
+            : '<span class="slot-badge warning">⚠️ 事例未登録</span>';
+          return `
+            <div class="slot ${isTbd ? "tbd" : ""}">
+              <div class="slot-num">#${p.slot}</div>
+              <div class="slot-name">${escapeHtml(p.name)}</div>
+              ${statusBadge}
+            </div>
+          `;
+        })
+        .join("");
+
+      document.getElementById("workshop-widget").innerHTML = `
+        <div class="workshop-widget ${deadlineUrgent ? "urgent" : ""}">
+          <div class="ws-head">
+            <div>
+              <div class="ws-title">📣 次回 AI ワークショップ</div>
+              <div class="ws-meta">${escapeHtml(w.title)} · ${escapeHtml(w.date)}（${escapeHtml(w.day_label)}）· ${escapeHtml(w.place)}</div>
+            </div>
+            <div class="ws-countdown">
+              <div class="ws-days">${dueLabel}</div>
+              <div class="ws-sub">${deadlineUrgent ? "📝 事例登録の締切迫る" : "発表サイクル"}</div>
+            </div>
+          </div>
+          <div class="ws-slots">${slotsHtml}</div>
+          <div class="ws-actions">
+            <a class="ws-btn primary" href="./workshop.html">📣 ワークショップ詳細・投影モード →</a>
+            <button class="ws-btn ghost" onclick="copyWorkshopInvite()">💬 依頼文をコピー</button>
+          </div>
+        </div>
+      `;
+    }
+
+    window.copyWorkshopInvite = function () {
+      if (!workshop?.next) return;
+      const w = workshop.next;
+      const text = `📣 次回 AI ワークショップのお知らせ\n\n📅 ${w.date}（${w.day_label}）\n📍 ${w.place}\n\nあなたが発表者にアサインされました！\n\n📝 事前準備：\n1. 普段やってる AI 活用事例を1つ選んで、こちらに登録してください\n   ${location.origin}${location.pathname.replace("index.html","")}register.html\n2. 当日はその登録内容をベースに 5分でシェア\n\n⚠️ 登録は前日まで（運用ルール）\n\nわからないことあれば藤本まで！`;
+      navigator.clipboard?.writeText(text).then(() => {
+        showToast("💬 依頼文をコピーしたよ。Slack DMに貼って使って");
+      });
+    };
+
+    /* ===== 業務シーン入り口 ===== */
+    function renderScenes(cards) {
+      const countByScene = {};
+      for (const c of cards) {
+        for (const s of c.scenes || []) {
+          countByScene[s] = (countByScene[s] || 0) + 1;
+        }
+      }
+      const el = document.getElementById("scenes-grid");
+      el.innerHTML = scenes
+        .map((s) => {
+          const n = countByScene[s.id] || 0;
+          const cls = n ? "scene-tile" : "scene-tile empty";
+          return `
+            <button class="${cls}" data-scene-id="${s.id}" data-count="${n}">
+              <span class="scene-emoji">${s.emoji}</span>
+              <div class="scene-label">${s.label}</div>
+              <div class="scene-desc">${escapeHtml(s.desc)}</div>
+              <div class="scene-count">${n ? `${n} 件の事例` : "事例待ち"}</div>
+            </button>
+          `;
+        })
+        .join("");
+
+      // クリック → シーンモーダル
+      el.querySelectorAll(".scene-tile").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const sid = btn.dataset.sceneId;
+          openSceneModal(sid);
+        });
+      });
+    }
+
+    function openSceneModal(sceneId) {
+      const scene = scenes.find((x) => x.id === sceneId);
+      if (!scene) return;
+      const matched = allCards.filter((c) => (c.scenes || []).includes(sceneId));
+
+      const cardsHtml = matched.length
+        ? matched.map(renderCard).join("")
+        : `
+          <div style="text-align:center;padding:40px 20px;color:#6B7280;">
+            <div style="font-size:40px;margin-bottom:10px;">${scene.emoji}</div>
+            <p style="font-size:14px;font-weight:700;color:#1F2937;">「${escapeHtml(scene.label)}」の事例はまだないよ</p>
+            <p style="font-size:12px;color:#6B7280;margin-top:6px;">あなたが1番乗りで登録するチャンス👀</p>
+            <a href="./register.html" style="display:inline-block;margin-top:14px;padding:8px 16px;background:#EC4899;color:#fff;border-radius:999px;text-decoration:none;font-size:12px;font-weight:700;">+ 事例を登録する</a>
+          </div>
+        `;
+
+      const modal = document.getElementById("card-modal");
+      document.getElementById("modal-body").innerHTML = `
+        <div style="text-align:center;margin-bottom:20px;">
+          <div style="font-size:48px;line-height:1;">${scene.emoji}</div>
+          <h2 style="font-size:22px;font-weight:800;margin:8px 0 4px;letter-spacing:-0.01em;">${escapeHtml(scene.label)}</h2>
+          <p style="font-size:13px;color:#6B7280;margin:0;">${escapeHtml(scene.desc)}</p>
+          ${matched.length ? `<div style="margin-top:10px;font-size:12px;color:#92400E;font-weight:700;">📚 ${matched.length} 件の活用事例</div>` : ""}
+        </div>
+        <div class="card-grid">${cardsHtml}</div>
+      `;
+      modal.classList.add("active");
+    }
+
+    function renderFlowMap(cards) {
+      const grouped = {};
+      STATIONS.forEach((s) => (grouped[s.id] = []));
+      for (const c of cards) {
+        const stations = stationOf(c);
+        for (const sid of stations) {
+          if (grouped[sid]) grouped[sid].push(c);
+        }
+      }
+      const toolsByStation = {};
+      STATIONS.forEach((s) => (toolsByStation[s.id] = []));
+      for (const t of externalTools) {
+        for (const sid of t.stations || []) {
+          if (toolsByStation[sid]) toolsByStation[sid].push(t);
+        }
+      }
+      const el = document.getElementById("flow-map");
+      el.innerHTML = `
+        <div class="flow-rail">
+          ${STATIONS.map((s, i) => `
+            <div class="flow-station-wrap" id="station-${s.id}">
+              <div class="flow-station" data-station="${s.id}">
+                <div class="station-dot"></div>
+                <div class="station-label">
+                  <span class="station-emoji">${s.emoji}</span>
+                  <strong>${s.label}</strong>
+                  <button class="station-share" data-station-id="${s.id}" title="この駅のリンクをコピー">🔗</button>
+                </div>
+                <div class="station-desc">${s.desc}</div>
+                <div class="station-count">${grouped[s.id].length} 件</div>
+              </div>
+              ${toolsByStation[s.id].length ? `
+                <div class="station-tools">
+                  <div class="station-tools-title">🛠 関連ツール</div>
+                  ${toolsByStation[s.id].map(renderExternalTool).join("")}
+                </div>
+              ` : ""}
+              <div class="station-cards">
+                ${grouped[s.id].length
+                  ? grouped[s.id].map(renderMiniCard).join("")
+                  : '<div class="station-empty">まだ事例なし<br><span style="font-size:10px;color:#D1D5DB;">登録待ち</span></div>'}
+              </div>
+              ${i < STATIONS.length - 1 ? '<div class="flow-line"></div>' : ""}
+            </div>
+          `).join("")}
+        </div>
+      `;
+
+      // 共有ボタンクリック
+      document.querySelectorAll(".station-share").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const sid = btn.dataset.stationId;
+          const url = `${location.origin}${location.pathname}#station=${sid}`;
+          navigator.clipboard?.writeText(url).then(() => {
+            showToast(`🔗 リンクをコピーしたよ「${STATIONS.find(s=>s.id===sid).label}」`);
+          }).catch(() => {
+            showToast("コピー失敗。手動で URL をコピーしてね");
+          });
+        });
+      });
+
+      // hash があれば該当駅にスクロール
+      const hash = location.hash;
+      if (hash.startsWith("#station=")) {
+        const sid = hash.replace("#station=", "");
+        const target = document.getElementById(`station-${sid}`);
+        if (target) setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
+      }
+    }
+
+    function renderExternalTool(tool) {
+      const badge = tool.is_common_tool ? '<span class="tool-badge">⭐ 全社共通</span>' : "";
+      return `
+        <a class="external-tool" href="${tool.url}" target="_blank" rel="noopener" title="${escapeHtml(tool.desc || tool.title)}">
+          <span class="tool-icon">${tool.icon || "🔗"}</span>
+          <div class="tool-body">
+            <div class="tool-title">${escapeHtml(tool.title)} ${badge}</div>
+            ${tool.owner ? `<div class="tool-owner">by ${escapeHtml(tool.owner)}</div>` : ""}
+          </div>
+          <span class="tool-arrow">↗</span>
+        </a>
+      `;
+    }
+
+    function showToast(msg) {
+      let toast = document.getElementById("v2-toast");
+      if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "v2-toast";
+        toast.className = "v2-toast";
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+
+    function renderMiniCard(card) {
+      const primaryRole = (card.role || [])[0] || "cross";
+      const saved = card.monthly_saved_minutes ? `月-${(card.monthly_saved_minutes/60).toFixed(1)}h` : "";
+      return `
+        <div class="station-card" data-role="${primaryRole}" onclick="openCardModal('${escapeHtml(card.id)}')" title="${escapeHtml(card.title)}">
+          <div class="mini-person">${escapeHtml(card.person || "—")}</div>
+          <div class="mini-title">${escapeHtml(card.title)}</div>
+          ${saved ? `<div class="mini-stat">${saved}</div>` : ""}
+        </div>
+      `;
+    }
+
+    function renderFeatured(cards) {
+      const top3 = [...cards]
+        .filter((c) => c.monthly_saved_minutes)
+        .sort((a, b) => (b.monthly_saved_minutes || 0) - (a.monthly_saved_minutes || 0))
+        .slice(0, 3);
+      const medals = ["🥇", "🥈", "🥉"];
+      document.getElementById("featured-cards").innerHTML = top3
+        .map((c, i) => renderFeaturedCard(c, medals[i], i + 1))
+        .join("");
+    }
+
+    function renderFeaturedCard(card, medal, rank) {
+      const primaryRole = (card.role || [])[0] || "cross";
+      const monthH = card.monthly_saved_minutes ? (card.monthly_saved_minutes / 60).toFixed(1) : "—";
+      const beforeText = card.before_minutes ? formatMinutes(card.before_minutes) : "手作業";
+      const afterText = card.after_minutes ? formatMinutes(card.after_minutes) : "AI活用";
+      return `
+        <div class="featured-card" data-role="${primaryRole}" onclick="openCardModal('${escapeHtml(card.id)}')">
+          <div class="featured-rank">${medal} <span class="rank-text">#${rank}</span></div>
+          <div class="featured-role">${renderRoleBadges(card.role || [])}</div>
+          <h3 class="featured-title">${escapeHtml(card.title)}</h3>
+          <div class="featured-flow">
+            <div class="flow-step before"><div class="flow-label">😓 Before</div><div class="flow-val">${beforeText}</div></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step after"><div class="flow-label">✨ After</div><div class="flow-val">${afterText}</div></div>
+          </div>
+          <div class="featured-stat">月 <strong>${monthH}時間</strong> 削減</div>
+          <div class="featured-meta">
+            <span>👤 ${escapeHtml(card.person || "—")}</span>
+            <span>🛠 ${escapeHtml(card.tool || "—")}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderGrouped(cards) {
+      const groups = {};
+      for (const c of cards) {
+        const roles = (c.role || []).length ? c.role : ["cross"];
+        for (const r of roles) {
+          if (!groups[r]) groups[r] = [];
+          groups[r].push(c);
+        }
+      }
+      const order = ["creative", "pm", "backoffice", "cross", "sales"];
+      const html = order
+        .filter((r) => groups[r] && groups[r].length)
+        .map((r) => {
+          const meta = ROLE_LABELS[r];
+          return `
+            <div class="role-section" data-role="${r}">
+              <div class="role-section-head">
+                <span class="role-section-icon">${meta.icon}</span>
+                <h3 class="role-section-title">${meta.label}</h3>
+                <span class="role-section-count">${groups[r].length} 件</span>
+              </div>
+              <div class="card-grid">${groups[r].map(renderCard).join("")}</div>
+            </div>
+          `;
+        })
+        .join("");
+      return html;
+    }
+
+    function renderList(cards) {
+      const featured = document.getElementById("featured-section");
+      const grouped = document.getElementById("grouped-cards");
+      if (!cards.length) {
+        featured.style.display = "none";
+        grouped.innerHTML = '<div class="empty-state">😅 該当する事例がありません。<br>フィルタや検索条件を変えてみて。</div>';
+        const host = document.getElementById("cori-host");
+        if (host) CORI.random(host, "encourage");
+        return;
+      }
+      // フィルタ・検索なしの時だけヒーロー＆フローマップを出す
+      const noFilter = !activeRoleFilter && !activeCommonOnly && !document.getElementById("search").value;
+      featured.style.display = noFilter ? "" : "none";
+      const flowSec = document.getElementById("flow-map-section");
+      if (flowSec) flowSec.style.display = noFilter ? "" : "none";
+      if (noFilter) {
+        renderFeatured(cards);
+        renderFlowMap(cards);
+        renderScenes(cards);
+      }
+      grouped.innerHTML = renderGrouped(cards);
+    }
+
+    function renderSummary() {
+      const total = allCards.length;
+      const monthlyTotal = allCards.reduce((s, c) => s + (c.monthly_saved_minutes || 0), 0);
+      const peopleSet = new Set(allCards.map((c) => c.person).filter(Boolean));
+      const commonCount = allCards.filter((c) => c.is_common_tool).length;
+      document.getElementById("summary").innerHTML = `
+        <div class="summary-card" data-aos="zoom-in">
+          <div class="num"><span data-count="${total}">0</span></div>
+          <div class="label">登録事例</div>
+          <span class="icon-bg">📚</span>
+        </div>
+        <div class="summary-card" data-aos="zoom-in" data-aos-delay="80">
+          <div class="num"><span data-count="${(monthlyTotal/60).toFixed(1)}" data-decimals="1" data-suffix="h">0h</span></div>
+          <div class="label">月間削減（推定合計）</div>
+          <span class="icon-bg">⏱</span>
+        </div>
+        <div class="summary-card" data-aos="zoom-in" data-aos-delay="160">
+          <div class="num"><span data-count="${peopleSet.size}">0</span></div>
+          <div class="label">活用社員</div>
+          <span class="icon-bg">👥</span>
+        </div>
+        <div class="summary-card" data-aos="zoom-in" data-aos-delay="240">
+          <div class="num"><span data-count="${commonCount}">0</span></div>
+          <div class="label">全社共通ツール</div>
+          <span class="icon-bg">⭐</span>
+        </div>
+      `;
+      observeCountUps();
+    }
+
+    function renderFilters() {
+      const roles = ["creative", "pm", "backoffice", "sales", "cross"];
+      const chips = roles
+        .map((r) => {
+          const meta = ROLE_LABELS[r];
+          return `<button class="filter-chip" data-role="${r}">${meta.icon} ${meta.label}</button>`;
+        })
+        .join("");
+      document.getElementById("filters").innerHTML = `
+        <button class="filter-chip active" data-role="">すべて</button>
+        ${chips}
+        <button class="filter-chip" id="common-toggle">⭐ 全社共通ツールのみ</button>
+      `;
+      document.querySelectorAll("#filters [data-role]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("#filters [data-role]").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          activeRoleFilter = btn.dataset.role || null;
+          applyFilters();
+        });
+      });
+      document.getElementById("common-toggle").addEventListener("click", (e) => {
+        activeCommonOnly = !activeCommonOnly;
+        e.target.classList.toggle("active", activeCommonOnly);
+        applyFilters();
+      });
+    }
+
+    async function init() {
+      try {
+        allCards = await loadJSON("./data/cards.json");
+        externalTools = await loadJSON("./data/external_tools.json").catch(() => []);
+        scenes = await loadJSON("./data/scenes.json").catch(() => []);
+        workshop = await loadJSON("./data/workshop_schedule.json").catch(() => null);
+        window._cardsCache = allCards;
+        window.ROLE_LABELS = ROLE_LABELS;
+
+        // CORI
+        const coriHost = document.getElementById("cori-host");
+        await CORI.load(coriHost, { size: 160, wave: true });
+        const monthlyTotal = allCards.reduce((s, c) => s + (c.monthly_saved_minutes || 0), 0);
+        CORI.say(coriHost, `やっほー！今月もう ${(monthlyTotal/60).toFixed(1)}時間 削減してるよ！`);
+
+        // role counts
+        const creativeN = allCards.filter((c) => (c.role || []).includes("creative")).length;
+        const pmN = allCards.filter((c) => (c.role || []).includes("pm")).length;
+        document.getElementById("creative-count").textContent = creativeN + " 件";
+        document.getElementById("pm-count").textContent = pmN + " 件";
+
+        renderWorkshopWidget();
+        renderSummary();
+        renderFilters();
+        renderList(allCards);
+
+        document.getElementById("search").addEventListener("input", applyFilters);
+
+        if (window.AOS) AOS.init({ duration: 600, once: true, offset: 50 });
+
+        // GMO benchmark celebration if exceeded
+        const peopleSet = new Set(allCards.map((c) => c.person).filter(Boolean));
+        const perH = peopleSet.size ? (monthlyTotal / peopleSet.size) / 60 : 0;
+        if (perH >= 50) {
+          setTimeout(() => CORI.celebrate(coriHost), 1500);
+        }
+      } catch (e) {
+        document.getElementById("cards").innerHTML =
+          '<div class="empty-state">データ読み込みに失敗しました: ' + e.message + "</div>";
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
