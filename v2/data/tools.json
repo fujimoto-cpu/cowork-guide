@@ -1,0 +1,94 @@
+[
+  {
+    "id": "gantt",
+    "icon": "📊",
+    "name": "KONNEKT ガントチャート",
+    "owner": "コバさん",
+    "kind": "common",
+    "dekiru": "案件スケジュールを全員が同じ画面で管理できる",
+    "url": "https://konnekt-b6a72.web.app/",
+    "loc_label": "konnekt-b6a72.web.app",
+    "areas": ["schedule"],
+    "note": "全社共通認定（6/5 AI推進室）"
+  },
+  {
+    "id": "pl",
+    "icon": "💰",
+    "name": "PL作成ツール",
+    "owner": "藤本",
+    "kind": "common",
+    "dekiru": "案件のPL・予算表を自動生成できる",
+    "url": "https://fujimoto-cpu.github.io/management-dashboard/",
+    "loc_label": "management-dashboard",
+    "areas": ["money"],
+    "note": "全社共通ツール（AIチーム主導）"
+  },
+  {
+    "id": "pantone",
+    "icon": "🎨",
+    "name": "Pantone リファレンス",
+    "owner": "藤本",
+    "kind": "personal",
+    "dekiru": "Pantone Solid Coated の色番号を一覧・検索できる",
+    "url": "https://fujimoto-cpu.github.io/pantone/",
+    "loc_label": "fujimoto-cpu.github.io/pantone",
+    "areas": ["create"]
+  },
+  {
+    "id": "pulse",
+    "icon": "📈",
+    "name": "月次AI活用アンケート",
+    "owner": "引地さん×藤本",
+    "kind": "system",
+    "dekiru": "みんなのAI活用度・削減時間を毎月見える化する",
+    "url": "https://fujimoto-cpu.github.io/ai-pulse-survey/",
+    "loc_label": "ai-pulse-survey",
+    "areas": ["research"]
+  },
+  {
+    "id": "quality",
+    "icon": "🏷",
+    "name": "品質表示タグ生成",
+    "owner": "藤本",
+    "kind": "personal",
+    "dekiru": "混率を入れると洗濯絵表示・付記用語を自動判定して版下用に出せる",
+    "url": null,
+    "loc_label": "Coworkスキル（藤本に声かけ）",
+    "areas": ["create"]
+  },
+  {
+    "id": "receipt",
+    "icon": "🧾",
+    "name": "レシート自動読取",
+    "owner": "Wataruさん",
+    "kind": "personal",
+    "dekiru": "レシートを写真に撮るだけでスプレッドシートに経費データ化",
+    "url": null,
+    "loc_label": "❓ 場所確認中（Wataruさんに聞く）",
+    "areas": ["money"],
+    "ask": true
+  },
+  {
+    "id": "slash",
+    "icon": "📅",
+    "name": "シュラッシュ（案件管理）",
+    "owner": "Wataruさん",
+    "kind": "personal",
+    "dekiru": "案件管理×ガントチャート連携（実装3週間→1週間）",
+    "url": null,
+    "loc_label": "❓ 場所確認中（Wataruさんに聞く）",
+    "areas": ["schedule"],
+    "ask": true
+  },
+  {
+    "id": "minutes",
+    "icon": "📝",
+    "name": "議事録集約",
+    "owner": "AIチーム",
+    "kind": "system",
+    "dekiru": "Google Meet の議事メモを毎朝 Notion に自動で溜める",
+    "url": null,
+    "loc_label": "GASで自動稼働中",
+    "areas": ["minutes"]
+  }
+]
