@@ -405,5 +405,75 @@
     "scenes": [
       "document"
     ]
+  },
+  {
+    "id": "case------1782831204971",
+    "version": 2,
+    "type": "case",
+    "title": "Notion DBに追加できるようになった",
+    "person": "てすと２",
+    "person_slack_id": null,
+    "role": [
+      "企画・デザイン"
+    ],
+    "tool": "Claude code",
+    "before_minutes": 2,
+    "after_minutes": 1,
+    "saved_minutes": 1,
+    "monthly_frequency": 1,
+    "monthly_saved_minutes": 1,
+    "tags": [
+      "その他"
+    ],
+    "is_common_tool": false,
+    "common_tool_status": null,
+    "desc": "Notion　DBとの連携に成功！",
+    "detail": "<p>いろいろつかったよ</p>",
+    "skill_link": null,
+    "github_url": null,
+    "attachments": [
+      "https://drive.google.com/file/d/1jFlT1doava0Ho6gwTHL3Jone4uIU5IlR/view?usp=drivesdk"
+    ],
+    "stat_legacy": "月0時間の削減",
+    "created_at": "2026-06-30",
+    "updated_at": "2026-06-30",
+    "presented_at": null,
+    "scenes": [
+      "document"
+    ]
+  },
+  {
+    "id": "case------1782832920270",
+    "version": 2,
+    "type": "case",
+    "title": "あ",
+    "person": "てすと２",
+    "person_slack_id": null,
+    "role": [],
+    "tool": "い",
+    "before_minutes": 2,
+    "after_minutes": 1,
+    "saved_minutes": 1,
+    "monthly_frequency": 1,
+    "monthly_saved_minutes": 1,
+    "tags": [
+      "その他"
+    ],
+    "is_common_tool": false,
+    "common_tool_status": null,
+    "desc": "う",
+    "detail": "<p>え</p>",
+    "skill_link": null,
+    "github_url": null,
+    "attachments": [
+      "https://drive.google.com/file/d/1Wn5aZMCP_TJCQgrmEvQiLNoDyp7Naqu6/view?usp=drivesdk"
+    ],
+    "stat_legacy": "月0時間の削減",
+    "created_at": "2026-06-30",
+    "updated_at": "2026-06-30",
+    "presented_at": null,
+    "scenes": [
+      "document"
+    ]
   }
 ]
