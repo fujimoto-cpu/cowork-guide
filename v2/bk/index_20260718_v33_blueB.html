@@ -9,19 +9,14 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔷</text></svg>" />
   <style>
     :root{
-      /* Task Cockpit のデザイントークンを踏襲・アクセントのみ紫→青（Cockpit の青 #3E78C9 系） */
-      --bg:#F5F5F7; --card:#FFFFFF; --tint:#E7F0FB; --tint2:#F1F1F4;
-      --ink:#1D1D22; --ink2:#6E6E76; --ink3:#9A9AA2;
-      --border:#E9E9EE; --p:#3E78C9; --p2:#2C5AA0; --p-light:#E7F0FB;
-      --serif:Georgia,"Times New Roman","Hiragino Mincho ProN","Yu Mincho",serif;
-      --shadow:0 1px 2px rgba(20,20,30,.05), 0 8px 24px rgba(20,20,30,.06);
-      --radius:12px;
+      --bg:#FFFFFF; --tint:#F0F5FF; --tint2:#F7FAFF; --ink:#101828; --ink2:#5D6B82; --ink3:#98A2B3;
+      --border:#E4EAF5; --p:#2563EB; --p2:#1D4ED8;
       color-scheme: light;
     }
     *{box-sizing:border-box;margin:0;padding:0;}
     html{scroll-behavior:smooth;scroll-padding-top:66px;}
     body{background:var(--bg);color:var(--ink);
-      font-family:"Noto Sans JP","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+      font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
       font-size:14px;line-height:1.7;-webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none;}
     .wrap{max-width:1040px;margin:0 auto;padding:0 20px;}
@@ -38,11 +33,10 @@
     .np.cta:hover{background:var(--p2);color:#fff;}
 
     /* hero */
-    .hero{background:var(--bg);border-bottom:1px solid var(--border);padding:38px 0 30px;position:relative;overflow:hidden;}
-    .hero .net{position:absolute;right:-10px;top:-24px;width:380px;height:230px;opacity:.45;pointer-events:none;}
+    .hero{background:linear-gradient(180deg,var(--tint2),#fff);border-bottom:1px solid var(--border);padding:30px 0 26px;position:relative;overflow:hidden;}
+    .hero .net{position:absolute;right:-10px;top:-24px;width:380px;height:230px;opacity:.5;pointer-events:none;}
     .hero-inner{position:relative;}
-    .eyebrow{font-size:11px;font-weight:600;color:var(--ink3);letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;}
-    h1{font-family:var(--serif);font-size:clamp(24px,3.2vw,32px);font-weight:600;line-height:1.4;letter-spacing:.005em;color:var(--ink);}
+    h1{font-size:clamp(21px,2.8vw,26px);font-weight:700;line-height:1.45;letter-spacing:.01em;}
     h1 em{font-style:normal;color:var(--p);}
     .hero-sub{color:var(--ink2);font-size:13px;margin:6px 0 16px;}
     .searchbox{display:flex;max-width:460px;border:1.5px solid var(--p);border-radius:11px;overflow:hidden;background:#fff;}
@@ -67,8 +61,8 @@
     .tool-stats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
     .tstat{background:#fff;border:1px solid var(--border);border-radius:99px;padding:4px 12px;font-size:11.5px;font-weight:600;color:var(--ink2);}
     .tstat b{color:var(--p2);font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;}
-    .covmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
-    .area{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 13px;display:flex;flex-direction:column;gap:6px;}
+    .covmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;}
+    .area{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 11px;display:flex;flex-direction:column;gap:6px;}
     .area .a-head{font-size:11px;font-weight:600;color:var(--ink2);}
     .area .a-head .ic{font-size:14px;margin-right:3px;}
     .tchip{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;background:var(--tint);border:1px solid transparent;color:var(--p2);border-radius:8px;padding:4px 9px;cursor:pointer;transition:.12s;}
@@ -95,7 +89,7 @@
     .ritem{font-size:12.5px;font-weight:600;color:var(--ink2);padding:8px 13px;border-radius:9px;cursor:pointer;border:none;background:transparent;text-align:left;font-family:inherit;transition:.12s;}
     .ritem:hover{background:var(--tint);color:var(--p);}
     .ritem.on{background:var(--p);color:#fff;}
-    .rev-pane{background:var(--tint2);border-radius:var(--radius);padding:14px 15px;min-height:180px;}
+    .rev-pane{background:var(--tint);border-radius:14px;padding:14px 15px;min-height:180px;}
     .rgroup{font-size:10px;font-weight:700;color:var(--p);letter-spacing:.12em;margin:4px 0 6px;}
     .rgroup:first-child{margin-top:0;}
     .rcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;}
@@ -119,8 +113,8 @@
 
     /* case cards */
     .cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;}
-    .case{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px;display:flex;flex-direction:column;gap:9px;transition:.15s;cursor:pointer;}
-    .case:hover{border-color:#BFD3FA;box-shadow:0 2px 4px rgba(20,20,30,.06),0 12px 28px rgba(62,120,201,.12);transform:translateY(-1px);}
+    .case{background:#fff;border:1px solid var(--border);border-radius:13px;padding:14px 16px;display:flex;flex-direction:column;gap:9px;transition:.15s;cursor:pointer;}
+    .case:hover{border-color:#BFD3FA;box-shadow:0 8px 22px rgba(37,99,235,.09);transform:translateY(-1px);}
     .case-top{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink3);}
     .avatar{width:21px;height:21px;border-radius:50%;background:var(--p);color:#fff;font-size:9.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
     .case-top .name{font-weight:600;color:var(--ink2);}
@@ -140,12 +134,12 @@
 
     /* steps / docs */
     .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
-    .step{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:13px 15px;}
+    .step{background:#fff;border:1px solid var(--border);border-radius:12px;padding:13px 15px;}
     .step .n{width:22px;height:22px;border-radius:50%;background:var(--p);color:#fff;font-weight:700;font-size:11.5px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;}
     .step h3{font-size:12.5px;font-weight:700;margin-bottom:3px;}
     .step p{font-size:11.5px;color:var(--ink2);}
     .grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;}
-    .doc{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:11px 14px;transition:.15s;}
+    .doc{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:11px 14px;transition:.15s;}
     .doc:hover{border-color:var(--p);}
     .doc .ic{font-size:19px;}
     .doc .t{font-size:12.5px;font-weight:600;}
@@ -208,7 +202,6 @@
     <g fill="#2563EB"><circle cx="40" cy="40" r="5"/><circle cx="160" cy="95" r="7"/><circle cx="280" cy="48" r="5"/><circle cx="345" cy="128" r="6"/><circle cx="225" cy="180" r="5"/><circle cx="100" cy="170" r="4"/></g>
   </svg>
   <div class="wrap hero-inner">
-    <div class="eyebrow">KONNEKT · AI INFO HUB</div>
     <h1>そのツール、<em>もう誰かが作ってる</em>かも。</h1>
     <p class="hero-sub">KONNEKTのAIツール・活用事例・設定手順がぜんぶここに。作る前に、まず検索。</p>
     <div class="searchbox">
