@@ -8,7 +8,7 @@
 //   GITHUB_TOKEN     — GitHub PAT (repo スコープ)
 // ============================================================
 
-const NOTION_DB_ID     = '04dafa7303f84bc79b759196469c17c1';
+const NOTION_DB_ID     = '38f7f11c9bd08097961bc9d6959cd80c';
 const GITHUB_REPO      = 'fujimoto-cpu/cowork-guide';
 const GITHUB_FILE_PATH = 'v2/data/cards.json';
 const DRIVE_FOLDER_NAME = 'KONNEKT AI活用事例 添付ファイル';
@@ -63,8 +63,11 @@ function doPost(e) {
     const personKey = (data.person || 'anonymous').toLowerCase().replace(/[^a-z0-9]/g, '-');
     const cardId = `case-${personKey}-${Date.now()}`;
 
-    // 4. Notion に保存
-    saveToNotion_(data, scenes, tags, fileUrl, cardId, props.getProperty('NOTION_TOKEN'));
+    // 4. Notion に保存（トークン未設定時はスキップ）
+    const notionToken = props.getProperty('NOTION_TOKEN');
+    if (notionToken) {
+      saveToNotion_(data, scenes, tags, fileUrl, cardId, notionToken);
+    }
 
     // 5. cards.json 更新（GitHub API）
     updateCardsJson_(data, scenes, tags, fileUrl, cardId, props.getProperty('GITHUB_TOKEN'));
