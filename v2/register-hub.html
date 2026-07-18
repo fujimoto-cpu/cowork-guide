@@ -44,9 +44,12 @@
     label .req{color:var(--p);margin-left:3px;}
     label .opt{color:var(--ink3);font-weight:500;font-size:11px;margin-left:5px;}
     .hint-s{font-size:11px;color:var(--ink3);font-weight:400;margin-top:4px;}
-    input[type=text],input[type=number],textarea{width:100%;border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-size:14px;font-family:inherit;color:var(--ink);background:#fff;outline:none;transition:.12s;}
-    input:focus,textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
-    textarea{resize:vertical;min-height:76px;line-height:1.6;}
+    input[type=text],input[type=number],textarea,select{width:100%;border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-size:14px;font-family:inherit;color:var(--ink);background:#fff;outline:none;transition:.12s;}
+    input:focus,textarea:focus,select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+    select{appearance:none;-webkit-appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235D6B82' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px;}
+    textarea{resize:vertical;line-height:1.6;}
+    textarea.ta-mid{min-height:76px;}
+    textarea.ta-lg{min-height:150px;}
     .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
     .row3 .sub{font-size:10.5px;color:var(--ink3);margin-top:3px;text-align:center;}
 
@@ -104,7 +107,26 @@
     <form class="card" id="register-form">
       <div class="field">
         <label>お名前<span class="req">*</span></label>
-        <input type="text" id="person" required placeholder="例：藤本 / Hiro / Wataru" />
+        <select id="person" required>
+          <option value="" disabled selected>── 選択してください ──</option>
+          <option value="由羽弘明">由羽弘明</option>
+          <option value="鈴木由洋">鈴木由洋</option>
+          <option value="佐々木渉">佐々木渉</option>
+          <option value="山崎丈嗣">山崎丈嗣</option>
+          <option value="佐生竜輔">佐生竜輔</option>
+          <option value="青木和輝">青木和輝</option>
+          <option value="藤本有璃子">藤本有璃子</option>
+          <option value="小林準基">小林準基</option>
+          <option value="川田嘉悠">川田嘉悠</option>
+          <option value="福島優美">福島優美</option>
+          <option value="高垣ひなた">高垣ひなた</option>
+          <option value="小柳雅裕">小柳雅裕</option>
+          <option value="齊藤マミ">齊藤マミ</option>
+          <option value="徳永美里">徳永美里</option>
+          <option value="引地瑞生">引地瑞生</option>
+          <option value="菊田舞">菊田舞</option>
+          <option value="渡部恵">渡部恵</option>
+        </select>
       </div>
 
       <div class="field">
@@ -113,9 +135,9 @@
       </div>
 
       <div class="field">
-        <label>✨ できること（1行）<span class="req">*</span></label>
-        <input type="text" id="desc" required placeholder="例：領収書を撮って投げるだけで、手入力ゼロで経費一覧が完成する" />
-        <div class="hint-s">「これで何ができるようになった？」を、読んだ人がすぐ分かる一言で。</div>
+        <label>✨ できること<span class="req">*</span></label>
+        <textarea id="desc" class="ta-mid" required placeholder="例：領収書を撮って投げるだけで、手入力ゼロで経費一覧が完成する"></textarea>
+        <div class="hint-s">「これで何ができるようになった？」を、読んだ人がすぐ分かるように。</div>
       </div>
 
       <div class="field">
@@ -135,7 +157,7 @@
 
       <div class="field">
         <label>手順・コマンド・詳しい説明<span class="opt">任意</span></label>
-        <textarea id="detail" placeholder="真似したい人が再現できるように、手順やプロンプト例を書けるとGood（空欄でもOK）"></textarea>
+        <textarea id="detail" class="ta-lg" placeholder="真似したい人が再現できるように、手順やプロンプト例を書けるとGood（空欄でもOK）"></textarea>
       </div>
 
       <div class="field">
