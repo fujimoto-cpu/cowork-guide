@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>事例を登録｜KONNEKT AI情報ハブ</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="KONNEKT AI情報ハブに、あなたのAI活用事例・ツールを登録する。" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔷</text></svg>" />
+  <style>
+    :root{
+      --bg:#F5F5F7; --card:#FFFFFF; --tint:#EAF1FE; --tint2:#F1F1F4;
+      --ink:#1D1D22; --ink2:#6E6E76; --ink3:#9A9AA2;
+      --border:#E9E9EE; --p:#2563EB; --p2:#1D4ED8; --p-light:#EAF1FE;
+      --serif:Georgia,"Times New Roman","Hiragino Mincho ProN","Yu Mincho",serif;
+      --shadow:0 1px 2px rgba(20,20,30,.05), 0 8px 24px rgba(20,20,30,.06);
+      --radius:12px;
+      color-scheme: light;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--ink);
+      font-family:"Noto Sans JP","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+      font-size:14px;line-height:1.7;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .wrap{max-width:680px;margin:0 auto;padding:0 20px;}
+
+    .nav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);}
+    .nav-inner{display:flex;align-items:center;gap:12px;padding:11px 20px;max-width:1040px;margin:0 auto;}
+    .logo{font-weight:700;font-size:14px;}
+    .logo .dia{color:var(--p);}
+    .back{margin-left:auto;font-size:12.5px;font-weight:600;color:var(--ink2);padding:6px 13px;border-radius:8px;border:1px solid var(--border);background:#fff;}
+    .back:hover{border-color:var(--p);color:var(--p);}
+
+    .hero{background:var(--bg);border-bottom:1px solid var(--border);padding:34px 0 26px;}
+    .eyebrow{font-size:11px;font-weight:600;color:var(--ink3);letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;}
+    h1{font-family:var(--serif);font-size:clamp(22px,3vw,28px);font-weight:600;line-height:1.4;color:var(--ink);}
+    .hero p{font-size:12.5px;color:var(--ink2);margin-top:8px;}
+
+    main{padding:26px 0 60px;}
+    .card{background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:16px;padding:24px 26px;}
+    .field{margin-bottom:18px;}
+    label{display:block;font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+    label .req{color:var(--p);margin-left:3px;}
+    label .opt{color:var(--ink3);font-weight:500;font-size:11px;margin-left:5px;}
+    .hint-s{font-size:11px;color:var(--ink3);font-weight:400;margin-top:4px;}
+    input[type=text],input[type=number],textarea{width:100%;border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-size:14px;font-family:inherit;color:var(--ink);background:#fff;outline:none;transition:.12s;}
+    input:focus,textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+    textarea{resize:vertical;min-height:76px;line-height:1.6;}
+    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+    .row3 .sub{font-size:10.5px;color:var(--ink3);margin-top:3px;text-align:center;}
+
+    .savings{display:none;background:var(--tint);border:1px solid #CFE0FF;border-radius:12px;padding:12px 15px;margin-top:4px;font-size:13px;color:var(--p2);font-weight:700;}
+    .savings b{font-size:18px;font-variant-numeric:tabular-nums;}
+
+    .drop{border:1.5px dashed #CFD6E4;border-radius:12px;padding:16px;text-align:center;font-size:12px;color:var(--ink3);cursor:pointer;transition:.12s;}
+    .drop:hover,.drop.drag-over{border-color:var(--p);background:var(--tint);color:var(--p2);}
+    .drop input{display:none;}
+    #file-name{color:var(--p2);font-weight:700;margin-top:6px;font-size:12px;}
+
+    .submit{width:100%;background:var(--p);color:#fff;font-weight:700;font-size:15.5px;border:none;border-radius:12px;padding:15px;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px rgba(37,99,235,.35);transition:.15s;margin-top:6px;}
+    .submit:hover{background:var(--p2);box-shadow:0 6px 20px rgba(37,99,235,.45);transform:translateY(-1px);}
+    .submit:disabled{opacity:.6;cursor:default;transform:none;}
+    .spinner{display:none;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;margin:0 auto;animation:spin .7s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .err{display:none;background:#FEF2F2;color:#B91C1C;border-radius:10px;padding:10px 14px;font-size:12px;margin-top:12px;}
+
+    .success{display:none;background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:16px;padding:36px 28px;text-align:center;}
+    .success .ic{font-size:44px;}
+    .success h2{font-family:var(--serif);font-size:20px;font-weight:600;margin:10px 0 6px;}
+    .success p{font-size:12.5px;color:var(--ink2);}
+    .success .btn{display:inline-block;margin-top:18px;background:var(--p);color:#fff;font-weight:700;font-size:13.5px;border-radius:10px;padding:11px 22px;}
+
+    .tip{background:var(--tint);border-radius:12px;padding:12px 15px;font-size:11.5px;color:var(--ink2);margin-bottom:18px;line-height:1.7;}
+    .tip b{color:var(--p2);}
+    footer{text-align:center;padding:26px 20px;color:var(--ink3);font-size:11px;border-top:1px solid var(--border);}
+    @media(max-width:520px){.row3{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <span class="logo"><span class="dia">🔷</span> KONNEKT AI情報ハブ</span>
+    <a class="back" href="./index.html">← ハブに戻る</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">KONNEKT · AI INFO HUB</div>
+    <h1>事例・ツールを登録する</h1>
+    <p>あなたのAI活用が、次の誰かの時短になる。登録した事例はハブに自動で並びます（評価にも繋がります）。</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="tip">
+      💡 <b>3分でOK。</b>まずは「名前・タイトル・できること」の3つだけでも登録できます。手順や画像は後から足せます。<br>
+      削減時間は <b>「AIなしでやったら何分」−「実際何分」</b> で入れてね。
+    </div>
+
+    <form class="card" id="register-form">
+      <div class="field">
+        <label>お名前<span class="req">*</span></label>
+        <input type="text" id="person" required placeholder="例：藤本 / Hiro / Wataru" />
+      </div>
+
+      <div class="field">
+        <label>事例タイトル<span class="req">*</span></label>
+        <input type="text" id="title" required placeholder="例：レシート写真 → スプレッドシートに自動データ化" />
+      </div>
+
+      <div class="field">
+        <label>✨ できること（1行）<span class="req">*</span></label>
+        <input type="text" id="desc" required placeholder="例：領収書を撮って投げるだけで、手入力ゼロで経費一覧が完成する" />
+        <div class="hint-s">「これで何ができるようになった？」を、読んだ人がすぐ分かる一言で。</div>
+      </div>
+
+      <div class="field">
+        <label>使ったツール<span class="opt">任意</span></label>
+        <input type="text" id="tool" placeholder="例：Cowork / ChatGPT / Illustratorスクリプト" />
+      </div>
+
+      <div class="field">
+        <label>どれくらい時短できた？<span class="opt">任意・入れると削減時間が自動計算されます</span></label>
+        <div class="row3">
+          <div><input type="number" id="before_minutes" min="0" placeholder="120" /><div class="sub">AIなし（分）</div></div>
+          <div><input type="number" id="after_minutes" min="0" placeholder="40" /><div class="sub">実際（分）</div></div>
+          <div><input type="number" id="monthly_frequency" min="0" placeholder="8" /><div class="sub">月の回数</div></div>
+        </div>
+        <div class="savings" id="savings-preview">⏱ 月あたり <b id="savings-h">0</b> 時間の削減（<span id="savings-val">0</span>分）</div>
+      </div>
+
+      <div class="field">
+        <label>手順・コマンド・詳しい説明<span class="opt">任意</span></label>
+        <textarea id="detail" placeholder="真似したい人が再現できるように、手順やプロンプト例を書けるとGood（空欄でもOK）"></textarea>
+      </div>
+
+      <div class="field">
+        <label>画像・資料を添付<span class="opt">任意</span></label>
+        <label class="drop" id="file-drop">
+          📎 ここにドラッグ、またはクリックして選択（PNG/JPG/PDF/動画など）
+          <input type="file" id="file-input" />
+          <div id="file-name"></div>
+        </label>
+      </div>
+
+      <button type="submit" class="submit" id="submit-btn">
+        <span id="btn-text">＋ この事例を登録する</span>
+        <span class="spinner" id="spinner"></span>
+      </button>
+      <div class="err" id="error-msg">送信に失敗しました。時間をおいて再度お試しください（藤本まで連絡でもOK）。</div>
+    </form>
+
+    <div class="success" id="success-box">
+      <div class="ic">🎉</div>
+      <h2>登録ありがとう！</h2>
+      <p>事例がハブに反映されます（数分〜）。<br>あなたの時短が、みんなの時短になります。</p>
+      <a class="btn" href="./index.html">ハブで確認する →</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  KONNEKT INTERNATIONAL · AI情報ハブ（社内限定・noindex）· presented by CORI 🤖
+</footer>
+
+<script>
+  // 動くデータ配線は既存のGASエンドポイント（cards.json 更新）を再利用＝ハブに自動反映
+  const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzu4-cn_x3D2nD_1F23VPN09H53TtBI_Itf5YL4jmIybKmGRa2m28u0T7d63ZF9QdzB/exec';
+
+  const fileInput=document.getElementById('file-input'), fileDrop=document.getElementById('file-drop'), fileName=document.getElementById('file-name');
+  let selectedFile=null;
+  fileInput.addEventListener('change',()=>{selectedFile=fileInput.files[0]||null;fileName.textContent=selectedFile?`✓ ${selectedFile.name}`:'';});
+  fileDrop.addEventListener('dragover',e=>{e.preventDefault();fileDrop.classList.add('drag-over');});
+  fileDrop.addEventListener('dragleave',()=>fileDrop.classList.remove('drag-over'));
+  fileDrop.addEventListener('drop',e=>{e.preventDefault();fileDrop.classList.remove('drag-over');selectedFile=e.dataTransfer.files[0]||null;if(selectedFile){fileInput.files=e.dataTransfer.files;fileName.textContent=`✓ ${selectedFile.name}`;}});
+
+  ['before_minutes','after_minutes','monthly_frequency'].forEach(id=>document.getElementById(id).addEventListener('input',updateSavings));
+  function updateSavings(){
+    const b=Number(document.getElementById('before_minutes').value)||0;
+    const a=Number(document.getElementById('after_minutes').value)||0;
+    const f=Number(document.getElementById('monthly_frequency').value)||0;
+    const saved=(b-a)*f, pv=document.getElementById('savings-preview');
+    if(b>0&&a>=0&&f>0&&b>a){document.getElementById('savings-val').textContent=saved;document.getElementById('savings-h').textContent=Math.round(saved/60*10)/10;pv.style.display='block';}
+    else pv.style.display='none';
+  }
+
+  document.getElementById('register-form').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const btn=document.getElementById('submit-btn'),btnText=document.getElementById('btn-text'),spinner=document.getElementById('spinner'),errMsg=document.getElementById('error-msg');
+    btn.disabled=true;btnText.style.display='none';spinner.style.display='block';errMsg.style.display='none';
+    try{
+      let file_base64=null,file_name=null,file_type=null;
+      if(selectedFile){file_base64=await toBase64(selectedFile);file_name=selectedFile.name;file_type=selectedFile.type;}
+      const payload={
+        person:document.getElementById('person').value.trim(),
+        role:[],
+        title:document.getElementById('title').value.trim(),
+        tool:document.getElementById('tool').value.trim(),
+        desc:document.getElementById('desc').value.trim(),
+        detail:document.getElementById('detail').value.trim(),
+        before_minutes:Number(document.getElementById('before_minutes').value)||null,
+        after_minutes:Number(document.getElementById('after_minutes').value)||null,
+        monthly_frequency:Number(document.getElementById('monthly_frequency').value)||null,
+        file_base64,file_name,file_type,
+      };
+      const res=await fetch(GAS_ENDPOINT,{method:'POST',body:JSON.stringify(payload)});
+      const result=await res.json().catch(()=>({success:true}));
+      if(result.success!==false){
+        document.getElementById('register-form').style.display='none';
+        document.getElementById('success-box').style.display='block';
+        window.scrollTo({top:0,behavior:'smooth'});
+      }else throw new Error(result.error||'送信エラー');
+    }catch(err){
+      console.error(err);
+      errMsg.style.display='block';btn.disabled=false;btnText.style.display='block';spinner.style.display='none';
+    }
+  });
+  function toBase64(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result.split(',')[1]);r.onerror=reject;r.readAsDataURL(file);});}
+</script>
+</body>
+</html>

@@ -9,10 +9,10 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔷</text></svg>" />
   <style>
     :root{
-      /* Task Cockpit のデザイントークンを踏襲・アクセントのみ紫→青（Cockpit の青 #3E78C9 系） */
-      --bg:#F5F5F7; --card:#FFFFFF; --tint:#E7F0FB; --tint2:#F1F1F4;
+      /* Task Cockpit のデザイントークンを踏襲・アクセントは彩度高めの明るい青 */
+      --bg:#F5F5F7; --card:#FFFFFF; --tint:#EAF1FE; --tint2:#F1F1F4;
       --ink:#1D1D22; --ink2:#6E6E76; --ink3:#9A9AA2;
-      --border:#E9E9EE; --p:#3E78C9; --p2:#2C5AA0; --p-light:#E7F0FB;
+      --border:#E9E9EE; --p:#2563EB; --p2:#1D4ED8; --p-light:#EAF1FE;
       --serif:Georgia,"Times New Roman","Hiragino Mincho ProN","Yu Mincho",serif;
       --shadow:0 1px 2px rgba(20,20,30,.05), 0 8px 24px rgba(20,20,30,.06);
       --radius:12px;
@@ -34,8 +34,8 @@
     .logo .dia{color:var(--p);}
     .np{font-size:12px;font-weight:600;color:var(--ink2);padding:6px 11px;border-radius:8px;transition:.15s;}
     .np:hover{background:var(--tint);color:var(--p);}
-    .np.cta{margin-left:auto;background:var(--p);color:#fff;border-radius:9px;padding:7px 15px;}
-    .np.cta:hover{background:var(--p2);color:#fff;}
+    .np.cta{margin-left:auto;background:var(--p);color:#fff;border-radius:11px;padding:13px 26px;font-size:15px;font-weight:700;box-shadow:0 4px 14px rgba(37,99,235,.35);transition:.15s;}
+    .np.cta:hover{background:var(--p2);color:#fff;box-shadow:0 6px 20px rgba(37,99,235,.45);transform:translateY(-1px);}
 
     /* hero */
     .hero{background:var(--bg);border-bottom:1px solid var(--border);padding:26px 0 24px;}
@@ -118,7 +118,7 @@
     /* case cards */
     .cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;}
     .case{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px;display:flex;flex-direction:column;gap:9px;transition:.15s;cursor:pointer;}
-    .case:hover{border-color:#BFD3FA;box-shadow:0 2px 4px rgba(20,20,30,.06),0 12px 28px rgba(62,120,201,.12);transform:translateY(-1px);}
+    .case:hover{border-color:#A9C6FA;box-shadow:0 2px 4px rgba(20,20,30,.06),0 12px 28px rgba(37,99,235,.14);transform:translateY(-1px);}
     .case-top{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink3);}
     .avatar{width:21px;height:21px;border-radius:50%;background:var(--p);color:#fff;font-size:9.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
     .case-top .name{font-weight:600;color:var(--ink2);}
@@ -194,7 +194,7 @@
     <a class="np" href="#start">はじめて</a>
     <a class="np" href="#setup">設定手順</a>
     <a class="np" href="#archive">発信</a>
-    <a class="np cta" href="./register.html">＋ 事例を登録</a>
+    <a class="np cta" href="./register-hub.html">＋ 事例を登録</a>
   </div>
 </nav>
 
@@ -334,7 +334,7 @@
       <h2>あなたの事例・ツール、3分で登録できるよ ✍️</h2>
       <p>シンプル投稿はタイトル＋内容＋タグの3つだけ。削減時間は「AIなしでやったら何分」−「実際何分」。登録は評価にも繋がる。</p>
     </div>
-    <a class="btn" href="./register.html">＋ 登録する</a>
+    <a class="btn" href="./register-hub.html">＋ 登録する</a>
   </div>
 
 </main>
@@ -345,7 +345,7 @@
     <a href="./role/pm.html">📊 PM・管理向け</a>
     <a href="./dashboard.html">📈 ダッシュボード</a>
     <a href="./workshop.html">📣 ワークショップ</a>
-    <a href="./register.html">＋ 事例を登録</a>
+    <a href="./register-hub.html">＋ 事例を登録</a>
     <a href="../">⏮ v1（旧版・読み取り専用）</a>
   </div>
   KONNEKT INTERNATIONAL · AI情報ハブ（社内限定・noindex）· presented by CORI 🤖
