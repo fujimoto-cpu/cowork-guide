@@ -191,7 +191,9 @@
 
 <script>
   // 動くデータ配線は既存のGASエンドポイント（cards.json 更新）を再利用＝ハブに自動反映
-  const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzu4-cn_x3D2nD_1F23VPN09H53TtBI_Itf5YL4jmIybKmGRa2m28u0T7d63ZF9QdzB/exec';
+  // 2026-08-01 差し替え：旧デプロイ(AKfycbzu4-cn…)はプロジェクト本体が行方不明になったため、
+  // KONNEKT-AI-HUB として作り直したプロジェクトの新デプロイに切り替えた。
+  const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxffr3ArU0h9RQVA37j7P3vMjs1cQ4nCfGEq9UMOOT5vD4km80NBKztxm8uwNmlol8B/exec';
 
   const fileInput=document.getElementById('file-input'), fileDrop=document.getElementById('file-drop'), fileName=document.getElementById('file-name');
   let selectedFile=null;

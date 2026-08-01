@@ -39,6 +39,11 @@ const SCENES = [
 
 const TAGS = ['デザイン', '自動化', '資料作成', 'SNS', '経費', 'カレンダー', '初心者向け', 'その他'];
 
+// Gemini のモデルは定期的に廃止される（旧 gemini-1.5-flash は 2026 年に完全 shutdown ＝ 404）。
+// 1つに固定すると廃止された瞬間に静かにフォールバック値（その他／document）へ落ちるので、
+// 生きているものが見つかるまで順に試す。先頭が新しい。
+const MODEL_CANDIDATES = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-flash-latest'];
+
 // ------------------------------------------------------------
 // メインエントリ
 // ------------------------------------------------------------
@@ -124,26 +129,108 @@ ${tagsList}
 必ず以下のJSON形式のみで返してください（説明不要）:
 {"scenes": ["scene-id"], "tags": ["タグ名"]}`;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const FALLBACK = { scenes: ['document'], tags: ['その他'] };
+  if (!apiKey) {
+    console.warn('GEMINI_API_KEY が未設定。分類をフォールバック値にした。');
+    return FALLBACK;
+  }
 
-  const response = UrlFetchApp.fetch(url, {
-    method: 'post',
-    headers: { 'Content-Type': 'application/json' },
-    payload: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 200, temperature: 0.1 },
-    }),
-    muteHttpExceptions: true,
+  for (var i = 0; i < MODEL_CANDIDATES.length; i++) {
+    const model = MODEL_CANDIDATES[i];
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    const response = UrlFetchApp.fetch(url, {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      payload: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 200, temperature: 0.1 },
+      }),
+      muteHttpExceptions: true,
+    });
+
+    const code = response.getResponseCode();
+    if (code !== 200) {
+      // 404 = そのモデルが廃止済み。次の候補へ。それ以外（400/403/429）もログに残して次へ。
+      console.warn(`Gemini ${model} が ${code} を返した: ${response.getContentText().slice(0, 200)}`);
+      continue;
+    }
+
+    try {
+      const json = JSON.parse(response.getContentText());
+      const text = json.candidates[0].content.parts[0].text.trim()
+        .replace(/```json\n?/g, '').replace(/```/g, '');
+      const parsed = JSON.parse(text);
+      if (parsed && parsed.scenes && parsed.tags) return parsed;
+    } catch (_) {
+      console.warn(`Gemini ${model} の返答を解釈できなかった。次の候補へ。`);
+    }
+  }
+
+  console.warn('Gemini のモデル候補が全滅。分類をフォールバック値にした。');
+  return FALLBACK;
+}
+
+// ------------------------------------------------------------
+// 2-b. セットアップ自己診断（GASエディタで手動実行する用）
+// ------------------------------------------------------------
+// 使い方：GASエディタ上部の関数リストで testSetup を選んで「実行」。
+// 下の「実行ログ」に、鍵4本の設定状況と Gemini が生きているかが出る。
+function testSetup() {
+  const props = PropertiesService.getScriptProperties();
+  const keys = ['GEMINI_API_KEY', 'NOTION_TOKEN', 'SLACK_WEBHOOK_URL', 'GITHUB_TOKEN'];
+  const lines = ['===== セットアップ診断 ====='];
+
+  keys.forEach(k => {
+    const v = props.getProperty(k);
+    lines.push(`${v ? '✅ 設定済み' : '❌ 未設定  '}  ${k}${v ? `（${v.length}文字）` : ''}`);
   });
 
-  try {
-    const json = JSON.parse(response.getContentText());
-    const text = json.candidates[0].content.parts[0].text.trim()
-      .replace(/```json\n?/g, '').replace(/```/g, '');
-    return JSON.parse(text);
-  } catch (_) {
-    return { scenes: ['document'], tags: ['その他'] };
+  // Gemini のモデルが生きているか（キーがある時だけ）
+  const apiKey = props.getProperty('GEMINI_API_KEY');
+  if (!apiKey) {
+    lines.push('— Gemini: APIキーが無いので確認をスキップ');
+  } else {
+    MODEL_CANDIDATES.forEach(model => {
+      const res = UrlFetchApp.fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          payload: JSON.stringify({ contents: [{ parts: [{ text: 'ping。"ok"だけ返して。' }] }] }),
+          muteHttpExceptions: true,
+        }
+      );
+      const code = res.getResponseCode();
+      const verdict = code === 200 ? '✅ 使える'
+        : code === 404 ? '❌ このモデルは廃止済み'
+        : code === 403 ? '❌ キーが無効か権限なし'
+        : code === 429 ? '⚠ 無料枠の上限'
+        : `❌ ${code}`;
+      lines.push(`Gemini ${model} → ${verdict}`);
+    });
   }
+
+  // Notion DB に届くか（トークンがある時だけ）
+  const notionToken = props.getProperty('NOTION_TOKEN');
+  if (!notionToken) {
+    lines.push('— Notion: トークンが無いので確認をスキップ');
+  } else {
+    const res = UrlFetchApp.fetch(`https://api.notion.com/v1/databases/${NOTION_DB_ID}`, {
+      headers: { 'Authorization': `Bearer ${notionToken}`, 'Notion-Version': '2022-06-28' },
+      muteHttpExceptions: true,
+    });
+    const code = res.getResponseCode();
+    lines.push(code === 200
+      ? '✅ Notion「AI活用事例DB」に届いた'
+      : code === 404
+        ? '❌ Notion 404 — DBにインテグレーションを接続していない（DBの ••• → 接続 → 追加）'
+        : `❌ Notion ${code}: ${res.getContentText().slice(0, 200)}`);
+  }
+
+  lines.push('============================');
+  console.log(lines.join('\n'));
+  return lines.join('\n');
 }
 
 // ------------------------------------------------------------
