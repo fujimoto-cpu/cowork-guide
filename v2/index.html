@@ -67,32 +67,38 @@
     .tstat{background:#fff;border:1px solid var(--border);border-radius:99px;padding:4px 12px;font-size:11.5px;font-weight:600;color:var(--ink2);}
     .tstat b{color:var(--p2);font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;}
     .covmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding-top:9px;}
-    /* フォルダ化：閉じてるときはラベルだけ・ホバー/タップで中身がポコポコ飛び出す */
-    .area{position:relative;background:var(--card);border:1px solid var(--border);border-radius:3px 12px 12px 12px;box-shadow:var(--shadow);padding:12px 13px;display:flex;flex-direction:column;cursor:pointer;transition:box-shadow .2s ease,transform .2s ease;}
-    .area::before{content:"";position:absolute;top:-8px;left:11px;width:38px;height:9px;background:var(--card);border:1px solid var(--border);border-bottom:none;border-radius:6px 6px 0 0;}
-    .area:hover,.area.open{box-shadow:0 4px 10px rgba(20,20,30,.08),0 16px 30px rgba(37,99,235,.16);transform:translateY(-2px);}
+    /* フォルダ化 v1.1（仕様書のイージング値を反映）：閉じてるときはラベルだけ・ホバー/タップで丸アイコンがポコポコ吹き出す */
+    .area{position:relative;background:var(--card);border:1px solid var(--border);border-radius:3px 12px 12px 12px;box-shadow:var(--shadow);padding:12px 13px;display:flex;flex-direction:column;cursor:pointer;
+      transition:transform .2s cubic-bezier(.22,1,.36,1),box-shadow .2s cubic-bezier(.22,1,.36,1);}
+    .area::before{content:"";position:absolute;top:-8px;left:11px;width:38px;height:9px;background:var(--card);border:1px solid var(--border);border-bottom:none;border-radius:6px 6px 0 0;transition:border-color .2s ease;}
+    .area:hover,.area.open{transform:translateY(-12px) scale(1.03);box-shadow:0 4px 10px rgba(20,20,30,.08),0 18px 34px rgba(37,99,235,.18);}
     .area:hover::before,.area.open::before{border-color:#A9C6FA;}
     .area .a-head{display:flex;align-items:center;font-size:11px;font-weight:600;color:var(--ink2);}
     .area .a-head .ic{font-size:14px;margin-right:3px;}
     .a-count{margin-left:auto;font-size:10px;font-weight:700;color:var(--p2);background:var(--tint);border-radius:99px;padding:1px 7px;}
     .a-chevron{margin-left:5px;font-size:8px;color:var(--ink3);display:inline-block;transition:transform .25s ease,color .25s ease;}
     .area:hover .a-chevron,.area.open .a-chevron{transform:rotate(180deg);color:var(--p);}
-    .tchip-wrap{display:flex;flex-direction:column;gap:6px;max-height:0;opacity:0;overflow:hidden;transition:max-height .34s cubic-bezier(.2,.9,.3,1),opacity .2s ease,margin-top .34s ease;}
-    .area:hover .tchip-wrap,.area.open .tchip-wrap{max-height:260px;opacity:1;margin-top:8px;}
-    .tchip{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;background:var(--tint);border:1px solid transparent;color:var(--p2);border-radius:8px;padding:4px 9px;cursor:pointer;
-      opacity:0;transform:translateX(-9px);transition:opacity .2s ease,transform .2s ease,border-color .12s ease;}
-    .area:hover .tchip,.area.open .tchip{opacity:1;transform:translateX(0);}
-    .tchip:nth-child(1){transition-delay:.03s;} .tchip:nth-child(2){transition-delay:.08s;}
-    .tchip:nth-child(3){transition-delay:.13s;} .tchip:nth-child(4){transition-delay:.18s;}
-    .tchip:nth-child(5){transition-delay:.23s;} .tchip:nth-child(6){transition-delay:.28s;}
-    .tchip:hover{border-color:var(--p);}
-    .tchip .ask{color:#B45309;font-size:9.5px;font-weight:700;}
     .area.empty{border-style:dashed;background:transparent;cursor:default;}
     .area.empty::before{display:none;}
+    .area.empty:hover{transform:none;box-shadow:none;}
     .area .hollow{font-size:10.5px;color:var(--ink3);line-height:1.5;margin-top:6px;}
-    @media (prefers-reduced-motion:reduce){.tchip-wrap,.tchip,.a-chevron,.area{transition:none!important;}
-      .tchip-wrap{max-height:none!important;opacity:1!important;margin-top:8px!important;}
-      .tchip{opacity:1!important;transform:none!important;}}
+
+    /* 丸アイコンの吹き出し（フォルダの外に浮くフライアウト・レイアウトを崩さない） */
+    .bubble-fly{position:fixed;z-index:110;display:none;}
+    .bubble-fly.show{display:block;}
+    .bubble-row{display:flex;gap:8px;background:#fff;border:1px solid var(--border);border-radius:18px;padding:9px 10px;box-shadow:0 12px 30px rgba(16,24,40,.18);max-width:min(72vw,320px);flex-wrap:wrap;}
+    .bubble{position:relative;width:38px;height:38px;flex-shrink:0;border-radius:50%;background:var(--tint);border:1.5px solid transparent;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;
+      transform:scale(0);opacity:0;transition:transform .22s cubic-bezier(.34,1.56,.64,1),opacity .16s ease,border-color .12s ease,box-shadow .12s ease;}
+    .bubble-fly.show .bubble{transform:scale(1);opacity:1;}
+    .bubble:nth-child(1){transition-delay:0s;} .bubble:nth-child(2){transition-delay:.08s;}
+    .bubble:nth-child(3){transition-delay:.16s;} .bubble:nth-child(4){transition-delay:.24s;}
+    .bubble:nth-child(5){transition-delay:.32s;} .bubble:nth-child(6){transition-delay:.4s;}
+    .bubble:hover,.bubble:focus-visible{border-color:var(--p);box-shadow:0 0 0 3px var(--p-light);outline:none;}
+    .bubble .ask-dot{position:absolute;top:-2px;right:-2px;width:11px;height:11px;border-radius:50%;background:#B45309;color:#fff;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+    @media (prefers-reduced-motion:reduce){.area,.bubble{transition:none!important;}
+      .area:hover,.area.open{transform:none!important;}
+      .bubble{transform:scale(1)!important;opacity:1!important;}}
+    @media (hover:none){.bubble-row{max-width:min(88vw,320px);}}
     .kind{font-size:9.5px;font-weight:700;border-radius:99px;padding:1px 8px;}
     .kind.common{background:var(--tint);color:var(--p2);}
     .kind.personal{background:#E6F6FB;color:#0E7490;}
@@ -445,35 +451,68 @@ function renderTools(){
     `<span class="tstat">🗺 カバー領域 <b>${covered.length}</b>/${AREAS.length}</span>`;
   document.getElementById("covmap").innerHTML=AREAS.map(a=>{
     const ts=TOOLS.filter(t=>(t.areas||[]).includes(a.id));
-    const inner=ts.length
-      ?`<div class="tchip-wrap">${ts.map(t=>`<span class="tchip" data-tool="${esc(t.id)}">${esc(t.icon)} ${esc(t.name)}${t.ask?' <span class="ask">❓</span>':""}</span>`).join("")}</div>`
-      :`<span class="hollow">🕳 ツール未開拓<br>→ 作るチャンス（事例は逆引きへ）</span>`;
-    return `<div class="area${ts.length?"":" empty"}"><span class="a-head"><span class="ic">${a.icon}</span>${esc(a.label)}${ts.length?`<span class="a-count">${ts.length}</span><span class="a-chevron">▾</span>`:""}</span>${inner}</div>`;
+    const inner=ts.length?"":`<span class="hollow">🕳 ツール未開拓<br>→ 作るチャンス（事例は逆引きへ）</span>`;
+    return `<div class="area${ts.length?"":" empty"}" data-area="${esc(a.id)}"><span class="a-head"><span class="ic">${a.icon}</span>${esc(a.label)}${ts.length?`<span class="a-count">${ts.length}</span><span class="a-chevron">▾</span>`:""}</span>${inner}</div>`;
   }).join("");
-  document.querySelectorAll("#covmap .tchip").forEach(el=>{
-    const t=TOOLS.find(x=>x.id===el.dataset.tool);
-    el.setAttribute("tabindex","0");
-    el.onclick=(e)=>{e.stopPropagation();hideTT();toolChipAction(t);};
-    el.addEventListener("mouseenter",()=>showTT(t,el));
-    el.addEventListener("mouseleave",hideTT);
-    el.addEventListener("focus",()=>showTT(t,el));
-    el.addEventListener("blur",hideTT);
-  });
-  /* フォルダ本体：タップ/Enterで開閉（スマホはホバーが無いため） */
+  /* フォルダ本体：ホバー(PC)で丸アイコンが浮き出る／タップ・Enter(スマホ・キーボード)で開閉ピン留め */
   document.querySelectorAll("#covmap .area:not(.empty)").forEach(areaEl=>{
+    const ts=TOOLS.filter(t=>(t.areas||[]).includes(areaEl.dataset.area));
     areaEl.setAttribute("tabindex","0");
     areaEl.setAttribute("role","button");
     areaEl.setAttribute("aria-expanded","false");
-    const toggle=()=>{
-      const open=areaEl.classList.toggle("open");
-      areaEl.setAttribute("aria-expanded",open?"true":"false");
-    };
-    areaEl.addEventListener("click",(e)=>{if(e.target.closest(".tchip"))return;toggle();});
-    areaEl.addEventListener("keydown",(e)=>{
-      if(e.target.closest(".tchip"))return;
-      if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle();}
+    areaEl.addEventListener("mouseenter",()=>{cancelHideBubbles();showBubbles(areaEl,ts);});
+    areaEl.addEventListener("mouseleave",()=>{if(areaEl!==openAreaEl)scheduleHideBubbles();});
+    areaEl.addEventListener("focus",()=>{cancelHideBubbles();showBubbles(areaEl,ts);});
+    areaEl.addEventListener("blur",()=>{if(areaEl!==openAreaEl)scheduleHideBubbles();});
+    areaEl.addEventListener("click",()=>{
+      if(areaEl===openAreaEl){closeOpenArea();return;}
+      closeOpenArea();
+      areaEl.classList.add("open");areaEl.setAttribute("aria-expanded","true");openAreaEl=areaEl;
+      cancelHideBubbles();showBubbles(areaEl,ts);
     });
+    areaEl.addEventListener("keydown",(e)=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();areaEl.click();}});
   });
+}
+
+/* ===== 丸アイコンの吹き出し（フォルダからポコポコ・仕様書05のイージング反映） ===== */
+let openAreaEl=null,bubbleHideTimer=null;
+const bubbleFly=document.createElement("div");bubbleFly.className="bubble-fly";
+bubbleFly.innerHTML='<div class="bubble-row"></div>';document.body.appendChild(bubbleFly);
+const bubbleRow=bubbleFly.querySelector(".bubble-row");
+bubbleFly.addEventListener("mouseenter",cancelHideBubbles);
+bubbleFly.addEventListener("mouseleave",()=>{if(!openAreaEl)scheduleHideBubbles();});
+function cancelHideBubbles(){if(bubbleHideTimer){clearTimeout(bubbleHideTimer);bubbleHideTimer=null;}}
+function scheduleHideBubbles(){cancelHideBubbles();bubbleHideTimer=setTimeout(hideBubbles,170);}
+function closeOpenArea(){
+  if(openAreaEl){openAreaEl.classList.remove("open");openAreaEl.setAttribute("aria-expanded","false");openAreaEl=null;}
+  hideBubbles();
+}
+function showBubbles(areaEl,ts){
+  bubbleFly.classList.remove("show");
+  bubbleRow.innerHTML=ts.map(t=>`<span class="bubble" data-tool="${esc(t.id)}" tabindex="0" title="${esc(t.name)}">${esc(t.icon)}${t.ask?'<span class="ask-dot">?</span>':""}</span>`).join("");
+  positionBubbleFly(areaEl);
+  requestAnimationFrame(()=>bubbleFly.classList.add("show"));
+  bubbleRow.querySelectorAll(".bubble").forEach(b=>{
+    const t=ts.find(x=>x.id===b.dataset.tool);
+    b.onclick=(e)=>{e.stopPropagation();hideTT();toolChipAction(t);};
+    b.addEventListener("mouseenter",()=>showTT(t,b));
+    b.addEventListener("mouseleave",hideTT);
+    b.addEventListener("focus",()=>showTT(t,b));
+    b.addEventListener("blur",hideTT);
+    b.addEventListener("keydown",(e)=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toolChipAction(t);}});
+  });
+}
+function hideBubbles(){bubbleFly.classList.remove("show");hideTT();}
+function positionBubbleFly(areaEl){
+  const r=areaEl.getBoundingClientRect();
+  bubbleFly.style.display="block";
+  const w=bubbleFly.offsetWidth,h=bubbleFly.offsetHeight;
+  let x=r.right+10,y=r.top+r.height/2-h/2;
+  if(x+w>window.innerWidth-8){x=r.left;y=r.bottom+8;}
+  x=Math.max(8,Math.min(x,window.innerWidth-w-8));
+  y=Math.max(8,Math.min(y,window.innerHeight-h-8));
+  bubbleFly.style.left=x+"px";bubbleFly.style.top=y+"px";
+  bubbleFly.style.display="";
 }
 
 /* ホバー時の補足ポップアップ */
