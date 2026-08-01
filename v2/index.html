@@ -66,22 +66,33 @@
     .tool-stats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
     .tstat{background:#fff;border:1px solid var(--border);border-radius:99px;padding:4px 12px;font-size:11.5px;font-weight:600;color:var(--ink2);}
     .tstat b{color:var(--p2);font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;}
-    .covmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding-top:9px;}
-    /* フォルダ化 v1.1（仕様書のイージング値を反映）：閉じてるときはラベルだけ・ホバー/タップで丸アイコンがポコポコ吹き出す */
-    .area{position:relative;background:var(--card);border:1px solid var(--border);border-radius:3px 12px 12px 12px;box-shadow:var(--shadow);padding:12px 13px;display:flex;flex-direction:column;cursor:pointer;
+    .covmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;padding-top:14px;}
+    /* フォルダ化 v2（仕様書04画面構成に寄せる）：カテゴリごとに色/質感を持つ大きめフォルダ。閉じてるときはラベルだけ・ホバー/タップで丸アイコンがポコポコ吹き出す */
+    .area{position:relative;border-radius:6px 20px 20px 20px;padding:24px 16px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;
+      min-height:148px;cursor:pointer;color:#fff;box-shadow:0 2px 6px rgba(20,20,30,.10),0 14px 28px rgba(20,20,30,.14);
+      background-image:linear-gradient(155deg,var(--c1),var(--c2)),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-blend-mode:normal,overlay;
       transition:transform .2s cubic-bezier(.22,1,.36,1),box-shadow .2s cubic-bezier(.22,1,.36,1);}
-    .area::before{content:"";position:absolute;top:-8px;left:11px;width:38px;height:9px;background:var(--card);border:1px solid var(--border);border-bottom:none;border-radius:6px 6px 0 0;transition:border-color .2s ease;}
-    .area:hover,.area.open{transform:translateY(-12px) scale(1.03);box-shadow:0 4px 10px rgba(20,20,30,.08),0 18px 34px rgba(37,99,235,.18);}
-    .area:hover::before,.area.open::before{border-color:#A9C6FA;}
-    .area .a-head{display:flex;align-items:center;font-size:11px;font-weight:600;color:var(--ink2);}
-    .area .a-head .ic{font-size:14px;margin-right:3px;}
-    .a-count{margin-left:auto;font-size:10px;font-weight:700;color:var(--p2);background:var(--tint);border-radius:99px;padding:1px 7px;}
-    .a-chevron{margin-left:5px;font-size:8px;color:var(--ink3);display:inline-block;transition:transform .25s ease,color .25s ease;}
-    .area:hover .a-chevron,.area.open .a-chevron{transform:rotate(180deg);color:var(--p);}
-    .area.empty{border-style:dashed;background:transparent;cursor:default;}
+    .area::before{content:"";position:absolute;top:-10px;left:14px;width:44%;min-width:52px;height:13px;border-radius:8px 8px 0 0;
+      background-image:linear-gradient(155deg,var(--c1),var(--c2));opacity:.92;}
+    .area:hover,.area.open{transform:translateY(-12px) scale(1.03);box-shadow:0 6px 14px rgba(20,20,30,.14),0 20px 38px rgba(20,20,30,.22);}
+    .area[data-area="schedule"]{--c1:#5B9BE8;--c2:#2F5FC4;}
+    .area[data-area="create"]{--c1:#E3B056;--c2:#B9812B;}
+    .area[data-area="minutes"]{--c1:#3B4A6B;--c2:#1E2740;}
+    .area[data-area="money"]{--c1:#3FAE7E;--c2:#1F7E56;}
+    .area[data-area="research"]{--c1:#34B4BE;--c2:#0E7F88;}
+    .area[data-area="comms"]{--c1:#E06E93;--c2:#B23B60;}
+    .a-face{font-size:38px;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.22));}
+    .a-label{font-size:13.5px;font-weight:700;line-height:1.35;}
+    .a-count{position:absolute;top:11px;right:12px;font-size:10px;font-weight:700;background:rgba(255,255,255,.24);border-radius:99px;padding:2px 9px;}
+    .a-chevron{position:absolute;top:12px;left:14px;font-size:9px;color:rgba(255,255,255,.85);display:inline-block;transition:transform .25s ease;}
+    .area:hover .a-chevron,.area.open .a-chevron{transform:rotate(180deg);}
+    .area.empty{background-image:none;background-color:var(--card);border:1.5px dashed var(--border);color:var(--ink3);box-shadow:none;cursor:default;}
     .area.empty::before{display:none;}
     .area.empty:hover{transform:none;box-shadow:none;}
-    .area .hollow{font-size:10.5px;color:var(--ink3);line-height:1.5;margin-top:6px;}
+    .area.empty .a-face{font-size:26px;filter:none;opacity:.6;}
+    .area .hollow{font-size:10.5px;color:var(--ink3);line-height:1.5;}
+    .a-detail-hint{font-size:9.5px;color:rgba(255,255,255,.75);}
 
     /* 丸アイコンの吹き出し（フォルダの外に浮くフライアウト・レイアウトを崩さない） */
     .bubble-fly{position:fixed;z-index:110;display:none;}
@@ -192,6 +203,18 @@
     .modal{background:#fff;border-radius:16px;max-width:560px;width:100%;padding:24px 26px;position:relative;max-height:84vh;overflow-y:auto;}
     .modal .x{position:absolute;top:12px;right:14px;border:none;background:var(--tint);border-radius:50%;width:30px;height:30px;font-size:15px;cursor:pointer;color:var(--ink2);font-family:inherit;}
     .modal h3{font-size:15px;font-weight:700;margin-bottom:10px;padding-right:30px;}
+    .ad-tool{border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-bottom:8px;cursor:pointer;transition:border-color .12s ease;}
+    .ad-tool:hover{border-color:var(--p);}
+    .ad-tool-head{display:flex;align-items:center;gap:6px;font-size:13px;}
+    .ad-tool-head .ic{font-size:15px;}
+    .ad-tool-head .ask{color:#B45309;font-size:10px;font-weight:700;}
+    .ad-tool-head .go{margin-left:auto;color:var(--p);font-weight:600;font-size:11px;}
+    .ad-tool-sub{font-size:11px;color:var(--ink3);margin-top:3px;}
+    .ad-cases{margin-top:8px;display:flex;flex-direction:column;gap:5px;padding-top:8px;border-top:1px dashed var(--border);}
+    .ad-case{background:var(--tint2);border-radius:8px;padding:6px 10px;font-size:11.5px;cursor:pointer;}
+    .ad-case:hover{background:var(--tint);}
+    .ad-case b{font-weight:600;}
+    .ad-case .m{display:block;color:var(--ink3);font-size:10px;margin-top:1px;}
     .person-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink2);background:var(--tint);border-radius:99px;padding:3px 12px;}
     .person-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--p);}
     .cmd-box{background:#101828;color:#E5E7EB;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.7;border-radius:10px;padding:12px 14px;white-space:pre-wrap;word-break:break-word;}
@@ -451,27 +474,54 @@ function renderTools(){
     `<span class="tstat">🗺 カバー領域 <b>${covered.length}</b>/${AREAS.length}</span>`;
   document.getElementById("covmap").innerHTML=AREAS.map(a=>{
     const ts=TOOLS.filter(t=>(t.areas||[]).includes(a.id));
-    const inner=ts.length?"":`<span class="hollow">🕳 ツール未開拓<br>→ 作るチャンス（事例は逆引きへ）</span>`;
-    return `<div class="area${ts.length?"":" empty"}" data-area="${esc(a.id)}"><span class="a-head"><span class="ic">${a.icon}</span>${esc(a.label)}${ts.length?`<span class="a-count">${ts.length}</span><span class="a-chevron">▾</span>`:""}</span>${inner}</div>`;
+    return ts.length
+      ?`<div class="area" data-area="${esc(a.id)}"><span class="a-count">${ts.length}</span><span class="a-chevron">▾</span><span class="a-face">${a.icon}</span><span class="a-label">${esc(a.label)}</span><span class="a-detail-hint">クリックで詳細</span></div>`
+      :`<div class="area empty" data-area="${esc(a.id)}"><span class="a-face">${a.icon}</span><span class="a-label">${esc(a.label)}</span><span class="hollow">🕳 ツール未開拓<br>→ 作るチャンス（事例は逆引きへ）</span></div>`;
   }).join("");
-  /* フォルダ本体：ホバー(PC)で丸アイコンが浮き出る／タップ・Enter(スマホ・キーボード)で開閉ピン留め */
+  /* フォルダ本体：PC=ホバーで丸アイコン・クリックで詳細／スマホ=タップで直接詳細（仕様書06レスポンシブ） */
+  const hoverCapable=matchMedia("(hover:hover) and (pointer:fine)").matches;
   document.querySelectorAll("#covmap .area:not(.empty)").forEach(areaEl=>{
     const ts=TOOLS.filter(t=>(t.areas||[]).includes(areaEl.dataset.area));
+    const areaDef=AREAS.find(a=>a.id===areaEl.dataset.area);
     areaEl.setAttribute("tabindex","0");
     areaEl.setAttribute("role","button");
     areaEl.setAttribute("aria-expanded","false");
-    areaEl.addEventListener("mouseenter",()=>{cancelHideBubbles();showBubbles(areaEl,ts);});
-    areaEl.addEventListener("mouseleave",()=>{if(areaEl!==openAreaEl)scheduleHideBubbles();});
-    areaEl.addEventListener("focus",()=>{cancelHideBubbles();showBubbles(areaEl,ts);});
-    areaEl.addEventListener("blur",()=>{if(areaEl!==openAreaEl)scheduleHideBubbles();});
-    areaEl.addEventListener("click",()=>{
-      if(areaEl===openAreaEl){closeOpenArea();return;}
-      closeOpenArea();
-      areaEl.classList.add("open");areaEl.setAttribute("aria-expanded","true");openAreaEl=areaEl;
-      cancelHideBubbles();showBubbles(areaEl,ts);
-    });
+    if(hoverCapable){
+      areaEl.addEventListener("mouseenter",()=>{cancelHideBubbles();showBubbles(areaEl,ts);});
+      areaEl.addEventListener("mouseleave",()=>{if(areaEl!==openAreaEl)scheduleHideBubbles();});
+      areaEl.addEventListener("focus",()=>{cancelHideBubbles();showBubbles(areaEl,ts);});
+      areaEl.addEventListener("blur",()=>{if(areaEl!==openAreaEl)scheduleHideBubbles();});
+      areaEl.addEventListener("click",()=>{closeOpenArea();openAreaDetail(areaDef,ts);});
+    }else{
+      areaEl.addEventListener("click",()=>{openAreaDetail(areaDef,ts);});
+    }
     areaEl.addEventListener("keydown",(e)=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();areaEl.click();}});
   });
+}
+
+/* フォルダクリック＝詳細ビュー（仕様書⑤・静的サイトなので別ページでなくモーダルで代替） */
+function openAreaDetail(areaDef,ts){
+  hideBubbles();
+  const toolRows=ts.map(t=>{
+    const relatedCases=CARDS.filter(c=>!isTest(c)&&TOOL_OF[c.id]===t.id);
+    const caseRows=relatedCases.map(c=>`
+      <div class="ad-case" data-case="${esc(c.id)}"><b>${esc(c.title)}</b><span class="m">${esc(c.person)}${c.monthly_saved_minutes?" ・ "+esc(fmtMonthly(c.monthly_saved_minutes)):""}</span></div>`).join("");
+    return `<div class="ad-tool" data-tool="${esc(t.id)}">
+      <div class="ad-tool-head"><span class="ic">${esc(t.icon)}</span><b>${esc(t.name)}</b>${t.ask?' <span class="ask">❓</span>':""}<span class="go">${t.url?"開く →":"詳細 →"}</span></div>
+      <div class="ad-tool-sub">${esc(t.dekiru)}　・　作った人: ${esc(t.owner)}</div>
+      ${caseRows?`<div class="ad-cases">${caseRows}</div>`:""}
+    </div>`;
+  }).join("");
+  document.getElementById("modal-body").innerHTML=
+    `<h3>${esc(areaDef.icon+" "+areaDef.label)}</h3>`+
+    `<p style="font-size:12px;color:var(--ink3);margin-bottom:14px;">このカテゴリのツール ${ts.length}個・関連する事例へもここから飛べるよ</p>`+
+    toolRows;
+  document.getElementById("modal-body").querySelectorAll(".ad-tool").forEach(el=>{
+    const t=ts.find(x=>x.id===el.dataset.tool);
+    el.querySelector(".ad-tool-head").onclick=()=>toolChipAction(t);
+    el.querySelectorAll(".ad-case").forEach(ce=>{ce.onclick=(e)=>{e.stopPropagation();closeModal();openCase(ce.dataset.case);};});
+  });
+  document.getElementById("backdrop").classList.add("open");
 }
 
 /* ===== 丸アイコンの吹き出し（フォルダからポコポコ・仕様書05のイージング反映） ===== */
