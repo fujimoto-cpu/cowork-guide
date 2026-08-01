@@ -66,50 +66,15 @@
     .tool-stats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
     .tstat{background:#fff;border:1px solid var(--border);border-radius:99px;padding:4px 12px;font-size:11.5px;font-weight:600;color:var(--ink2);}
     .tstat b{color:var(--p2);font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;}
-    .covmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;padding-top:14px;}
-    /* フォルダ化 v2（仕様書04画面構成に寄せる）：カテゴリごとに色/質感を持つ大きめフォルダ。閉じてるときはラベルだけ・ホバー/タップで丸アイコンがポコポコ吹き出す */
-    .area{position:relative;border-radius:6px 20px 20px 20px;padding:24px 16px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;
-      min-height:148px;cursor:pointer;color:#fff;box-shadow:0 2px 6px rgba(20,20,30,.10),0 14px 28px rgba(20,20,30,.14);
-      background-image:linear-gradient(155deg,var(--c1),var(--c2)),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-blend-mode:normal,overlay;
-      transition:transform .2s cubic-bezier(.22,1,.36,1),box-shadow .2s cubic-bezier(.22,1,.36,1);}
-    .area::before{content:"";position:absolute;top:-10px;left:14px;width:44%;min-width:52px;height:13px;border-radius:8px 8px 0 0;
-      background-image:linear-gradient(155deg,var(--c1),var(--c2));opacity:.92;}
-    .area:hover,.area.open{transform:translateY(-12px) scale(1.03);box-shadow:0 6px 14px rgba(20,20,30,.14),0 20px 38px rgba(20,20,30,.22);}
-    .area[data-area="schedule"]{--c1:#5B9BE8;--c2:#2F5FC4;}
-    .area[data-area="create"]{--c1:#E3B056;--c2:#B9812B;}
-    .area[data-area="minutes"]{--c1:#3B4A6B;--c2:#1E2740;}
-    .area[data-area="money"]{--c1:#3FAE7E;--c2:#1F7E56;}
-    .area[data-area="research"]{--c1:#34B4BE;--c2:#0E7F88;}
-    .area[data-area="comms"]{--c1:#E06E93;--c2:#B23B60;}
-    .a-face{font-size:38px;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.22));}
-    .a-label{font-size:13.5px;font-weight:700;line-height:1.35;}
-    .a-count{position:absolute;top:11px;right:12px;font-size:10px;font-weight:700;background:rgba(255,255,255,.24);border-radius:99px;padding:2px 9px;}
-    .a-chevron{position:absolute;top:12px;left:14px;font-size:9px;color:rgba(255,255,255,.85);display:inline-block;transition:transform .25s ease;}
-    .area:hover .a-chevron,.area.open .a-chevron{transform:rotate(180deg);}
-    .area.empty{background-image:none;background-color:var(--card);border:1.5px dashed var(--border);color:var(--ink3);box-shadow:none;cursor:default;}
-    .area.empty::before{display:none;}
-    .area.empty:hover{transform:none;box-shadow:none;}
-    .area.empty .a-face{font-size:26px;filter:none;opacity:.6;}
+    .covmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+    .area{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 13px;display:flex;flex-direction:column;gap:6px;}
+    .area .a-head{font-size:11px;font-weight:600;color:var(--ink2);}
+    .area .a-head .ic{font-size:14px;margin-right:3px;}
+    .tchip{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;background:var(--tint);border:1px solid transparent;color:var(--p2);border-radius:8px;padding:4px 9px;cursor:pointer;transition:.12s;}
+    .tchip:hover{border-color:var(--p);}
+    .tchip .ask{color:#B45309;font-size:9.5px;font-weight:700;}
+    .area.empty{border-style:dashed;background:transparent;}
     .area .hollow{font-size:10.5px;color:var(--ink3);line-height:1.5;}
-    .a-detail-hint{font-size:9.5px;color:rgba(255,255,255,.75);}
-
-    /* 丸アイコンの吹き出し（フォルダの外に浮くフライアウト・レイアウトを崩さない） */
-    .bubble-fly{position:fixed;z-index:110;display:none;}
-    .bubble-fly.show{display:block;}
-    .bubble-row{display:flex;gap:8px;background:#fff;border:1px solid var(--border);border-radius:18px;padding:9px 10px;box-shadow:0 12px 30px rgba(16,24,40,.18);max-width:min(72vw,320px);flex-wrap:wrap;}
-    .bubble{position:relative;width:38px;height:38px;flex-shrink:0;border-radius:50%;background:var(--tint);border:1.5px solid transparent;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;
-      transform:scale(0);opacity:0;transition:transform .22s cubic-bezier(.34,1.56,.64,1),opacity .16s ease,border-color .12s ease,box-shadow .12s ease;}
-    .bubble-fly.show .bubble{transform:scale(1);opacity:1;}
-    .bubble:nth-child(1){transition-delay:0s;} .bubble:nth-child(2){transition-delay:.08s;}
-    .bubble:nth-child(3){transition-delay:.16s;} .bubble:nth-child(4){transition-delay:.24s;}
-    .bubble:nth-child(5){transition-delay:.32s;} .bubble:nth-child(6){transition-delay:.4s;}
-    .bubble:hover,.bubble:focus-visible{border-color:var(--p);box-shadow:0 0 0 3px var(--p-light);outline:none;}
-    .bubble .ask-dot{position:absolute;top:-2px;right:-2px;width:11px;height:11px;border-radius:50%;background:#B45309;color:#fff;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;}
-    @media (prefers-reduced-motion:reduce){.area,.bubble{transition:none!important;}
-      .area:hover,.area.open{transform:none!important;}
-      .bubble{transform:scale(1)!important;opacity:1!important;}}
-    @media (hover:none){.bubble-row{max-width:min(88vw,320px);}}
     .kind{font-size:9.5px;font-weight:700;border-radius:99px;padding:1px 8px;}
     .kind.common{background:var(--tint);color:var(--p2);}
     .kind.personal{background:#E6F6FB;color:#0E7490;}
@@ -123,22 +88,24 @@
     .tchip.dim{opacity:.22;}
     .notice{font-size:11px;color:var(--ink3);margin-top:8px;}
 
-    /* ===== 逆引き（2ペイン） ===== */
-    .rev{display:grid;grid-template-columns:225px 1fr;gap:14px;align-items:start;}
-    .rev-list{display:flex;flex-direction:column;gap:5px;}
-    .ritem{font-size:12.5px;font-weight:600;color:var(--ink2);padding:8px 13px;border-radius:9px;cursor:pointer;border:none;background:transparent;text-align:left;font-family:inherit;transition:.12s;}
-    .ritem:hover{background:var(--tint);color:var(--p);}
-    .ritem.on{background:var(--p);color:#fff;}
-    .rev-pane{background:var(--tint2);border-radius:var(--radius);padding:14px 15px;min-height:180px;}
-    .rgroup{font-size:10px;font-weight:700;color:var(--p);letter-spacing:.12em;margin:4px 0 6px;}
-    .rgroup:first-child{margin-top:0;}
-    .rcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;}
-    .rcard{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-size:11.5px;cursor:pointer;transition:.12s;line-height:1.6;}
-    .rcard:hover{border-color:var(--p);}
-    .rcard b{font-size:12px;font-weight:600;color:var(--ink);}
-    .rcard .m{color:var(--ink3);font-size:10.5px;display:block;}
-    .rcard .go{color:var(--p);font-weight:600;font-size:10.5px;}
+    /* ===== 「〇〇したい」クイックフィルタ（旧2ペイン逆引きを統合・2026-08-01） ===== */
+    .want-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+    .wantbtn{font-size:12px;font-weight:600;color:var(--ink2);padding:7px 13px;border-radius:99px;cursor:pointer;border:1px solid var(--border);background:#fff;text-align:left;font-family:inherit;transition:.12s;}
+    .wantbtn:hover{border-color:var(--p);color:var(--p);}
+    .wantbtn.on{background:var(--p);color:#fff;border-color:var(--p);}
+    .want-extra{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:14px;min-height:22px;}
+    .we-label{font-size:10.5px;color:var(--ink3);font-weight:600;}
+    .wchip{font-size:11px;font-weight:600;background:var(--tint);color:var(--p2);border-radius:8px;padding:4px 9px;cursor:pointer;}
+    .wchip:hover{background:var(--p-light);}
     .rempty{font-size:12px;color:var(--ink3);}
+
+    /* ===== ホーム/タブ切替（04+05→ガイド・06→発信・2026-08-01） ===== */
+    .backhome{font-size:12px;font-weight:600;color:var(--ink2);background:#fff;border:1px solid var(--border);border-radius:9px;padding:7px 14px;cursor:pointer;font-family:inherit;margin:20px 0 14px;}
+    .backhome:hover{border-color:var(--p);color:var(--p);}
+    .subtabs{display:flex;gap:6px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px;}
+    .subtab{font-size:13px;font-weight:600;color:var(--ink2);background:transparent;border:none;border-radius:9px;padding:8px 14px;cursor:pointer;font-family:inherit;}
+    .subtab:hover{background:var(--tint);}
+    .subtab.on{background:var(--p);color:#fff;}
 
     /* controls */
     .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
@@ -203,18 +170,6 @@
     .modal{background:#fff;border-radius:16px;max-width:560px;width:100%;padding:24px 26px;position:relative;max-height:84vh;overflow-y:auto;}
     .modal .x{position:absolute;top:12px;right:14px;border:none;background:var(--tint);border-radius:50%;width:30px;height:30px;font-size:15px;cursor:pointer;color:var(--ink2);font-family:inherit;}
     .modal h3{font-size:15px;font-weight:700;margin-bottom:10px;padding-right:30px;}
-    .ad-tool{border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-bottom:8px;cursor:pointer;transition:border-color .12s ease;}
-    .ad-tool:hover{border-color:var(--p);}
-    .ad-tool-head{display:flex;align-items:center;gap:6px;font-size:13px;}
-    .ad-tool-head .ic{font-size:15px;}
-    .ad-tool-head .ask{color:#B45309;font-size:10px;font-weight:700;}
-    .ad-tool-head .go{margin-left:auto;color:var(--p);font-weight:600;font-size:11px;}
-    .ad-tool-sub{font-size:11px;color:var(--ink3);margin-top:3px;}
-    .ad-cases{margin-top:8px;display:flex;flex-direction:column;gap:5px;padding-top:8px;border-top:1px dashed var(--border);}
-    .ad-case{background:var(--tint2);border-radius:8px;padding:6px 10px;font-size:11.5px;cursor:pointer;}
-    .ad-case:hover{background:var(--tint);}
-    .ad-case b{font-weight:600;}
-    .ad-case .m{display:block;color:var(--ink3);font-size:10px;margin-top:1px;}
     .person-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink2);background:var(--tint);border-radius:99px;padding:3px 12px;}
     .person-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--p);}
     .cmd-box{background:#101828;color:#E5E7EB;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.7;border-radius:10px;padding:12px 14px;white-space:pre-wrap;word-break:break-word;}
@@ -222,9 +177,6 @@
     .text-xs{font-size:11px;}.font-semibold{font-weight:600;}.text-gray-600{color:var(--ink2);}
 
     @media (max-width:720px){
-      .rev{grid-template-columns:1fr;}
-      .rev-list{flex-direction:row;flex-wrap:wrap;}
-      .ritem{border:1px solid var(--border);}
       .count{margin-left:0;width:100%;}
       .hero .net{display:none;}
     }
@@ -236,12 +188,10 @@
 <nav class="nav">
   <div class="nav-inner">
     <span class="logo"><span class="dia">🔷</span> KONNEKT AI情報ハブ</span>
-    <a class="np" href="#tools">ツール</a>
-    <a class="np" href="#reverse">〇〇したい</a>
-    <a class="np" href="#cases">活用事例</a>
-    <a class="np" href="#start">はじめて</a>
-    <a class="np" href="#setup">設定手順</a>
-    <a class="np" href="#archive">発信</a>
+    <a class="np" href="#tools" onclick="showHome();return true;">ツール</a>
+    <a class="np" href="#cases" onclick="showHome();return true;">〇〇したい</a>
+    <a class="np" href="javascript:void(0)" onclick="showTab('guide')">ガイド</a>
+    <a class="np" href="javascript:void(0)" onclick="showTab('archive')">発信</a>
     <a class="np cta" href="./register-hub.html">＋ 事例を登録</a>
   </div>
 </nav>
@@ -269,12 +219,14 @@
 
 <main class="wrap">
 
+  <div id="home-view">
+
   <!-- ===== 01 ツールの全体感 ===== -->
   <section id="tools">
     <div class="num-head">
       <span class="sec-badge">01</span>
       <div class="titles">
-        <h2>社内ツールの全体感</h2>
+        <h2>社内ツール</h2>
         <span class="sec-note">何ができて・どこにあるか。カーソルで詳細・クリックで開く（❓は場所確認中）</span>
       </div>
     </div>
@@ -283,30 +235,17 @@
     <p class="notice">空きエリアは「まだツールがない＝作るチャンス」。作る前に、まずここで検索してね。</p>
   </section>
 
-  <!-- ===== 02 逆引き ===== -->
-  <section id="reverse">
+  <!-- ===== 02 〇〇したいから探す（旧02+03を統合） ===== -->
+  <section id="cases">
     <div class="num-head">
       <span class="sec-badge">02</span>
       <div class="titles">
         <h2>「〇〇したい」から探す</h2>
-        <span class="sec-note">やりたいことを選ぶ → 使えるツール・事例・ガイドが出る</span>
+        <span class="sec-note">やりたいことを選ぶと下の事例が絞り込まれる。※一部の削減値は本人確認前の推定（登録し直し歓迎）</span>
       </div>
     </div>
-    <div class="rev">
-      <div class="rev-list" id="rev-list"></div>
-      <div class="rev-pane" id="rev-pane"></div>
-    </div>
-  </section>
-
-  <!-- ===== 03 活用事例 ===== -->
-  <section id="cases">
-    <div class="num-head">
-      <span class="sec-badge">03</span>
-      <div class="titles">
-        <h2>活用事例</h2>
-        <span class="sec-note">みんながAIで何をしたか。※一部の削減値は本人確認前の推定（登録し直し歓迎）</span>
-      </div>
-    </div>
+    <div class="want-row" id="want-row"></div>
+    <div class="want-extra" id="want-extra"></div>
     <div class="controls">
       <span class="ctrl-label">並べ替え</span>
       <button class="sortbtn on" id="sort-new" onclick="setSort('new')">新しい順</button>
@@ -321,68 +260,69 @@
     <div class="cases" id="cases-grid"></div>
   </section>
 
-  <!-- ===== 04 はじめてのAI ===== -->
-  <section id="start">
-    <div class="num-head">
-      <span class="sec-badge">04</span>
-      <div class="titles">
-        <h2>はじめてのAI（新規入社者向け）</h2>
-        <span class="sec-note">最初の4ステップ・迷ったら藤本まで</span>
-      </div>
-    </div>
-    <div class="steps">
-      <div class="step"><div class="n">1</div><h3>📥 アプリをダウンロード</h3><p>Claude（Cowork）のデスクトップアプリを入れる。</p></div>
-      <div class="step"><div class="n">2</div><h3>🔑 会社メールでログイン</h3><p>@konnekt-i.com のアカウントでサインイン。</p></div>
-      <div class="step"><div class="n">3</div><h3>🔌 ツールを接続</h3><p>Slack・Notion・カレンダー等を接続（下の設定手順を参照）。</p></div>
-      <div class="step"><div class="n">4</div><h3>💬 話しかけてみる</h3><p>「今日の予定まとめて」から。活用事例を真似するのが最短。</p></div>
-    </div>
-    <div class="grid3" style="margin-top:10px;">
-      <a class="doc" href="../docs/cowork-onboarding.pdf" target="_blank" rel="noopener"><span class="ic">🚀</span><span><span class="t">オンボーディングガイド</span><br><span class="s">PDF・最初にこれ1本</span></span><span class="arrow">→</span></a>
-      <a class="doc" href="../docs/complete-guide.pdf" target="_blank" rel="noopener"><span class="ic">📘</span><span><span class="t">Cowork 完全ガイド</span><br><span class="s">PDF・ぜんぶ載ってる保存版</span></span><span class="arrow">→</span></a>
-    </div>
-  </section>
-
-  <!-- ===== 05 設定手順 ===== -->
-  <section id="setup">
-    <div class="num-head">
-      <span class="sec-badge">05</span>
-      <div class="titles">
-        <h2>設定手順（社員向け）</h2>
-        <span class="sec-note">ツール別の接続・設定ガイド</span>
-      </div>
-    </div>
-    <div class="grid3">
-      <a class="doc" href="../docs/shopify-connection.pdf" target="_blank" rel="noopener"><span class="ic">🛍</span><span><span class="t">Shopify 接続ガイド</span><br><span class="s">PDF</span></span><span class="arrow">→</span></a>
-      <a class="doc" href="../docs/shopify-report-guide.pdf" target="_blank" rel="noopener"><span class="ic">📊</span><span><span class="t">Shopify 売上レポート</span><br><span class="s">PDF</span></span><span class="arrow">→</span></a>
-      <a class="doc" href="../docs/google-meet-guide.pdf" target="_blank" rel="noopener"><span class="ic">📋</span><span><span class="t">Google Meet 議事録ガイド</span><br><span class="s">PDF</span></span><span class="arrow">→</span></a>
-      <a class="doc" href="../docs/pm-guide.pdf" target="_blank" rel="noopener"><span class="ic">👔</span><span><span class="t">PM向けガイド</span><br><span class="s">PDF</span></span><span class="arrow">→</span></a>
-      <a class="doc" href="../docs/pm-30cases.pdf" target="_blank" rel="noopener"><span class="ic">💼</span><span><span class="t">PM 30事例集</span><br><span class="s">PDF</span></span><span class="arrow">→</span></a>
-    </div>
-  </section>
-
-  <!-- ===== 06 発信アーカイブ ===== -->
-  <section id="archive">
-    <div class="num-head">
-      <span class="sec-badge">06</span>
-      <div class="titles">
-        <h2>発信アーカイブ</h2>
-        <span class="sec-note">会社がAIについて発信してきたもの（β）</span>
-      </div>
-    </div>
-    <div class="grid3">
-      <a class="doc" href="https://fujimoto-cpu.github.io/ai-pulse-survey/" target="_blank" rel="noopener"><span class="ic">📈</span><span><span class="t">月次AI活用アンケート</span><br><span class="s">毎月・結果は全体定例で共有</span></span><span class="arrow">→</span></a>
-      <a class="doc" href="https://fujimoto-cpu.github.io/dashboard/ai-knowledge-cases.html" target="_blank" rel="noopener"><span class="ic">🏢</span><span><span class="t">他社AIナレッジ活用事例集</span><br><span class="s">2026-06-16・複利の仕組み5社</span></span><span class="arrow">→</span></a>
-      <div class="doc"><span class="ic">🏆</span><span><span class="t">AI活用実績 2026.05</span><br><span class="s">月357h削減・新規79件・浸透率80%</span></span></div>
-      <div class="doc"><span class="ic">⚠️</span><span><span class="t">AIの怖い話（6/23全社定例）</span><br><span class="s">顧客情報NG・鵜呑みNG・頼りきりNG</span></span></div>
-    </div>
-  </section>
-
   <div class="cta">
     <div>
       <h2>あなたの事例・ツール、3分で登録できるよ ✍️</h2>
       <p>シンプル投稿はタイトル＋内容＋タグの3つだけ。削減時間は「AIなしでやったら何分」−「実際何分」。登録は評価にも繋がる。</p>
     </div>
     <a class="btn" href="./register-hub.html">＋ 登録する</a>
+  </div>
+
+  </div><!-- /home-view -->
+
+  <div id="tab-view" style="display:none;">
+    <button class="backhome" onclick="showHome()">← ホームに戻る</button>
+    <div class="subtabs">
+      <button class="subtab on" id="subtab-guide" onclick="showTab('guide')">📘 ガイド</button>
+      <button class="subtab" id="subtab-archive" onclick="showTab('archive')">📣 発信</button>
+    </div>
+
+    <div id="panel-guide">
+      <div class="num-head">
+        <div class="titles">
+          <h2>はじめてのAI（新規入社者向け）</h2>
+          <span class="sec-note">最初の4ステップ・迷ったら藤本まで</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><h3>📥 アプリをダウンロード</h3><p>Claude（Cowork）のデスクトップアプリを入れる。</p></div>
+        <div class="step"><div class="n">2</div><h3>🔑 会社メールでログイン</h3><p>@konnekt-i.com のアカウントでサインイン。</p></div>
+        <div class="step"><div class="n">3</div><h3>🔌 ツールを接続</h3><p>Slack・Notion・カレンダー等を接続（下の設定手順を参照）。</p></div>
+        <div class="step"><div class="n">4</div><h3>💬 話しかけてみる</h3><p>「今日の予定まとめて」から。活用事例を真似するのが最短。</p></div>
+      </div>
+      <div class="grid3" style="margin-top:16px;">
+        <a class="doc" href="../docs/cowork-onboarding.pdf" target="_blank" rel="noopener"><span class="ic">🚀</span><span><span class="t">オンボーディングガイド</span><br><span class="s">PDF・最初にこれ1本</span></span><span class="arrow">→</span></a>
+        <a class="doc" href="../docs/complete-guide.pdf" target="_blank" rel="noopener"><span class="ic">📘</span><span><span class="t">Cowork 完全ガイド</span><br><span class="s">PDF・ぜんぶ載ってる保存版</span></span><span class="arrow">→</span></a>
+      </div>
+      <div class="num-head" style="margin-top:28px;">
+        <div class="titles">
+          <h2>設定手順（社員向け）</h2>
+          <span class="sec-note">ツール別の接続・設定ガイド</span>
+        </div>
+      </div>
+      <div class="grid3">
+        <a class="doc" href="../docs/shopify-connection.pdf" target="_blank" rel="noopener"><span class="ic">🛍</span><span><span class="t">Shopify 接続ガイド</span><br><span class="s">PDF</span></span><span class="arrow">→</span></a>
+        <a class="doc" href="../docs/shopify-report-guide.pdf" target="_blank" rel="noopener"><span class="ic">📊</span><span><span class="t">Shopify 売上レポート</span><br><span class="s">PDF</span></span><span class="arrow">→</span></a>
+        <a class="doc" href="../docs/google-meet-guide.pdf" target="_blank" rel="noopener"><span class="ic">📋</span><span><span class="t">Google Meet 議事録ガイド</span><br><span class="s">PDF</span></span><span class="arrow">→</span></a>
+        <a class="doc" href="../docs/pm-guide.pdf" target="_blank" rel="noopener"><span class="ic">👔</span><span><span class="t">PM向けガイド</span><br><span class="s">PDF</span></span><span class="arrow">→</span></a>
+        <a class="doc" href="../docs/pm-30cases.pdf" target="_blank" rel="noopener"><span class="ic">💼</span><span><span class="t">PM 30事例集</span><br><span class="s">PDF</span></span><span class="arrow">→</span></a>
+      </div>
+    </div>
+
+    <div id="panel-archive" style="display:none;">
+      <div class="num-head">
+        <div class="titles">
+          <h2>発信アーカイブ</h2>
+          <span class="sec-note">会社がAIについて発信してきたもの（β）</span>
+        </div>
+      </div>
+      <div class="grid3">
+        <a class="doc" href="https://fujimoto-cpu.github.io/ai-pulse-survey/" target="_blank" rel="noopener"><span class="ic">📈</span><span><span class="t">月次AI活用アンケート</span><br><span class="s">毎月・結果は全体定例で共有</span></span><span class="arrow">→</span></a>
+        <a class="doc" href="https://fujimoto-cpu.github.io/dashboard/ai-knowledge-cases.html" target="_blank" rel="noopener"><span class="ic">🏢</span><span><span class="t">他社AIナレッジ活用事例集</span><br><span class="s">2026-06-16・複利の仕組み5社</span></span><span class="arrow">→</span></a>
+        <div class="doc"><span class="ic">🏆</span><span><span class="t">AI活用実績 2026.05</span><br><span class="s">月357h削減・新規79件・浸透率80%</span></span></div>
+        <div class="doc"><span class="ic">⚠️</span><span><span class="t">AIの怖い話（6/23全社定例）</span><br><span class="s">顧客情報NG・鵜呑みNG・頼りきりNG</span></span></div>
+      </div>
+    </div>
   </div>
 
 </main>
@@ -474,95 +414,20 @@ function renderTools(){
     `<span class="tstat">🗺 カバー領域 <b>${covered.length}</b>/${AREAS.length}</span>`;
   document.getElementById("covmap").innerHTML=AREAS.map(a=>{
     const ts=TOOLS.filter(t=>(t.areas||[]).includes(a.id));
-    return ts.length
-      ?`<div class="area" data-area="${esc(a.id)}"><span class="a-count">${ts.length}</span><span class="a-chevron">▾</span><span class="a-face">${a.icon}</span><span class="a-label">${esc(a.label)}</span><span class="a-detail-hint">クリックで詳細</span></div>`
-      :`<div class="area empty" data-area="${esc(a.id)}"><span class="a-face">${a.icon}</span><span class="a-label">${esc(a.label)}</span><span class="hollow">🕳 ツール未開拓<br>→ 作るチャンス（事例は逆引きへ）</span></div>`;
+    const inner=ts.length
+      ?ts.map(t=>`<span class="tchip" data-tool="${esc(t.id)}">${esc(t.icon)} ${esc(t.name)}${t.ask?' <span class="ask">❓</span>':""}</span>`).join("")
+      :`<span class="hollow">🕳 ツール未開拓<br>→ 作るチャンス（事例は逆引きへ）</span>`;
+    return `<div class="area${ts.length?"":" empty"}"><span class="a-head"><span class="ic">${a.icon}</span>${esc(a.label)}</span>${inner}</div>`;
   }).join("");
-  /* フォルダ本体：PC=ホバーで丸アイコン・クリックで詳細／スマホ=タップで直接詳細（仕様書06レスポンシブ） */
-  const hoverCapable=matchMedia("(hover:hover) and (pointer:fine)").matches;
-  document.querySelectorAll("#covmap .area:not(.empty)").forEach(areaEl=>{
-    const ts=TOOLS.filter(t=>(t.areas||[]).includes(areaEl.dataset.area));
-    const areaDef=AREAS.find(a=>a.id===areaEl.dataset.area);
-    areaEl.setAttribute("tabindex","0");
-    areaEl.setAttribute("role","button");
-    areaEl.setAttribute("aria-expanded","false");
-    if(hoverCapable){
-      areaEl.addEventListener("mouseenter",()=>{cancelHideBubbles();showBubbles(areaEl,ts);});
-      areaEl.addEventListener("mouseleave",()=>{if(areaEl!==openAreaEl)scheduleHideBubbles();});
-      areaEl.addEventListener("focus",()=>{cancelHideBubbles();showBubbles(areaEl,ts);});
-      areaEl.addEventListener("blur",()=>{if(areaEl!==openAreaEl)scheduleHideBubbles();});
-      areaEl.addEventListener("click",()=>{closeOpenArea();openAreaDetail(areaDef,ts);});
-    }else{
-      areaEl.addEventListener("click",()=>{openAreaDetail(areaDef,ts);});
-    }
-    areaEl.addEventListener("keydown",(e)=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();areaEl.click();}});
+  document.querySelectorAll("#covmap .tchip").forEach(el=>{
+    const t=TOOLS.find(x=>x.id===el.dataset.tool);
+    el.setAttribute("tabindex","0");
+    el.onclick=()=>{hideTT();toolChipAction(t);};
+    el.addEventListener("mouseenter",()=>showTT(t,el));
+    el.addEventListener("mouseleave",hideTT);
+    el.addEventListener("focus",()=>showTT(t,el));
+    el.addEventListener("blur",hideTT);
   });
-}
-
-/* フォルダクリック＝詳細ビュー（仕様書⑤・静的サイトなので別ページでなくモーダルで代替） */
-function openAreaDetail(areaDef,ts){
-  hideBubbles();
-  const toolRows=ts.map(t=>{
-    const relatedCases=CARDS.filter(c=>!isTest(c)&&TOOL_OF[c.id]===t.id);
-    const caseRows=relatedCases.map(c=>`
-      <div class="ad-case" data-case="${esc(c.id)}"><b>${esc(c.title)}</b><span class="m">${esc(c.person)}${c.monthly_saved_minutes?" ・ "+esc(fmtMonthly(c.monthly_saved_minutes)):""}</span></div>`).join("");
-    return `<div class="ad-tool" data-tool="${esc(t.id)}">
-      <div class="ad-tool-head"><span class="ic">${esc(t.icon)}</span><b>${esc(t.name)}</b>${t.ask?' <span class="ask">❓</span>':""}<span class="go">${t.url?"開く →":"詳細 →"}</span></div>
-      <div class="ad-tool-sub">${esc(t.dekiru)}　・　作った人: ${esc(t.owner)}</div>
-      ${caseRows?`<div class="ad-cases">${caseRows}</div>`:""}
-    </div>`;
-  }).join("");
-  document.getElementById("modal-body").innerHTML=
-    `<h3>${esc(areaDef.icon+" "+areaDef.label)}</h3>`+
-    `<p style="font-size:12px;color:var(--ink3);margin-bottom:14px;">このカテゴリのツール ${ts.length}個・関連する事例へもここから飛べるよ</p>`+
-    toolRows;
-  document.getElementById("modal-body").querySelectorAll(".ad-tool").forEach(el=>{
-    const t=ts.find(x=>x.id===el.dataset.tool);
-    el.querySelector(".ad-tool-head").onclick=()=>toolChipAction(t);
-    el.querySelectorAll(".ad-case").forEach(ce=>{ce.onclick=(e)=>{e.stopPropagation();closeModal();openCase(ce.dataset.case);};});
-  });
-  document.getElementById("backdrop").classList.add("open");
-}
-
-/* ===== 丸アイコンの吹き出し（フォルダからポコポコ・仕様書05のイージング反映） ===== */
-let openAreaEl=null,bubbleHideTimer=null;
-const bubbleFly=document.createElement("div");bubbleFly.className="bubble-fly";
-bubbleFly.innerHTML='<div class="bubble-row"></div>';document.body.appendChild(bubbleFly);
-const bubbleRow=bubbleFly.querySelector(".bubble-row");
-bubbleFly.addEventListener("mouseenter",cancelHideBubbles);
-bubbleFly.addEventListener("mouseleave",()=>{if(!openAreaEl)scheduleHideBubbles();});
-function cancelHideBubbles(){if(bubbleHideTimer){clearTimeout(bubbleHideTimer);bubbleHideTimer=null;}}
-function scheduleHideBubbles(){cancelHideBubbles();bubbleHideTimer=setTimeout(hideBubbles,170);}
-function closeOpenArea(){
-  if(openAreaEl){openAreaEl.classList.remove("open");openAreaEl.setAttribute("aria-expanded","false");openAreaEl=null;}
-  hideBubbles();
-}
-function showBubbles(areaEl,ts){
-  bubbleFly.classList.remove("show");
-  bubbleRow.innerHTML=ts.map(t=>`<span class="bubble" data-tool="${esc(t.id)}" tabindex="0" title="${esc(t.name)}">${esc(t.icon)}${t.ask?'<span class="ask-dot">?</span>':""}</span>`).join("");
-  positionBubbleFly(areaEl);
-  requestAnimationFrame(()=>bubbleFly.classList.add("show"));
-  bubbleRow.querySelectorAll(".bubble").forEach(b=>{
-    const t=ts.find(x=>x.id===b.dataset.tool);
-    b.onclick=(e)=>{e.stopPropagation();hideTT();toolChipAction(t);};
-    b.addEventListener("mouseenter",()=>showTT(t,b));
-    b.addEventListener("mouseleave",hideTT);
-    b.addEventListener("focus",()=>showTT(t,b));
-    b.addEventListener("blur",hideTT);
-    b.addEventListener("keydown",(e)=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toolChipAction(t);}});
-  });
-}
-function hideBubbles(){bubbleFly.classList.remove("show");hideTT();}
-function positionBubbleFly(areaEl){
-  const r=areaEl.getBoundingClientRect();
-  bubbleFly.style.display="block";
-  const w=bubbleFly.offsetWidth,h=bubbleFly.offsetHeight;
-  let x=r.right+10,y=r.top+r.height/2-h/2;
-  if(x+w>window.innerWidth-8){x=r.left;y=r.bottom+8;}
-  x=Math.max(8,Math.min(x,window.innerWidth-w-8));
-  y=Math.max(8,Math.min(y,window.innerHeight-h-8));
-  bubbleFly.style.left=x+"px";bubbleFly.style.top=y+"px";
-  bubbleFly.style.display="";
 }
 
 /* ホバー時の補足ポップアップ */
@@ -590,43 +455,56 @@ function dimTools(q){
   });
 }
 
-/* ===== 逆引き（2ペイン） ===== */
-function renderReverse(){
-  const listEl=document.getElementById("rev-list");
-  REVERSE.forEach((r,i)=>{
+/* ===== 「〇〇したい」で絞り込む（旧2ペインの逆引きを事例グリッドに統合・2026-08-01） ===== */
+let activeWant=null;
+function renderWantRow(){
+  const rowEl=document.getElementById("want-row");
+  const allBtn=document.createElement("button");
+  allBtn.className="wantbtn on";allBtn.textContent="すべて";
+  allBtn.onclick=()=>setWant(null);
+  rowEl.appendChild(allBtn);
+  REVERSE.forEach(r=>{
     const b=document.createElement("button");
-    b.className="ritem"+(i===0?" on":"");b.textContent=r.label;
-    b.onclick=()=>{document.querySelectorAll(".ritem").forEach(x=>x.classList.remove("on"));b.classList.add("on");showReverse(r);};
-    listEl.appendChild(b);
+    b.className="wantbtn";b.textContent=r.label;
+    b.onclick=()=>setWant(r);
+    rowEl.appendChild(b);
   });
-  showReverse(REVERSE[0]);
 }
-function showReverse(r){
-  const groups=[];
-  const toolCards=r.tools.map(id=>TOOLS.find(x=>x.id===id)).filter(Boolean).map(t=>`
-    <div class="rcard" data-tool="${esc(t.id)}"><b>${esc(t.icon)} ${esc(t.name)}</b>
-      <span class="m">${esc(t.owner)} ・ ${esc(t.dekiru)}</span>
-      <span class="m">📍 ${esc(t.loc_label)}</span>
-      <span class="go">${t.url?"開く →":"聞く →"}</span></div>`);
-  if(toolCards.length)groups.push(`<div class="rgroup">TOOL</div><div class="rcards">${toolCards.join("")}</div>`);
-  const caseCards=r.cases.map(id=>CARDS.find(x=>x.id===id)).filter(Boolean).map(c=>`
-    <div class="rcard" data-case="${esc(c.id)}"><b>${esc(c.title)}</b>
-      <span class="m">${esc(c.person)}${c.monthly_saved_minutes?" ・ "+esc(fmtMonthly(c.monthly_saved_minutes)):""}</span>
-      <span class="go">見る →</span></div>`);
-  if(caseCards.length)groups.push(`<div class="rgroup">事例</div><div class="rcards">${caseCards.join("")}</div>`);
-  const guideCards=r.guides.map(g=>`
-    <div class="rcard" data-href="${esc(g[1])}"><b>${esc(g[0])}</b>
-      <span class="go">PDF →</span></div>`);
-  if(guideCards.length)groups.push(`<div class="rgroup">GUIDE</div><div class="rcards">${guideCards.join("")}</div>`);
-  const el=document.getElementById("rev-pane");
-  el.innerHTML=groups.join("")||'<p class="rempty">まだ登録なし — 最初の事例を登録するチャンス！</p>';
-  el.querySelectorAll(".rcard").forEach(h=>{
-    h.onclick=()=>{
-      if(h.dataset.tool)toolChipAction(TOOLS.find(t=>t.id===h.dataset.tool));
-      else if(h.dataset.case)openCase(h.dataset.case);
-      else if(h.dataset.href)window.open(h.dataset.href,"_blank","noopener");
+function setWant(r){
+  activeWant=r;
+  document.querySelectorAll(".wantbtn").forEach(b=>b.classList.toggle("on",b.textContent===(r?r.label:"すべて")));
+  renderWantExtra(r);
+  applyFilters();
+}
+function renderWantExtra(r){
+  const el=document.getElementById("want-extra");
+  if(!r){el.innerHTML="";return;}
+  const toolChips=(r.tools||[]).map(id=>TOOLS.find(t=>t.id===id)).filter(Boolean)
+    .map(t=>`<span class="wchip" data-tool="${esc(t.id)}">🧰 ${esc(t.icon)} ${esc(t.name)}</span>`).join("");
+  const guideChips=(r.guides||[]).map(g=>`<span class="wchip" data-href="${esc(g[1])}">📄 ${esc(g[0])}</span>`).join("");
+  if(!toolChips&&!guideChips){el.innerHTML="";return;}
+  el.innerHTML=`<span class="we-label">関連ツール・ガイド：</span>${toolChips}${guideChips}`;
+  el.querySelectorAll(".wchip").forEach(w=>{
+    w.onclick=()=>{
+      if(w.dataset.tool)toolChipAction(TOOLS.find(t=>t.id===w.dataset.tool));
+      else if(w.dataset.href)window.open(w.dataset.href,"_blank","noopener");
     };
   });
+}
+
+/* ===== ホーム / タブ 切り替え（04+05をガイドに統合・06発信は別タブ・2026-08-01） ===== */
+function showHome(){
+  document.getElementById("home-view").style.display="";
+  document.getElementById("tab-view").style.display="none";
+}
+function showTab(which){
+  document.getElementById("home-view").style.display="none";
+  document.getElementById("tab-view").style.display="";
+  document.getElementById("panel-guide").style.display=which==="guide"?"":"none";
+  document.getElementById("panel-archive").style.display=which==="archive"?"":"none";
+  document.getElementById("subtab-guide").classList.toggle("on",which==="guide");
+  document.getElementById("subtab-archive").classList.toggle("on",which==="archive");
+  window.scrollTo({top:0,behavior:"instant"});
 }
 
 /* ===== 事例 ===== */
@@ -671,7 +549,7 @@ function render(list){
         ${(c.tags||[]).map(t=>`<span class="b-tag">#${esc(t)}</span>`).join("")}
         ${toolBtn}
       </div>
-    </article>`;}).join("");
+    </article>`;}).join("")||'<p class="rempty">まだこの条件の事例は無いよ。他の「〇〇したい」も見てみて、なければ登録してみて！</p>';
   document.getElementById("count").textContent=list.length+" 件 / 全 "+CARDS.length+" 件";
   el.querySelectorAll(".case").forEach(a=>{
     a.onclick=e=>{
@@ -685,6 +563,7 @@ function applyFilters(){
   const q=document.getElementById("search").value.trim().toLowerCase();
   const p=document.getElementById("person").value;
   let list=CARDS.filter(c=>{
+    if(activeWant&&!(activeWant.cases||[]).includes(c.id))return false;
     const hay=((c.title||"")+(c.person||"")+(c.tool||"")+(c.desc||"")+(c.tags||[]).join()).toLowerCase();
     if(q&&!hay.includes(q))return false;
     if(p&&c.person!==p)return false;
@@ -702,7 +581,7 @@ function setSort(m){sortMode=m;
   document.getElementById("sort-saved").classList.toggle("on",m==="saved");
   applyFilters();}
 function quickSearch(q){document.getElementById("search").value=q;applyFilters();jumpTo("tools");}
-function jumpTo(id){document.getElementById(id).scrollIntoView({behavior:"smooth"});}
+function jumpTo(id){showHome();document.getElementById(id).scrollIntoView({behavior:"smooth"});}
 document.getElementById("search").addEventListener("input",applyFilters);
 
 function openCase(id){
@@ -731,7 +610,7 @@ Promise.all([
   animateNum(document.getElementById("kpi-cases"),CARDS.length,0);
   document.getElementById("kpi-people").textContent=new Set(CARDS.map(c=>c.person)).size;
   renderTools();
-  renderReverse();
+  renderWantRow();
   buildControls(CARDS);
   applyFilters();
 }).catch(()=>{
