@@ -539,5 +539,39 @@
     "scenes": [
       "document"
     ]
+  },
+  {
+    "id": "case-corin-----3-1785565552346",
+    "version": 2,
+    "type": "case",
+    "title": "【あとで削除】疎通テスト3_Instagram投稿スケジュールを作成",
+    "person": "CORIN疎通テスト3",
+    "person_slack_id": null,
+    "role": [],
+    "tool": "Claude Code",
+    "before_minutes": 120,
+    "after_minutes": 30,
+    "saved_minutes": 90,
+    "monthly_frequency": 4,
+    "monthly_saved_minutes": 360,
+    "tags": [
+      "SNS",
+      "資料作成"
+    ],
+    "is_common_tool": false,
+    "common_tool_status": null,
+    "desc": "ブランドのInstagram月間投稿カレンダーを、テーマ・投稿日・ハッシュタグ案までまとめて提案してもらう。SNSの企画会議前の下準備が短くなった。",
+    "detail": "<p>CORINによる本番経路の最終テスト（2026-08-01・再デプロイ後）。確認後に削除します。</p>",
+    "skill_link": null,
+    "github_url": null,
+    "attachments": [],
+    "stat_legacy": "月6時間の削減",
+    "created_at": "2026-08-01",
+    "updated_at": "2026-08-01",
+    "presented_at": null,
+    "scenes": [
+      "sns-schedule",
+      "document"
+    ]
   }
 ]
