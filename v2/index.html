@@ -66,15 +66,33 @@
     .tool-stats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
     .tstat{background:#fff;border:1px solid var(--border);border-radius:99px;padding:4px 12px;font-size:11.5px;font-weight:600;color:var(--ink2);}
     .tstat b{color:var(--p2);font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;}
-    .covmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
-    .area{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 13px;display:flex;flex-direction:column;gap:6px;}
-    .area .a-head{font-size:11px;font-weight:600;color:var(--ink2);}
+    .covmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding-top:9px;}
+    /* フォルダ化：閉じてるときはラベルだけ・ホバー/タップで中身がポコポコ飛び出す */
+    .area{position:relative;background:var(--card);border:1px solid var(--border);border-radius:3px 12px 12px 12px;box-shadow:var(--shadow);padding:12px 13px;display:flex;flex-direction:column;cursor:pointer;transition:box-shadow .2s ease,transform .2s ease;}
+    .area::before{content:"";position:absolute;top:-8px;left:11px;width:38px;height:9px;background:var(--card);border:1px solid var(--border);border-bottom:none;border-radius:6px 6px 0 0;}
+    .area:hover,.area.open{box-shadow:0 4px 10px rgba(20,20,30,.08),0 16px 30px rgba(37,99,235,.16);transform:translateY(-2px);}
+    .area:hover::before,.area.open::before{border-color:#A9C6FA;}
+    .area .a-head{display:flex;align-items:center;font-size:11px;font-weight:600;color:var(--ink2);}
     .area .a-head .ic{font-size:14px;margin-right:3px;}
-    .tchip{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;background:var(--tint);border:1px solid transparent;color:var(--p2);border-radius:8px;padding:4px 9px;cursor:pointer;transition:.12s;}
+    .a-count{margin-left:auto;font-size:10px;font-weight:700;color:var(--p2);background:var(--tint);border-radius:99px;padding:1px 7px;}
+    .a-chevron{margin-left:5px;font-size:8px;color:var(--ink3);display:inline-block;transition:transform .25s ease,color .25s ease;}
+    .area:hover .a-chevron,.area.open .a-chevron{transform:rotate(180deg);color:var(--p);}
+    .tchip-wrap{display:flex;flex-direction:column;gap:6px;max-height:0;opacity:0;overflow:hidden;transition:max-height .34s cubic-bezier(.2,.9,.3,1),opacity .2s ease,margin-top .34s ease;}
+    .area:hover .tchip-wrap,.area.open .tchip-wrap{max-height:260px;opacity:1;margin-top:8px;}
+    .tchip{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;background:var(--tint);border:1px solid transparent;color:var(--p2);border-radius:8px;padding:4px 9px;cursor:pointer;
+      opacity:0;transform:translateX(-9px);transition:opacity .2s ease,transform .2s ease,border-color .12s ease;}
+    .area:hover .tchip,.area.open .tchip{opacity:1;transform:translateX(0);}
+    .tchip:nth-child(1){transition-delay:.03s;} .tchip:nth-child(2){transition-delay:.08s;}
+    .tchip:nth-child(3){transition-delay:.13s;} .tchip:nth-child(4){transition-delay:.18s;}
+    .tchip:nth-child(5){transition-delay:.23s;} .tchip:nth-child(6){transition-delay:.28s;}
     .tchip:hover{border-color:var(--p);}
     .tchip .ask{color:#B45309;font-size:9.5px;font-weight:700;}
-    .area.empty{border-style:dashed;background:transparent;}
-    .area .hollow{font-size:10.5px;color:var(--ink3);line-height:1.5;}
+    .area.empty{border-style:dashed;background:transparent;cursor:default;}
+    .area.empty::before{display:none;}
+    .area .hollow{font-size:10.5px;color:var(--ink3);line-height:1.5;margin-top:6px;}
+    @media (prefers-reduced-motion:reduce){.tchip-wrap,.tchip,.a-chevron,.area{transition:none!important;}
+      .tchip-wrap{max-height:none!important;opacity:1!important;margin-top:8px!important;}
+      .tchip{opacity:1!important;transform:none!important;}}
     .kind{font-size:9.5px;font-weight:700;border-radius:99px;padding:1px 8px;}
     .kind.common{background:var(--tint);color:var(--p2);}
     .kind.personal{background:#E6F6FB;color:#0E7490;}
@@ -428,18 +446,33 @@ function renderTools(){
   document.getElementById("covmap").innerHTML=AREAS.map(a=>{
     const ts=TOOLS.filter(t=>(t.areas||[]).includes(a.id));
     const inner=ts.length
-      ?ts.map(t=>`<span class="tchip" data-tool="${esc(t.id)}">${esc(t.icon)} ${esc(t.name)}${t.ask?' <span class="ask">❓</span>':""}</span>`).join("")
+      ?`<div class="tchip-wrap">${ts.map(t=>`<span class="tchip" data-tool="${esc(t.id)}">${esc(t.icon)} ${esc(t.name)}${t.ask?' <span class="ask">❓</span>':""}</span>`).join("")}</div>`
       :`<span class="hollow">🕳 ツール未開拓<br>→ 作るチャンス（事例は逆引きへ）</span>`;
-    return `<div class="area${ts.length?"":" empty"}"><span class="a-head"><span class="ic">${a.icon}</span>${esc(a.label)}</span>${inner}</div>`;
+    return `<div class="area${ts.length?"":" empty"}"><span class="a-head"><span class="ic">${a.icon}</span>${esc(a.label)}${ts.length?`<span class="a-count">${ts.length}</span><span class="a-chevron">▾</span>`:""}</span>${inner}</div>`;
   }).join("");
   document.querySelectorAll("#covmap .tchip").forEach(el=>{
     const t=TOOLS.find(x=>x.id===el.dataset.tool);
     el.setAttribute("tabindex","0");
-    el.onclick=()=>{hideTT();toolChipAction(t);};
+    el.onclick=(e)=>{e.stopPropagation();hideTT();toolChipAction(t);};
     el.addEventListener("mouseenter",()=>showTT(t,el));
     el.addEventListener("mouseleave",hideTT);
     el.addEventListener("focus",()=>showTT(t,el));
     el.addEventListener("blur",hideTT);
+  });
+  /* フォルダ本体：タップ/Enterで開閉（スマホはホバーが無いため） */
+  document.querySelectorAll("#covmap .area:not(.empty)").forEach(areaEl=>{
+    areaEl.setAttribute("tabindex","0");
+    areaEl.setAttribute("role","button");
+    areaEl.setAttribute("aria-expanded","false");
+    const toggle=()=>{
+      const open=areaEl.classList.toggle("open");
+      areaEl.setAttribute("aria-expanded",open?"true":"false");
+    };
+    areaEl.addEventListener("click",(e)=>{if(e.target.closest(".tchip"))return;toggle();});
+    areaEl.addEventListener("keydown",(e)=>{
+      if(e.target.closest(".tchip"))return;
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle();}
+    });
   });
 }
 
