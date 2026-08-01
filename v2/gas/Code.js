@@ -137,38 +137,115 @@ ${tagsList}
 
   for (var i = 0; i < MODEL_CANDIDATES.length; i++) {
     const model = MODEL_CANDIDATES[i];
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
-    const response = UrlFetchApp.fetch(url, {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      payload: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 200, temperature: 0.1 },
-      }),
-      muteHttpExceptions: true,
-    });
-
-    const code = response.getResponseCode();
-    if (code !== 200) {
-      // 404 = そのモデルが廃止済み。次の候補へ。それ以外（400/403/429）もログに残して次へ。
-      console.warn(`Gemini ${model} が ${code} を返した: ${response.getContentText().slice(0, 200)}`);
-      continue;
-    }
-
-    try {
-      const json = JSON.parse(response.getContentText());
-      const text = json.candidates[0].content.parts[0].text.trim()
-        .replace(/```json\n?/g, '').replace(/```/g, '');
-      const parsed = JSON.parse(text);
-      if (parsed && parsed.scenes && parsed.tags) return parsed;
-    } catch (_) {
-      console.warn(`Gemini ${model} の返答を解釈できなかった。次の候補へ。`);
-    }
+    const r = callGemini_(model, prompt, apiKey);
+    if (r.parsed) return r.parsed;
+    console.warn(`Gemini ${model} 失敗: ${r.why}`);
   }
 
   console.warn('Gemini のモデル候補が全滅。分類をフォールバック値にした。');
   return FALLBACK;
+}
+
+// ------------------------------------------------------------
+// 2-a. Gemini 1回呼び出し（結果と失敗理由を必ず返す）
+// ------------------------------------------------------------
+// 2.5 以降のモデルは「思考」に出力トークンを使う。maxOutputTokens が小さいと
+// 思考だけで枯渇して本文が空になり（finishReason: MAX_TOKENS）、
+// 静かにフォールバックへ落ちる。だから枠を広げ、思考は明示的に切る。
+// thinkingConfig を受け付けないモデルには 400 が返るので、その時だけ外して再試行する。
+function callGemini_(model, prompt, apiKey) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+  function post(useThinkingConfig) {
+    const gc = { maxOutputTokens: 2048, temperature: 0.1, responseMimeType: 'application/json' };
+    if (useThinkingConfig) gc.thinkingConfig = { thinkingBudget: 0 };
+    return UrlFetchApp.fetch(url, {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      payload: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: gc }),
+      muteHttpExceptions: true,
+    });
+  }
+
+  let res = post(true);
+  if (res.getResponseCode() === 400) res = post(false);   // thinkingConfig 非対応モデル用
+
+  const code = res.getResponseCode();
+  const body = res.getContentText();
+  if (code !== 200) {
+    return { parsed: null, why: `HTTP ${code} — ${body.slice(0, 300)}`, code, body };
+  }
+
+  let json;
+  try {
+    json = JSON.parse(body);
+  } catch (e) {
+    return { parsed: null, why: `レスポンスがJSONでない: ${body.slice(0, 200)}`, code, body };
+  }
+
+  const cand = (json.candidates || [])[0];
+  const finish = cand && cand.finishReason;
+  const text = cand && cand.content && cand.content.parts && cand.content.parts[0]
+    ? cand.content.parts[0].text : null;
+
+  if (!text) {
+    return {
+      parsed: null,
+      why: `本文が空（finishReason=${finish} / usage=${JSON.stringify(json.usageMetadata || {})}）`,
+      code, body, finish,
+    };
+  }
+
+  const cleaned = text.trim().replace(/```json\n?/g, '').replace(/```/g, '');
+  try {
+    const parsed = JSON.parse(cleaned);
+    if (parsed && parsed.scenes && parsed.tags) return { parsed, why: 'ok', code, body, finish };
+    return { parsed: null, why: `JSONだが scenes/tags が無い: ${cleaned.slice(0, 200)}`, code, body, finish };
+  } catch (e) {
+    return { parsed: null, why: `本文がJSONとして読めない: ${cleaned.slice(0, 200)}`, code, body, finish };
+  }
+}
+
+// ------------------------------------------------------------
+// 2-c. 分類の実地テスト（GASエディタで手動実行する用）
+// ------------------------------------------------------------
+// 使い方：関数リストで testClassify を選んで「実行」。
+// 実際の分類プロンプトを投げて、モデルごとの結果と失敗理由を実行ログに出す。
+// ※デプロイは不要（エディタ上の最新コードで動く）。
+function testClassify() {
+  const apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
+  if (!apiKey) { console.log('GEMINI_API_KEY が未設定'); return; }
+
+  const title = '会議の議事録を自動作成';
+  const desc  = '会議の音声ファイルを渡すだけで議事録が自動で作成される。手作業の書き起こしと整形が不要になった。';
+  const tool  = 'Claude Code';
+  const prompt = `以下のAI活用事例をカテゴリ判定してください。
+
+タイトル: ${title}
+説明: ${desc}
+ツール: ${tool}
+
+利用可能なscenes（1〜3つ選択、id で返す）:
+${SCENES.map(s => `${s.id} (${s.label})`).join(', ')}
+
+利用可能なtags（1〜3つ選択）:
+${TAGS.join(', ')}
+
+必ず以下のJSON形式のみで返してください（説明不要）:
+{"scenes": ["scene-id"], "tags": ["タグ名"]}`;
+
+  const lines = ['===== 分類テスト ====='];
+  MODEL_CANDIDATES.forEach(model => {
+    const r = callGemini_(model, prompt, apiKey);
+    if (r.parsed) {
+      lines.push(`✅ ${model} → scenes=${JSON.stringify(r.parsed.scenes)} tags=${JSON.stringify(r.parsed.tags)}`);
+    } else {
+      lines.push(`❌ ${model} → ${r.why}`);
+    }
+  });
+  lines.push('======================');
+  lines.push('※ ✅が1つでも出れば分類は復活。全部❌なら理由がその行に出ている。');
+  console.log(lines.join('\n'));
 }
 
 // ------------------------------------------------------------
@@ -202,13 +279,17 @@ function testSetup() {
         }
       );
       const code = res.getResponseCode();
-      const verdict = code === 200 ? '✅ 使える'
+      // ⚠ これは「APIが応答するか」だけの確認。実際に分類できるかは別問題
+      //   （2026-08-01：ここが全部✅なのに分類はフォールバックだった）。
+      //   分類そのものの確認は testClassify を使う。
+      const verdict = code === 200 ? '○ 応答あり'
         : code === 404 ? '❌ このモデルは廃止済み'
         : code === 403 ? '❌ キーが無効か権限なし'
         : code === 429 ? '⚠ 無料枠の上限'
         : `❌ ${code}`;
       lines.push(`Gemini ${model} → ${verdict}`);
     });
+    lines.push('  ※ 応答ありは「APIが生きてる」だけ。分類できるかは testClassify で確認');
   }
 
   // Notion DB に届くか（トークンがある時だけ）
