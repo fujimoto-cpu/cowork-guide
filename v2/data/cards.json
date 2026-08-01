@@ -507,5 +507,37 @@
     "scenes": [
       "document"
     ]
+  },
+  {
+    "id": "case-corin-----2-1785564867425",
+    "version": 2,
+    "type": "case",
+    "title": "【あとで削除】疎通テスト2_請求書PDFから経費データを自動読取",
+    "person": "CORIN疎通テスト2",
+    "person_slack_id": null,
+    "role": [],
+    "tool": "Claude Code",
+    "before_minutes": 45,
+    "after_minutes": 5,
+    "saved_minutes": 40,
+    "monthly_frequency": 8,
+    "monthly_saved_minutes": 320,
+    "tags": [
+      "その他"
+    ],
+    "is_common_tool": false,
+    "common_tool_status": null,
+    "desc": "届いた請求書PDFをまとめて読み取り、日付・金額・取引先を表にして経費申請フォームに貼れる形で出力する。手入力が不要になった。",
+    "detail": "<p>CORINによるパイプライン疎通テスト2回目（2026-08-01・Notion連携後）。確認後に削除します。</p>",
+    "skill_link": null,
+    "github_url": null,
+    "attachments": [],
+    "stat_legacy": "月5.3時間の削減",
+    "created_at": "2026-08-01",
+    "updated_at": "2026-08-01",
+    "presented_at": null,
+    "scenes": [
+      "document"
+    ]
   }
 ]
