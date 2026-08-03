@@ -198,7 +198,7 @@
   <div class="nav-inner">
     <span class="logo"><span class="dia">🔷</span> KONNEKT AI情報ハブ</span>
     <a class="np" href="#tools" onclick="showHome();return true;">ツール</a>
-    <a class="np" href="#reverse" onclick="showHome();return true;">〇〇したい</a>
+    <a class="np" href="#reverse" onclick="showHome();return true;">やりたいこと</a>
     <a class="np" href="#cases" onclick="showHome();return true;">活用事例</a>
     <a class="np" href="javascript:void(0)" onclick="showTab('guide')">ガイド</a>
     <a class="np" href="javascript:void(0)" onclick="showTab('archive')">発信</a>
@@ -249,7 +249,7 @@
     <div class="num-head">
       <span class="sec-badge">02</span>
       <div class="titles">
-        <h2>「〇〇したい」から探す</h2>
+        <h2>やりたいことから探す</h2>
         <span class="sec-note">やりたいことを選ぶ → 使えるツール・事例・ガイドが出る</span>
       </div>
     </div>
@@ -438,7 +438,7 @@ function renderTools(){
     const ts=TOOLS.filter(t=>(t.areas||[]).includes(a.id));
     const inner=ts.length
       ?ts.map(t=>`<span class="tchip" data-tool="${esc(t.id)}">${esc(t.icon)} ${esc(t.name)}${t.ask?' <span class="ask">❓</span>':""}</span>`).join("")
-      :`<span class="hollow">🕳 ツール未開拓<br>→ 作るチャンス（事例は逆引きへ）</span>`;
+      :`<span class="hollow">🕳 ツール未開拓</span>`;
     return `<div class="area${ts.length?"":" empty"}"><span class="a-head"><span class="ic">${a.icon}</span>${esc(a.label)}</span>${inner}</div>`;
   }).join("");
   document.querySelectorAll("#covmap .tchip").forEach(el=>{
@@ -492,7 +492,7 @@ function showReverse(r){
   const groups=[];
   const toolCards=r.tools.map(id=>TOOLS.find(x=>x.id===id)).filter(Boolean).map(t=>`
     <div class="rcard" data-tool="${esc(t.id)}"><b>${esc(t.icon)} ${esc(t.name)}</b>
-      <span class="m">${esc(t.owner)} ・ ${esc(t.dekiru)}</span>
+      <span class="m">${esc(t.dekiru)}</span>
       <span class="m">📍 ${esc(t.loc_label)}</span>
       <span class="go">${t.url?"開く →":"聞く →"}</span></div>`);
   if(toolCards.length)groups.push(`<div class="rgroup">TOOL</div><div class="rcards">${toolCards.join("")}</div>`);
