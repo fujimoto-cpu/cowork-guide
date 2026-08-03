@@ -53,7 +53,10 @@ function doPost(e) {
     const data = JSON.parse(e.postData.contents);
     const props = PropertiesService.getScriptProperties();
 
-    // 1. ファイルアップロード（添付あれば Google Drive へ）
+    // 2026-08-03 追加：編集モード（register-hub.html から action:'update', id:<既存id> が来る）
+    const isEdit = data.action === 'update' && !!data.id;
+
+    // 1. ファイルアップロード（添付あれば Google Drive へ・編集時は新しいファイルが来た時だけ）
     let fileUrl = null;
     if (data.file_base64 && data.file_name) {
       fileUrl = uploadToDrive_(data.file_base64, data.file_name, data.file_type);
@@ -64,38 +67,49 @@ function doPost(e) {
     const isTool = data.type === 'tool';
 
     // 2. Gemini でカテゴリ自動判定（事例のみ。ツールはエリアをフォームで選ばせている）
+    //    編集時も更新後の内容で再判定する（タイトル・説明を直したら分類も追従してほしいため）。
     const { scenes, tags } = isTool
       ? { scenes: [], tags: ['ツール'] }
       : classifyWithGemini_(data.title, data.desc, data.tool, props.getProperty('GEMINI_API_KEY'));
 
-    // 3. ID 生成
+    // 3. ID 決定：編集時は既存IDをそのまま使う（新規採番しない）
     // ★2026-08-03 修正：日本語名は [^a-z0-9] 置換で全文字がハイフンになり
     //   「藤本有璃子」→ 'case-------123' のようなIDが生まれていた。
     //   ハブ側のテスト判定 /^case-----/ に一致してしまい、日本語名の投稿が
     //   すべて「テスト投稿」として非表示にされていた（登録が消える主因）。
     //   連続ハイフンを畳み、英数字が1文字も残らない場合は 'member' を使う。
-    const personKey = (data.person || 'anonymous').toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '') || 'member';
-    const cardId = `${isTool ? 'tool' : 'case'}-${personKey}-${Date.now()}`;
+    let cardId;
+    if (isEdit) {
+      cardId = data.id;
+    } else {
+      const personKey = (data.person || 'anonymous').toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'member';
+      cardId = `${isTool ? 'tool' : 'case'}-${personKey}-${Date.now()}`;
+    }
 
     // 4. Notion に保存（トークン未設定時はスキップ）
     //    ツールも同じDBに入れる（既存プロパティのみ使用＝DBスキーマ変更不要。
     //    タグの 'ツール' で事例と区別できる）。KONNEKT方針＝ナレッジはNotionに集約。
     const notionToken = props.getProperty('NOTION_TOKEN');
     if (notionToken) {
-      saveToNotion_(data, scenes, tags, fileUrl, cardId, notionToken);
+      if (isEdit) updateNotionPage_(data, scenes, tags, fileUrl, cardId, notionToken);
+      else saveToNotion_(data, scenes, tags, fileUrl, cardId, notionToken);
     }
 
     // 5. GitHub API でデータ更新
     if (isTool) {
-      updateToolsJson_(data, cardId, props.getProperty('GITHUB_TOKEN'));
+      if (isEdit) editToolsJson_(data, cardId, props.getProperty('GITHUB_TOKEN'));
+      else updateToolsJson_(data, cardId, props.getProperty('GITHUB_TOKEN'));
     } else {
-      updateCardsJson_(data, scenes, tags, fileUrl, cardId, props.getProperty('GITHUB_TOKEN'));
+      if (isEdit) editCardsJson_(data, scenes, tags, fileUrl, cardId, props.getProperty('GITHUB_TOKEN'));
+      else updateCardsJson_(data, scenes, tags, fileUrl, cardId, props.getProperty('GITHUB_TOKEN'));
     }
 
-    // 6. Slack #ai-share に投稿
-    postToSlack_(data, scenes, tags, cardId, props.getProperty('SLACK_WEBHOOK_URL'));
+    // 6. Slack #ai-share に投稿（編集時は毎回鳴らすとノイズになるので新規登録のみ）
+    if (!isEdit) {
+      postToSlack_(data, scenes, tags, cardId, props.getProperty('SLACK_WEBHOOK_URL'));
+    }
 
     return ContentService
       .createTextOutput(JSON.stringify({ success: true, id: cardId }))
@@ -334,10 +348,9 @@ function testSetup() {
 // ------------------------------------------------------------
 // 3. Notion DB に保存
 // ------------------------------------------------------------
-function saveToNotion_(data, scenes, tags, fileUrl, cardId, token) {
+function buildNotionProperties_(data, scenes, tags, fileUrl, cardId) {
   const today = new Date().toISOString().split('T')[0];
-
-  const properties = {
+  return {
     'タイトル': { title: [{ text: { content: data.title || '' } }] },
     '投稿者': { rich_text: [{ text: { content: data.person || '' } }] },
     'ツール名': { rich_text: [{ text: { content: data.tool || '' } }] },
@@ -357,7 +370,9 @@ function saveToNotion_(data, scenes, tags, fileUrl, cardId, token) {
     '投稿日': { date: { start: today } },
     'Status': { select: { name: 'published' } },
   };
+}
 
+function saveToNotion_(data, scenes, tags, fileUrl, cardId, token) {
   UrlFetchApp.fetch('https://api.notion.com/v1/pages', {
     method: 'post',
     headers: {
@@ -367,8 +382,45 @@ function saveToNotion_(data, scenes, tags, fileUrl, cardId, token) {
     },
     payload: JSON.stringify({
       parent: { database_id: NOTION_DB_ID },
-      properties,
+      properties: buildNotionProperties_(data, scenes, tags, fileUrl, cardId),
     }),
+    muteHttpExceptions: true,
+  });
+}
+
+// ------------------------------------------------------------
+// 3-b. Notion 既存ページを更新（編集・2026-08-03 追加）
+//      cards_id で該当ページを検索してから上書きする（ページIDを別途保存していないため、
+//      毎回検索する。1DB内のcards_idはユニークな前提）。
+// ------------------------------------------------------------
+function updateNotionPage_(data, scenes, tags, fileUrl, cardId, token) {
+  const queryRes = UrlFetchApp.fetch(`https://api.notion.com/v1/databases/${NOTION_DB_ID}/query`, {
+    method: 'post',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json',
+    },
+    payload: JSON.stringify({
+      filter: { property: 'cards_id', rich_text: { equals: cardId } },
+    }),
+    muteHttpExceptions: true,
+  });
+  const queryJson = JSON.parse(queryRes.getContentText());
+  const page = (queryJson.results || [])[0];
+  if (!page) {
+    // Notion側に元ページが見つからない（トークン未設定時に作成された等）→ 新規作成で補完
+    saveToNotion_(data, scenes, tags, fileUrl, cardId, token);
+    return;
+  }
+  UrlFetchApp.fetch(`https://api.notion.com/v1/pages/${page.id}`, {
+    method: 'patch',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json',
+    },
+    payload: JSON.stringify({ properties: buildNotionProperties_(data, scenes, tags, fileUrl, cardId) }),
     muteHttpExceptions: true,
   });
 }
@@ -498,6 +550,126 @@ function updateCardsJson_(data, scenes, tags, fileUrl, cardId, token) {
     payload: JSON.stringify({
       message: `feat: add case ${cardId} by ${data.person || 'anonymous'}`,
       content: newContent,
+      sha,
+    }),
+    muteHttpExceptions: true,
+  });
+}
+
+// ------------------------------------------------------------
+// 4-c. GitHub API で cards.json の既存エントリを更新（編集・2026-08-03 追加）
+// ------------------------------------------------------------
+function editCardsJson_(data, scenes, tags, fileUrl, cardId, token) {
+  const apiBase = `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
+
+  const getRes = UrlFetchApp.fetch(apiBase, {
+    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' },
+  });
+  const getJson = JSON.parse(getRes.getContentText());
+  const sha = getJson.sha;
+  const current = JSON.parse(Utilities.newBlob(Utilities.base64Decode(getJson.content.replace(/\n/g, ''))).getDataAsString());
+
+  const idx = current.findIndex(c => c.id === cardId);
+  if (idx === -1) throw new Error('編集対象の事例が見つかりません（id: ' + cardId + '）');
+  const existing = current[idx];
+
+  const before = Number(data.before_minutes) || 0;
+  const after  = Number(data.after_minutes)  || 0;
+  const freq   = Number(data.monthly_frequency) || 0;
+
+  current[idx] = Object.assign({}, existing, {
+    title: data.title || '',
+    person: data.person || '',
+    role: data.role || [],
+    tool: data.tool || '',
+    before_minutes: before,
+    after_minutes: after,
+    saved_minutes: before - after,
+    monthly_frequency: freq,
+    monthly_saved_minutes: (before - after) * freq,
+    tags,
+    desc: data.desc || '',
+    detail: `<p>${(data.detail || data.desc || '').replace(/\n/g, '<br>')}</p>`,
+    link: data.link || null,
+    // 新しいファイルが来た時だけ差し替え。無ければ既存の添付をそのまま維持する。
+    attachments: fileUrl ? [fileUrl] : (existing.attachments || []),
+    stat_legacy: before && after ? `月${Math.round((before - after) * freq / 60 * 10) / 10}時間の削減` : '',
+    updated_at: new Date().toISOString().split('T')[0],
+    scenes,
+  });
+
+  const newContent = Utilities.base64Encode(
+    Utilities.newBlob(JSON.stringify(current, null, 2)).getBytes()
+  );
+
+  UrlFetchApp.fetch(apiBase, {
+    method: 'put',
+    headers: {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+    },
+    payload: JSON.stringify({
+      message: `edit: update case ${cardId} by ${data.person || 'anonymous'}`,
+      content: newContent,
+      sha,
+    }),
+    muteHttpExceptions: true,
+  });
+}
+
+// ------------------------------------------------------------
+// 4-d. GitHub API で tools.json の既存エントリを更新（編集・2026-08-03 追加）
+// ------------------------------------------------------------
+function editToolsJson_(data, toolId, token) {
+  const apiBase = `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_TOOLS_PATH}`;
+
+  const getRes = UrlFetchApp.fetch(apiBase, {
+    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' },
+  });
+  const getJson = JSON.parse(getRes.getContentText());
+  const sha = getJson.sha;
+  const current = JSON.parse(Utilities.newBlob(Utilities.base64Decode(getJson.content.replace(/\n/g, ''))).getDataAsString());
+
+  const idx = current.findIndex(t => t.id === toolId);
+  if (idx === -1) throw new Error('編集対象のツールが見つかりません（id: ' + toolId + '）');
+  const existing = current[idx];
+
+  const url = (data.tool_url || '').trim();
+  let locLabel, ask = false;
+  if (url) {
+    locLabel = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  } else {
+    locLabel = `❓ 場所確認中（${data.person || '登録者'}に聞く）`;
+    ask = true;
+  }
+
+  current[idx] = Object.assign({}, existing, {
+    icon: (data.tool_icon || '').trim() || '🧰',
+    name: data.title || '',
+    owner: data.person || '',
+    kind: ['common', 'personal', 'system'].indexOf(data.tool_kind) >= 0 ? data.tool_kind : 'personal',
+    dekiru: data.desc || '',
+    url: url || null,
+    loc_label: locLabel,
+    areas: Array.isArray(data.tool_areas) ? data.tool_areas : [],
+  });
+  if (ask) current[idx].ask = true; else delete current[idx].ask;
+
+  const updated = Utilities.base64Encode(
+    Utilities.newBlob(JSON.stringify(current, null, 2)).getBytes()
+  );
+
+  UrlFetchApp.fetch(apiBase, {
+    method: 'put',
+    headers: {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github.v3+json',
+    },
+    contentType: 'application/json',
+    payload: JSON.stringify({
+      message: `edit: update tool ${toolId} by ${data.person || 'anonymous'}`,
+      content: updated,
       sha,
     }),
     muteHttpExceptions: true,

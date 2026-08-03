@@ -250,7 +250,6 @@
         <span class="sec-note">何ができて・どこにあるか。カーソルで詳細・クリックで開く（❓は場所確認中）</span>
       </div>
     </div>
-    <div class="tool-stats" id="tool-stats"></div>
     <div class="covmap" id="covmap"></div>
     <p class="notice">空きエリアは「まだツールがない＝作るチャンス」。作る前に、まずここで検索してね。</p>
   </section>
@@ -438,15 +437,6 @@ function toolChipAction(t){
   document.getElementById("backdrop").classList.add("open");
 }
 function renderTools(){
-  const counts={common:0,personal:0,system:0};
-  TOOLS.forEach(t=>counts[t.kind]=(counts[t.kind]||0)+1);
-  const covered=AREAS.filter(a=>TOOLS.some(t=>(t.areas||[]).includes(a.id)));
-  document.getElementById("tool-stats").innerHTML=
-    `<span class="tstat">🧰 ツール <b>${TOOLS.length}</b> 個</span>`+
-    `<span class="tstat">🏢 全社共通 <b>${counts.common||0}</b></span>`+
-    `<span class="tstat">💡 社員の発明 <b>${counts.personal||0}</b></span>`+
-    `<span class="tstat">⚙️ 自動の仕組み <b>${counts.system||0}</b></span>`+
-    `<span class="tstat">🗺 カバー領域 <b>${covered.length}</b>/${AREAS.length}</span>`;
   document.getElementById("covmap").innerHTML=AREAS.map(a=>{
     const ts=TOOLS.filter(t=>(t.areas||[]).includes(a.id));
     const inner=ts.length
@@ -576,7 +566,8 @@ function openCase(id){
   const links=[];
   if(c.link) links.push(`<a class="linkbtn" href="${esc(c.link)}" target="_blank" rel="noopener">🔗 このツール・資料を開く</a>`);
   (c.attachments||[]).forEach(a=>links.push(`<a class="linkbtn ghost" href="${esc(a)}" target="_blank" rel="noopener">📎 添付を開く</a>`));
-  const linkRow=links.length?`<div class="linkrow">${links.join("")}</div>`:"";
+  links.push(`<a class="linkbtn ghost" href="./register-hub.html?edit=${encodeURIComponent(c.id)}">✏️ 編集する</a>`);
+  const linkRow=`<div class="linkrow">${links.join("")}</div>`;
   // 本文が「リンクそのもの」しかない場合は、上のボタンと重複するので本文を出さない
   const raw=(c.detail||c.desc||"").replace(/<[^>]*>/g,"").trim();
   const bodyIsJustLink=c.link&&raw===String(c.link).trim();

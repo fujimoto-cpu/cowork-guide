@@ -273,6 +273,68 @@
   // KONNEKT-AI-HUB として作り直したプロジェクトの新デプロイに切り替えた。
   const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxffr3ArU0h9RQVA37j7P3vMjs1cQ4nCfGEq9UMOOT5vD4km80NBKztxm8uwNmlol8B/exec';
 
+  /* ===== 編集モード（?edit=<id>・2026-08-03 追加） =====
+     index.html の詳細モーダルから「✏️ 編集する」で ?edit=<id> 付きで開かれる。
+     既存の cards.json / tools.json から該当データを探してフォームに流し込み、
+     送信時は action:'update' + id を付けて同じGASエンドポイントに送る（新規採番しない）。 */
+  let editId = null;
+  const editParam = new URLSearchParams(location.search).get('edit');
+  if (editParam) { editId = editParam; loadForEdit(editId); }
+
+  async function loadForEdit(id) {
+    try {
+      const [cards, tools] = await Promise.all([
+        fetch('./data/cards.json').then(r => r.json()),
+        fetch('./data/tools.json').then(r => r.json()),
+      ]);
+      let item = cards.find(c => c.id === id), kind = 'case';
+      if (!item) { item = tools.find(t => t.id === id); kind = 'tool'; }
+      if (!item) {
+        const errMsg = document.getElementById('error-msg');
+        errMsg.textContent = '編集対象が見つからなかったよ（削除された可能性があります）。';
+        errMsg.style.display = 'block';
+        return;
+      }
+      setKind(kind);
+      // 編集中は種別（事例⇄ツール）を切り替えさせない
+      document.querySelectorAll('.kindbtn').forEach(b => { b.disabled = true; });
+      document.querySelector('.kindpick').style.opacity = '.55';
+      document.querySelector('.kindpick').style.pointerEvents = 'none';
+      document.querySelector('h1').textContent = kind === 'tool' ? 'ツールを編集する' : '事例を編集する';
+      document.querySelector('.hero p').textContent = '内容を直して保存すると、ハブにすぐ反映されるよ。';
+      document.getElementById('btn-text').textContent = '✎ この内容で更新する';
+      document.getElementById('person').value = item.person || item.owner || '';
+      document.getElementById('title').value = item.title || item.name || '';
+      document.getElementById('desc').value = item.desc || item.dekiru || '';
+      if (kind === 'case') {
+        document.getElementById('tool').value = item.tool || '';
+        document.getElementById('link').value = item.link || '';
+        document.getElementById('before_minutes').value = item.before_minutes || '';
+        document.getElementById('after_minutes').value = item.after_minutes || '';
+        document.getElementById('monthly_frequency').value = item.monthly_frequency || '';
+        document.getElementById('detail').value = (item.detail || '')
+          .replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '');
+        updateSavings();
+        if ((item.attachments || []).length) {
+          document.getElementById('file-name').textContent = '📎 既存の添付あり（新しいファイルを選ぶと差し替わります）';
+        }
+      } else {
+        document.getElementById('tool_icon').value = item.icon || '';
+        document.getElementById('tool_kind').value = item.kind || 'personal';
+        document.getElementById('tool_url').value = item.url || '';
+        (item.areas || []).forEach(a => {
+          const cb = document.querySelector(`#tool-areas input[value="${a}"]`);
+          if (cb) { cb.checked = true; cb.closest('.areabox').classList.add('on'); }
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      const errMsg = document.getElementById('error-msg');
+      errMsg.textContent = '編集データの読み込みに失敗したよ。時間をおいて開き直してみて。';
+      errMsg.style.display = 'block';
+    }
+  }
+
   /* ===== 種別切替（事例 / ツール・2026-08-03 新設） ===== */
   let entryKind='case';
   function setKind(k){
@@ -329,6 +391,7 @@
       if(selectedFile){file_base64=await toBase64(selectedFile);file_name=selectedFile.name;file_type=selectedFile.type;}
       const payload={
         type:entryKind,
+        ...(editId?{action:'update',id:editId}:{}),
         person:document.getElementById('person').value.trim(),
         role:[],
         title:document.getElementById('title').value.trim(),
@@ -356,7 +419,10 @@
       const res=await fetch(GAS_ENDPOINT,{method:'POST',body:JSON.stringify(payload)});
       const result=await res.json().catch(()=>({success:true}));
       if(result.success!==false){
-        document.getElementById('success-msg').innerHTML=entryKind==='tool'
+        document.getElementById('success-box').querySelector('h2').textContent=editId?'更新したよ！':'登録ありがとう！';
+        document.getElementById('success-msg').innerHTML=editId
+          ?'内容を更新したよ。ハブに反映されます（数分〜）。'
+          :entryKind==='tool'
           ?'ツールが 01「社内ツール」台帳に反映されます（数分〜）。<br>あなたの道具が、みんなの道具になります。'
           :'事例がハブに反映されます（数分〜）。<br>あなたの時短が、みんなの時短になります。';
         document.getElementById('register-form').style.display='none';
