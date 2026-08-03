@@ -11,6 +11,7 @@
 const NOTION_DB_ID     = '38f7f11c9bd08097961bc9d6959cd80c';
 const GITHUB_REPO      = 'fujimoto-cpu/cowork-guide';
 const GITHUB_FILE_PATH = 'v2/data/cards.json';
+const GITHUB_TOOLS_PATH = 'v2/data/tools.json';   // 2026-08-03 追加：ツール台帳
 const DRIVE_FOLDER_NAME = 'KONNEKT AI活用事例 添付ファイル';
 
 // scenes.json の id 一覧（カテゴリ判定用）
@@ -58,24 +59,33 @@ function doPost(e) {
       fileUrl = uploadToDrive_(data.file_base64, data.file_name, data.file_type);
     }
 
-    // 2. Gemini でカテゴリ自動判定
-    const { scenes, tags } = classifyWithGemini_(
-      data.title, data.desc, data.tool,
-      props.getProperty('GEMINI_API_KEY')
-    );
+    // 2026-08-03 追加：登録種別で分岐（'tool' = 社内ツール台帳 / 既定 = 活用事例）
+    // 旧フォーム（type を送ってこない）からのPOSTは今まで通り case として扱う＝後方互換。
+    const isTool = data.type === 'tool';
 
-    // 3. cards.json 用 ID 生成
+    // 2. Gemini でカテゴリ自動判定（事例のみ。ツールはエリアをフォームで選ばせている）
+    const { scenes, tags } = isTool
+      ? { scenes: [], tags: ['ツール'] }
+      : classifyWithGemini_(data.title, data.desc, data.tool, props.getProperty('GEMINI_API_KEY'));
+
+    // 3. ID 生成
     const personKey = (data.person || 'anonymous').toLowerCase().replace(/[^a-z0-9]/g, '-');
-    const cardId = `case-${personKey}-${Date.now()}`;
+    const cardId = `${isTool ? 'tool' : 'case'}-${personKey}-${Date.now()}`;
 
     // 4. Notion に保存（トークン未設定時はスキップ）
+    //    ツールも同じDBに入れる（既存プロパティのみ使用＝DBスキーマ変更不要。
+    //    タグの 'ツール' で事例と区別できる）。KONNEKT方針＝ナレッジはNotionに集約。
     const notionToken = props.getProperty('NOTION_TOKEN');
     if (notionToken) {
       saveToNotion_(data, scenes, tags, fileUrl, cardId, notionToken);
     }
 
-    // 5. cards.json 更新（GitHub API）
-    updateCardsJson_(data, scenes, tags, fileUrl, cardId, props.getProperty('GITHUB_TOKEN'));
+    // 5. GitHub API でデータ更新
+    if (isTool) {
+      updateToolsJson_(data, cardId, props.getProperty('GITHUB_TOKEN'));
+    } else {
+      updateCardsJson_(data, scenes, tags, fileUrl, cardId, props.getProperty('GITHUB_TOKEN'));
+    }
 
     // 6. Slack #ai-share に投稿
     postToSlack_(data, scenes, tags, cardId, props.getProperty('SLACK_WEBHOOK_URL'));
@@ -328,7 +338,10 @@ function saveToNotion_(data, scenes, tags, fileUrl, cardId, token) {
     'Before（分）': { number: data.before_minutes ? Number(data.before_minutes) : null },
     'After（分）': { number: data.after_minutes ? Number(data.after_minutes) : null },
     '月次頻度': { number: data.monthly_frequency ? Number(data.monthly_frequency) : null },
-    '説明': { rich_text: [{ text: { content: data.desc || '' } }] },
+    // ツール登録のときは置き場所URLも説明に含める（DBスキーマを変えずに情報を落とさないため）
+    '説明': { rich_text: [{ text: { content: data.type === 'tool'
+        ? `${data.desc || ''}${data.tool_url ? `\n📍 ${data.tool_url}` : '\n📍 場所未定'}`
+        : (data.desc || '') } }] },
     'タグ': { multi_select: tags.map(t => ({ name: t })) },
     'Scenes': { multi_select: scenes.map(s => ({ name: s })) },
     '添付ファイルURL': { rich_text: [{ text: { content: fileUrl || '' } }] },
@@ -347,6 +360,66 @@ function saveToNotion_(data, scenes, tags, fileUrl, cardId, token) {
     payload: JSON.stringify({
       parent: { database_id: NOTION_DB_ID },
       properties,
+    }),
+    muteHttpExceptions: true,
+  });
+}
+
+// ------------------------------------------------------------
+// 4-b. GitHub API で tools.json 更新（2026-08-03 新設）
+//      01「社内ツール」台帳。cards.json と違い areas / kind / url を持つ。
+// ------------------------------------------------------------
+function updateToolsJson_(data, toolId, token) {
+  const apiBase = `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_TOOLS_PATH}`;
+
+  const getRes = UrlFetchApp.fetch(apiBase, {
+    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' },
+  });
+  const getJson = JSON.parse(getRes.getContentText());
+  const sha = getJson.sha;
+  const current = JSON.parse(Utilities.newBlob(Utilities.base64Decode(getJson.content.replace(/\n/g, ''))).getDataAsString());
+
+  const url = (data.tool_url || '').trim();
+  // 置き場所ラベル：URLがあればホスト名（+パス先頭）、無ければ「作った人に聞く」
+  let locLabel, ask = false;
+  if (url) {
+    locLabel = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  } else {
+    locLabel = `❓ 場所確認中（${data.person || '登録者'}に聞く）`;
+    ask = true;
+  }
+
+  const newTool = {
+    id: toolId,
+    icon: (data.tool_icon || '').trim() || '🧰',
+    name: data.title || '',
+    owner: data.person || '',
+    kind: ['common', 'personal', 'system'].indexOf(data.tool_kind) >= 0 ? data.tool_kind : 'personal',
+    dekiru: data.desc || '',
+    url: url || null,
+    loc_label: locLabel,
+    areas: Array.isArray(data.tool_areas) ? data.tool_areas : [],
+    registered_at: new Date().toISOString().split('T')[0],
+  };
+  if (ask) newTool.ask = true;
+
+  current.push(newTool);
+
+  const updated = Utilities.base64Encode(
+    Utilities.newBlob(JSON.stringify(current, null, 2)).getBytes()
+  );
+
+  UrlFetchApp.fetch(apiBase, {
+    method: 'put',
+    headers: {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github.v3+json',
+    },
+    contentType: 'application/json',
+    payload: JSON.stringify({
+      message: `feat: add tool ${toolId} by ${data.person || 'anonymous'}`,
+      content: updated,
+      sha,
     }),
     muteHttpExceptions: true,
   });
@@ -435,13 +508,21 @@ function postToSlack_(data, scenes, tags, cardId, webhookUrl) {
     return s ? s.label : id;
   }).join(' / ');
 
-  const text = [
-    `📣 *新しい活用事例が登録されました！*`,
-    `*${data.title}*  by ${data.person || '匿名'}`,
-    `🛠 ${data.tool || '—'}　${savedText}`,
-    sceneLabels ? `🏷 ${sceneLabels}` : '',
-    `\nhttps://fujimoto-cpu.github.io/cowork-guide/v2/`,
-  ].filter(Boolean).join('\n');
+  const text = data.type === 'tool'
+    ? [
+        `🧰 *新しい社内ツールが登録されました！*`,
+        `*${data.tool_icon || '🧰'} ${data.title}*  by ${data.person || '匿名'}`,
+        `✨ ${data.desc || ''}`,
+        data.tool_url ? `📍 ${data.tool_url}` : `📍 場所確認中（${data.person || '登録者'}に聞く）`,
+        `\nhttps://fujimoto-cpu.github.io/cowork-guide/v2/`,
+      ].filter(Boolean).join('\n')
+    : [
+        `📣 *新しい活用事例が登録されました！*`,
+        `*${data.title}*  by ${data.person || '匿名'}`,
+        `🛠 ${data.tool || '—'}　${savedText}`,
+        sceneLabels ? `🏷 ${sceneLabels}` : '',
+        `\nhttps://fujimoto-cpu.github.io/cowork-guide/v2/`,
+      ].filter(Boolean).join('\n');
 
   UrlFetchApp.fetch(webhookUrl, {
     method: 'post',

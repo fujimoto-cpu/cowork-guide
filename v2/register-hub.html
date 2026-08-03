@@ -74,6 +74,21 @@
     .success p{font-size:12.5px;color:var(--ink2);}
     .success .btn{display:inline-block;margin-top:18px;background:var(--p);color:#fff;font-weight:700;font-size:13.5px;border-radius:10px;padding:11px 22px;}
 
+    /* ===== 種別トグル（事例 / ツール・2026-08-03 新設） ===== */
+    .kindpick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+    .kindbtn{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:14px 15px;cursor:pointer;font-family:inherit;text-align:left;transition:.14s;}
+    .kindbtn:hover{border-color:var(--p);}
+    .kindbtn.on{border-color:var(--p);background:var(--tint);box-shadow:0 0 0 3px rgba(37,99,235,.10);}
+    .kindbtn .kb-t{display:block;font-size:13.5px;font-weight:700;color:var(--ink);}
+    .kindbtn.on .kb-t{color:var(--p2);}
+    .kindbtn .kb-s{display:block;font-size:11px;color:var(--ink3);font-weight:500;margin-top:3px;line-height:1.55;}
+    .areas{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:7px;}
+    .areabox{display:flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:9px;padding:8px 11px;font-size:12px;font-weight:600;color:var(--ink2);cursor:pointer;background:#fff;transition:.12s;}
+    .areabox:hover{border-color:var(--p);}
+    .areabox input{width:15px;height:15px;accent-color:var(--p);cursor:pointer;flex-shrink:0;}
+    .areabox.on{border-color:var(--p);background:var(--tint);color:var(--p2);}
+    @media(max-width:520px){.kindpick{grid-template-columns:1fr;}}
+
     .tip{background:var(--tint);border-radius:12px;padding:12px 15px;font-size:11.5px;color:var(--ink2);margin-bottom:18px;line-height:1.7;}
     .tip b{color:var(--p2);}
     footer{text-align:center;padding:26px 20px;color:var(--ink3);font-size:11px;border-top:1px solid var(--border);}
@@ -99,9 +114,24 @@
 
 <main>
   <div class="wrap">
-    <div class="tip">
+    <div class="kindpick">
+      <button type="button" class="kindbtn on" id="kind-case" onclick="setKind('case')">
+        <span class="kb-t">💡 活用事例を登録</span>
+        <span class="kb-s">AIでこんなことができた、という自分の使い方。<br>03「活用事例」に並びます。</span>
+      </button>
+      <button type="button" class="kindbtn" id="kind-tool" onclick="setKind('tool')">
+        <span class="kb-t">🧰 社内ツールを登録</span>
+        <span class="kb-s">みんなが使える道具そのもの。<br>01「社内ツール」の台帳に載ります。</span>
+      </button>
+    </div>
+
+    <div class="tip" id="tip-case">
       💡 <b>3分でOK。</b>まずは「名前・タイトル・できること」の3つだけでも登録できます。手順や画像は後から足せます。<br>
       削減時間は <b>「AIなしでやったら何分」−「実際何分」</b> で入れてね。
+    </div>
+    <div class="tip" id="tip-tool" style="display:none;">
+      🧰 <b>ツール台帳への登録です。</b>「名前・できること・置き場所」があれば載ります。<br>
+      置き場所が決まってなければ空欄でOK（<b>❓マーク付き</b>で「作った人に聞く」表示になります）。
     </div>
 
     <form class="card" id="register-form">
@@ -130,16 +160,57 @@
       </div>
 
       <div class="field">
-        <label>事例タイトル<span class="req">*</span></label>
+        <label id="lb-title">事例タイトル<span class="req">*</span></label>
         <input type="text" id="title" required placeholder="例：レシート写真 → スプレッドシートに自動データ化" />
+        <div class="hint-s" id="hint-title" style="display:none;">ハブに出るツール名。例：レシート自動読取 / PL作成ツール</div>
       </div>
 
       <div class="field">
-        <label>✨ できること<span class="req">*</span></label>
+        <label id="lb-desc">✨ できること<span class="req">*</span></label>
         <textarea id="desc" class="ta-mid" required placeholder="例：領収書を撮って投げるだけで、手入力ゼロで経費一覧が完成する"></textarea>
-        <div class="hint-s">「これで何ができるようになった？」を、読んだ人がすぐ分かるように。</div>
+        <div class="hint-s" id="hint-desc">「これで何ができるようになった？」を、読んだ人がすぐ分かるように。</div>
       </div>
 
+      <!-- ===== ツール登録のときだけ出る ===== -->
+      <div class="tool-only" style="display:none;">
+        <div class="field">
+          <label>アイコン<span class="opt">任意・絵文字ひとつ</span></label>
+          <input type="text" id="tool_icon" maxlength="4" placeholder="🧾" />
+          <div class="hint-s">空欄なら 🧰 になります。</div>
+        </div>
+
+        <div class="field">
+          <label>ツールの種類<span class="req">*</span></label>
+          <select id="tool_kind">
+            <option value="personal">💡 社員の発明（自分/誰かが作ったもの）</option>
+            <option value="common">🏢 全社共通（公式に全員が使うもの）</option>
+            <option value="system">⚙️ 自動の仕組み（裏で勝手に動いてるもの）</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>置き場所（URL）<span class="opt">任意</span></label>
+          <input type="text" id="tool_url" placeholder="https://..." />
+          <div class="hint-s">空欄でOK。その場合は「❓ 場所確認中（作った人に聞く）」と表示されます。</div>
+        </div>
+
+        <div class="field">
+          <label>どの業務で使う？<span class="req">*</span><span class="opt">複数選べます</span></label>
+          <div class="areas" id="tool-areas">
+            <label class="areabox"><input type="checkbox" value="schedule" />📅 スケジュール・案件管理</label>
+            <label class="areabox"><input type="checkbox" value="create" />🎨 制作・デザイン</label>
+            <label class="areabox"><input type="checkbox" value="docs" />📝 資料・ドキュメント</label>
+            <label class="areabox"><input type="checkbox" value="minutes" />📋 議事録・記録</label>
+            <label class="areabox"><input type="checkbox" value="money" />💰 経費・PL・お金</label>
+            <label class="areabox"><input type="checkbox" value="research" />🔍 リサーチ・分析</label>
+            <label class="areabox"><input type="checkbox" value="comms" />📣 共有・SNS</label>
+          </div>
+          <div class="hint-s">01のカバレッジマップの、どのエリアに置くかが決まります。</div>
+        </div>
+      </div>
+
+      <!-- ===== 活用事例のときだけ出る ===== -->
+      <div class="case-only">
       <div class="field">
         <label>使ったツール<span class="opt">任意</span></label>
         <input type="text" id="tool" placeholder="例：Cowork / ChatGPT / Illustratorスクリプト" />
@@ -168,6 +239,7 @@
           <div id="file-name"></div>
         </label>
       </div>
+      </div><!-- /case-only -->
 
       <button type="submit" class="submit" id="submit-btn">
         <span id="btn-text">＋ この事例を登録する</span>
@@ -179,7 +251,7 @@
     <div class="success" id="success-box">
       <div class="ic">🎉</div>
       <h2>登録ありがとう！</h2>
-      <p>事例がハブに反映されます（数分〜）。<br>あなたの時短が、みんなの時短になります。</p>
+      <p id="success-msg">事例がハブに反映されます（数分〜）。<br>あなたの時短が、みんなの時短になります。</p>
       <a class="btn" href="./index.html">ハブで確認する →</a>
     </div>
   </div>
@@ -194,6 +266,35 @@
   // 2026-08-01 差し替え：旧デプロイ(AKfycbzu4-cn…)はプロジェクト本体が行方不明になったため、
   // KONNEKT-AI-HUB として作り直したプロジェクトの新デプロイに切り替えた。
   const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxffr3ArU0h9RQVA37j7P3vMjs1cQ4nCfGEq9UMOOT5vD4km80NBKztxm8uwNmlol8B/exec';
+
+  /* ===== 種別切替（事例 / ツール・2026-08-03 新設） ===== */
+  let entryKind='case';
+  function setKind(k){
+    entryKind=k;
+    const isTool=k==='tool';
+    document.getElementById('kind-case').classList.toggle('on',!isTool);
+    document.getElementById('kind-tool').classList.toggle('on',isTool);
+    document.getElementById('tip-case').style.display=isTool?'none':'';
+    document.getElementById('tip-tool').style.display=isTool?'':'none';
+    document.querySelectorAll('.case-only').forEach(el=>el.style.display=isTool?'none':'');
+    document.querySelectorAll('.tool-only').forEach(el=>el.style.display=isTool?'':'none');
+    document.getElementById('lb-title').innerHTML=isTool
+      ?'ツール名<span class="req">*</span>':'事例タイトル<span class="req">*</span>';
+    document.getElementById('title').placeholder=isTool
+      ?'例：レシート自動読取':'例：レシート写真 → スプレッドシートに自動データ化';
+    document.getElementById('hint-title').style.display=isTool?'':'none';
+    document.getElementById('lb-desc').innerHTML=isTool
+      ?'✨ このツールでできること<span class="req">*</span>':'✨ できること<span class="req">*</span>';
+    document.getElementById('desc').placeholder=isTool
+      ?'例：レシートを写真に撮るだけでスプレッドシートに経費データ化':'例：領収書を撮って投げるだけで、手入力ゼロで経費一覧が完成する';
+    document.getElementById('hint-desc').textContent=isTool
+      ?'ハブの一覧とホバー吹き出しに、そのまま出る一文です。':'「これで何ができるようになった？」を、読んだ人がすぐ分かるように。';
+    document.getElementById('btn-text').textContent=isTool?'＋ このツールを登録する':'＋ この事例を登録する';
+  }
+  document.querySelectorAll('#tool-areas .areabox').forEach(box=>{
+    const cb=box.querySelector('input');
+    cb.addEventListener('change',()=>box.classList.toggle('on',cb.checked));
+  });
 
   const fileInput=document.getElementById('file-input'), fileDrop=document.getElementById('file-drop'), fileName=document.getElementById('file-name');
   let selectedFile=null;
@@ -216,10 +317,12 @@
     e.preventDefault();
     const btn=document.getElementById('submit-btn'),btnText=document.getElementById('btn-text'),spinner=document.getElementById('spinner'),errMsg=document.getElementById('error-msg');
     btn.disabled=true;btnText.style.display='none';spinner.style.display='block';errMsg.style.display='none';
+    errMsg.textContent='送信に失敗しました。時間をおいて再度お試しください（藤本まで連絡でもOK）。';
     try{
       let file_base64=null,file_name=null,file_type=null;
       if(selectedFile){file_base64=await toBase64(selectedFile);file_name=selectedFile.name;file_type=selectedFile.type;}
       const payload={
+        type:entryKind,
         person:document.getElementById('person').value.trim(),
         role:[],
         title:document.getElementById('title').value.trim(),
@@ -231,9 +334,24 @@
         monthly_frequency:Number(document.getElementById('monthly_frequency').value)||null,
         file_base64,file_name,file_type,
       };
+      if(entryKind==='tool'){
+        payload.tool_icon=document.getElementById('tool_icon').value.trim();
+        payload.tool_kind=document.getElementById('tool_kind').value;
+        payload.tool_url=document.getElementById('tool_url').value.trim();
+        payload.tool_areas=[...document.querySelectorAll('#tool-areas input:checked')].map(c=>c.value);
+        if(!payload.tool_areas.length){
+          errMsg.textContent='「どの業務で使う？」を1つ以上選んでね。';
+          errMsg.style.display='block';
+          btn.disabled=false;btnText.style.display='';spinner.style.display='none';
+          return;
+        }
+      }
       const res=await fetch(GAS_ENDPOINT,{method:'POST',body:JSON.stringify(payload)});
       const result=await res.json().catch(()=>({success:true}));
       if(result.success!==false){
+        document.getElementById('success-msg').innerHTML=entryKind==='tool'
+          ?'ツールが 01「社内ツール」台帳に反映されます（数分〜）。<br>あなたの道具が、みんなの道具になります。'
+          :'事例がハブに反映されます（数分〜）。<br>あなたの時短が、みんなの時短になります。';
         document.getElementById('register-form').style.display='none';
         document.getElementById('success-box').style.display='block';
         window.scrollTo({top:0,behavior:'smooth'});
