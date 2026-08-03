@@ -346,7 +346,11 @@
 
 <script>
 let CARDS=[], TOOLS=[];
-const isTest=c=>/^てすと/.test(c.person||"")||/^case-----/.test(c.id||"");
+/* ★2026-08-03 修正：旧判定は /^case-----/ でIDのハイフン連続をテスト扱いにしていたが、
+   GASのID生成が日本語名を1文字ずつハイフンに変換するため「藤本有璃子」等の投稿が
+   すべてテスト扱いで非表示になっていた（フォーム経由の登録が消える主因）。
+   IDの形に頼るのをやめ、投稿者名が「てすと」で始まるものだけをテストとする。 */
+const isTest=c=>/^てすと/.test(c.person||"");
 
 /* 業務エリア（カバレッジマップの軸） */
 const AREAS=[
@@ -378,6 +382,12 @@ const REVERSE=[
   {label:"💰 PL・予算を組みたい",tools:["pl"],cases:[],guides:[["👔 PM向けガイド","../docs/pm-guide.pdf"]],scenes:["pl"],areas:["money"]},
   {label:"📱 SNSスケジュールを立てたい",tools:[],cases:["case-pm担当-009"],guides:[],scenes:["sns-schedule","slack-share"],areas:["comms"]},
   {label:"📊 集計・自動判定させたい",tools:[],cases:["case-mizuki-005","case-wataru-007"],guides:[],scenes:["auto-check"],areas:["research"]},
+  /* ★2026-08-03 追加：下記3つが無いと research / brand-analysis / trend-collect /
+     mail-reply / video-caption のシーンを持つ事例がどの「やりたいこと」にも載らず、
+     03廃止後は完全に行き場を失う（登録しても見えない）。SCENES 全20種を必ず拾う。 */
+  {label:"🔍 リサーチ・分析したい",tools:[],cases:[],guides:[],scenes:["research","brand-analysis","trend-collect"],areas:["research"]},
+  {label:"✉️ メール・連絡を楽にしたい",tools:[],cases:[],guides:[],scenes:["mail-reply"],areas:["comms"]},
+  {label:"🎬 動画・字幕をつくりたい",tools:[],cases:[],guides:[],scenes:["video-caption"],areas:[]},
 ];
 /* 手打ちリスト＋自動マッチ（scenes / areas 一致）を重複なしで合成する */
 function toolsFor(r){

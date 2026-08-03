@@ -69,7 +69,14 @@ function doPost(e) {
       : classifyWithGemini_(data.title, data.desc, data.tool, props.getProperty('GEMINI_API_KEY'));
 
     // 3. ID 生成
-    const personKey = (data.person || 'anonymous').toLowerCase().replace(/[^a-z0-9]/g, '-');
+    // ★2026-08-03 修正：日本語名は [^a-z0-9] 置換で全文字がハイフンになり
+    //   「藤本有璃子」→ 'case-------123' のようなIDが生まれていた。
+    //   ハブ側のテスト判定 /^case-----/ に一致してしまい、日本語名の投稿が
+    //   すべて「テスト投稿」として非表示にされていた（登録が消える主因）。
+    //   連続ハイフンを畳み、英数字が1文字も残らない場合は 'member' を使う。
+    const personKey = (data.person || 'anonymous').toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'member';
     const cardId = `${isTool ? 'tool' : 'case'}-${personKey}-${Date.now()}`;
 
     // 4. Notion に保存（トークン未設定時はスキップ）
