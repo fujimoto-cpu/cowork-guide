@@ -220,7 +220,6 @@
       <span class="tag" onclick="quickSearch('レシート')">経費レシート</span>
     </p>
     <div class="hstats" title="登録データから自動集計（手動更新なし）">
-      <span class="hstat"><b id="kpi-hours">–</b>h/月 みんなの削減</span>
       <span class="hstat"><b id="kpi-tools">–</b>ツール</span>
       <span class="hstat"><b id="kpi-cases">–</b>事例（<span id="kpi-people">–</span>人が投稿）</span>
     </div>
@@ -574,7 +573,7 @@ function render(list){
         ${(c.tags||[]).map(t=>`<span class="b-tag">#${esc(t)}</span>`).join("")}
         ${toolBtn}
       </div>
-    </article>`;}).join("");
+    </article>`;}).join("")||'<p class="rempty">まだ事例がないよ。いちばん最初の事例を登録してみて 👇</p>';
   document.getElementById("count").textContent=list.length+" 件 / 全 "+CARDS.length+" 件";
   el.querySelectorAll(".case").forEach(a=>{
     a.onclick=e=>{
@@ -628,8 +627,6 @@ Promise.all([
 ]).then(([cards,tools])=>{
   CARDS=cards.filter(c=>c.type!=="tool"&&!isTest(c));
   TOOLS=tools;
-  const totalMin=CARDS.reduce((s,c)=>s+(c.monthly_saved_minutes||0),0);
-  animateNum(document.getElementById("kpi-hours"),totalMin/60,1);
   animateNum(document.getElementById("kpi-tools"),TOOLS.length,0);
   animateNum(document.getElementById("kpi-cases"),CARDS.length,0);
   document.getElementById("kpi-people").textContent=new Set(CARDS.map(c=>c.person)).size;
