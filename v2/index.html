@@ -190,6 +190,16 @@
     .linkbtn:hover{background:var(--p2);}
     .linkbtn.ghost{background:#fff;color:var(--p2);border:1px solid var(--border);}
     .linkbtn.ghost:hover{border-color:var(--p);background:var(--tint);}
+    /* 添付画像・リンク先のサムネイルプレビュー（2026-08-03 追加） */
+    .previewrow{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px;}
+    .thumb-link{display:block;width:150px;height:104px;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:var(--tint2);flex-shrink:0;}
+    .thumb-link img{width:100%;height:100%;object-fit:cover;display:block;}
+    .linkcard{display:flex;align-items:center;gap:9px;border:1px solid var(--border);border-radius:10px;padding:9px 13px;background:#fff;max-width:260px;transition:.12s;}
+    .linkcard:hover{border-color:var(--p);background:var(--tint);}
+    .linkcard-ico{width:22px;height:22px;border-radius:5px;flex-shrink:0;}
+    .linkcard-text{display:flex;flex-direction:column;min-width:0;}
+    .linkcard-text b{font-size:12px;color:var(--ink);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .linkcard-host{font-size:10.5px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
     .mb-2{margin-bottom:8px;}.mb-3{margin-bottom:12px;}.mb-4{margin-bottom:16px;}
     .text-xs{font-size:11px;}.font-semibold{font-weight:600;}.text-gray-600{color:var(--ink2);}
@@ -556,24 +566,41 @@ function linkify(html){
     });
   }).join("");
 }
+/* 添付・リンク先のプレビュー：画像URLは実サムネイル、それ以外はfavicon+ホスト名のリンクカード
+   （2026-08-03 追加・「文字ばかりで中身が想像できない」への対応） */
+const IMG_EXT_RE=/\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i;
+function isImageUrl(u){return IMG_EXT_RE.test(String(u||""));}
+function hostOf(u){try{return new URL(u).hostname.replace(/^www\./,"");}catch(e){return "";}}
+function previewCard(url,label){
+  if(!url) return "";
+  if(isImageUrl(url)){
+    return `<a class="thumb-link" href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(url)}" alt="" loading="lazy"></a>`;
+  }
+  const host=hostOf(url);
+  const favicon=host?`https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=64`:"";
+  return `<a class="linkcard" href="${esc(url)}" target="_blank" rel="noopener">
+    ${favicon?`<img class="linkcard-ico" src="${favicon}" alt="">`:""}
+    <span class="linkcard-text"><b>${esc(label)}</b><span class="linkcard-host">${esc(host||url)}</span></span>
+  </a>`;
+}
 function openCase(id){
   const c=CARDS.find(x=>x.id===id);if(!c)return;
   const badges=`<div class="badges" style="margin:6px 0 14px;">
     ${c.saved_minutes?`<span class="b-saved">⏱ 1回 -${esc(c.saved_minutes)}分</span>`:""}
     ${c.monthly_saved_minutes?`<span class="b-month">${esc(fmtMonthly(c.monthly_saved_minutes))}</span>`:""}
     ${c.tool?`<span class="b-tool">${esc(c.tool)}</span>`:""}</div>`;
-  // 参考リンク（フォームの「リンク」欄）＋ 添付ファイルを大きなボタンで先頭に出す
-  const links=[];
-  if(c.link) links.push(`<a class="linkbtn" href="${esc(c.link)}" target="_blank" rel="noopener">🔗 このツール・資料を開く</a>`);
-  (c.attachments||[]).forEach(a=>links.push(`<a class="linkbtn ghost" href="${esc(a)}" target="_blank" rel="noopener">📎 添付を開く</a>`));
-  links.push(`<a class="linkbtn ghost" href="./register-hub.html?edit=${encodeURIComponent(c.id)}">✏️ 編集する</a>`);
-  const linkRow=`<div class="linkrow">${links.join("")}</div>`;
-  // 本文が「リンクそのもの」しかない場合は、上のボタンと重複するので本文を出さない
+  // 参考リンク（フォームの「リンク」欄）＋ 添付ファイルを、画像ならサムネ／それ以外はfavicon付きカードで表示
+  const previews=[];
+  if(c.link) previews.push(previewCard(c.link,"このツール・資料を開く"));
+  (c.attachments||[]).forEach(a=>previews.push(previewCard(a,"添付を開く")));
+  const previewRow=previews.length?`<div class="previewrow">${previews.join("")}</div>`:"";
+  const linkRow=`<div class="linkrow"><a class="linkbtn ghost" href="./register-hub.html?edit=${encodeURIComponent(c.id)}">✏️ 編集する</a></div>`;
+  // 本文が「リンクそのもの」しかない場合は、上のプレビューと重複するので本文を出さない
   const raw=(c.detail||c.desc||"").replace(/<[^>]*>/g,"").trim();
   const bodyIsJustLink=c.link&&raw===String(c.link).trim();
   const body=bodyIsJustLink?"":`<div class="modal-text">${linkify(c.detail||("<p>"+esc(c.desc||"")+"</p>"))}</div>`;
   document.getElementById("modal-body").innerHTML=
-    "<h3>"+esc(c.title)+"</h3>"+badges+linkRow+body;
+    "<h3>"+esc(c.title)+"</h3>"+badges+previewRow+body+linkRow;
   document.getElementById("backdrop").classList.add("open");
 }
 function closeModal(){document.getElementById("backdrop").classList.remove("open");}
