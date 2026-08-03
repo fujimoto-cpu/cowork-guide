@@ -88,15 +88,21 @@
     .tchip.dim{opacity:.22;}
     .notice{font-size:11px;color:var(--ink3);margin-top:8px;}
 
-    /* ===== 「〇〇したい」クイックフィルタ（旧2ペイン逆引きを統合・2026-08-01） ===== */
-    .want-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
-    .wantbtn{font-size:12px;font-weight:600;color:var(--ink2);padding:7px 13px;border-radius:99px;cursor:pointer;border:1px solid var(--border);background:#fff;text-align:left;font-family:inherit;transition:.12s;}
-    .wantbtn:hover{border-color:var(--p);color:var(--p);}
-    .wantbtn.on{background:var(--p);color:#fff;border-color:var(--p);}
-    .want-extra{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:14px;min-height:22px;}
-    .we-label{font-size:10.5px;color:var(--ink3);font-weight:600;}
-    .wchip{font-size:11px;font-weight:600;background:var(--tint);color:var(--p2);border-radius:8px;padding:4px 9px;cursor:pointer;}
-    .wchip:hover{background:var(--p-light);}
+    /* ===== 逆引き（2ペイン） ===== */
+    .rev{display:grid;grid-template-columns:225px 1fr;gap:14px;align-items:start;}
+    .rev-list{display:flex;flex-direction:column;gap:5px;}
+    .ritem{font-size:12.5px;font-weight:600;color:var(--ink2);padding:8px 13px;border-radius:9px;cursor:pointer;border:none;background:transparent;text-align:left;font-family:inherit;transition:.12s;}
+    .ritem:hover{background:var(--tint);color:var(--p);}
+    .ritem.on{background:var(--p);color:#fff;}
+    .rev-pane{background:var(--tint2);border-radius:var(--radius);padding:14px 15px;min-height:180px;}
+    .rgroup{font-size:10px;font-weight:700;color:var(--p);letter-spacing:.12em;margin:4px 0 6px;}
+    .rgroup:first-child{margin-top:0;}
+    .rcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;}
+    .rcard{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-size:11.5px;cursor:pointer;transition:.12s;line-height:1.6;}
+    .rcard:hover{border-color:var(--p);}
+    .rcard b{font-size:12px;font-weight:600;color:var(--ink);}
+    .rcard .m{color:var(--ink3);font-size:10.5px;display:block;}
+    .rcard .go{color:var(--p);font-weight:600;font-size:10.5px;}
     .rempty{font-size:12px;color:var(--ink3);}
 
     /* ===== ホーム/タブ切替（04+05→ガイド・06→発信・2026-08-01） ===== */
@@ -177,6 +183,9 @@
     .text-xs{font-size:11px;}.font-semibold{font-weight:600;}.text-gray-600{color:var(--ink2);}
 
     @media (max-width:720px){
+      .rev{grid-template-columns:1fr;}
+      .rev-list{flex-direction:row;flex-wrap:wrap;}
+      .ritem{border:1px solid var(--border);}
       .count{margin-left:0;width:100%;}
       .hero .net{display:none;}
     }
@@ -189,7 +198,8 @@
   <div class="nav-inner">
     <span class="logo"><span class="dia">🔷</span> KONNEKT AI情報ハブ</span>
     <a class="np" href="#tools" onclick="showHome();return true;">ツール</a>
-    <a class="np" href="#cases" onclick="showHome();return true;">〇〇したい</a>
+    <a class="np" href="#reverse" onclick="showHome();return true;">〇〇したい</a>
+    <a class="np" href="#cases" onclick="showHome();return true;">活用事例</a>
     <a class="np" href="javascript:void(0)" onclick="showTab('guide')">ガイド</a>
     <a class="np" href="javascript:void(0)" onclick="showTab('archive')">発信</a>
     <a class="np cta" href="./register-hub.html">＋ 事例を登録</a>
@@ -235,17 +245,30 @@
     <p class="notice">空きエリアは「まだツールがない＝作るチャンス」。作る前に、まずここで検索してね。</p>
   </section>
 
-  <!-- ===== 02 〇〇したいから探す（旧02+03を統合） ===== -->
-  <section id="cases">
+  <!-- ===== 02 逆引き ===== -->
+  <section id="reverse">
     <div class="num-head">
       <span class="sec-badge">02</span>
       <div class="titles">
         <h2>「〇〇したい」から探す</h2>
-        <span class="sec-note">やりたいことを選ぶと下の事例が絞り込まれる。※一部の削減値は本人確認前の推定（登録し直し歓迎）</span>
+        <span class="sec-note">やりたいことを選ぶ → 使えるツール・事例・ガイドが出る</span>
       </div>
     </div>
-    <div class="want-row" id="want-row"></div>
-    <div class="want-extra" id="want-extra"></div>
+    <div class="rev">
+      <div class="rev-list" id="rev-list"></div>
+      <div class="rev-pane" id="rev-pane"></div>
+    </div>
+  </section>
+
+  <!-- ===== 03 活用事例 ===== -->
+  <section id="cases">
+    <div class="num-head">
+      <span class="sec-badge">03</span>
+      <div class="titles">
+        <h2>活用事例</h2>
+        <span class="sec-note">みんながAIで何をしたか。※一部の削減値は本人確認前の推定（登録し直し歓迎）</span>
+      </div>
+    </div>
     <div class="controls">
       <span class="ctrl-label">並べ替え</span>
       <button class="sortbtn on" id="sort-new" onclick="setSort('new')">新しい順</button>
@@ -455,39 +478,41 @@ function dimTools(q){
   });
 }
 
-/* ===== 「〇〇したい」で絞り込む（旧2ペインの逆引きを事例グリッドに統合・2026-08-01） ===== */
-let activeWant=null;
-function renderWantRow(){
-  const rowEl=document.getElementById("want-row");
-  const allBtn=document.createElement("button");
-  allBtn.className="wantbtn on";allBtn.textContent="すべて";
-  allBtn.onclick=()=>setWant(null);
-  rowEl.appendChild(allBtn);
-  REVERSE.forEach(r=>{
+/* ===== 逆引き（2ペイン） ===== */
+function renderReverse(){
+  const listEl=document.getElementById("rev-list");
+  REVERSE.forEach((r,i)=>{
     const b=document.createElement("button");
-    b.className="wantbtn";b.textContent=r.label;
-    b.onclick=()=>setWant(r);
-    rowEl.appendChild(b);
+    b.className="ritem"+(i===0?" on":"");b.textContent=r.label;
+    b.onclick=()=>{document.querySelectorAll(".ritem").forEach(x=>x.classList.remove("on"));b.classList.add("on");showReverse(r);};
+    listEl.appendChild(b);
   });
+  showReverse(REVERSE[0]);
 }
-function setWant(r){
-  activeWant=r;
-  document.querySelectorAll(".wantbtn").forEach(b=>b.classList.toggle("on",b.textContent===(r?r.label:"すべて")));
-  renderWantExtra(r);
-  applyFilters();
-}
-function renderWantExtra(r){
-  const el=document.getElementById("want-extra");
-  if(!r){el.innerHTML="";return;}
-  const toolChips=(r.tools||[]).map(id=>TOOLS.find(t=>t.id===id)).filter(Boolean)
-    .map(t=>`<span class="wchip" data-tool="${esc(t.id)}">🧰 ${esc(t.icon)} ${esc(t.name)}</span>`).join("");
-  const guideChips=(r.guides||[]).map(g=>`<span class="wchip" data-href="${esc(g[1])}">📄 ${esc(g[0])}</span>`).join("");
-  if(!toolChips&&!guideChips){el.innerHTML="";return;}
-  el.innerHTML=`<span class="we-label">関連ツール・ガイド：</span>${toolChips}${guideChips}`;
-  el.querySelectorAll(".wchip").forEach(w=>{
-    w.onclick=()=>{
-      if(w.dataset.tool)toolChipAction(TOOLS.find(t=>t.id===w.dataset.tool));
-      else if(w.dataset.href)window.open(w.dataset.href,"_blank","noopener");
+function showReverse(r){
+  const groups=[];
+  const toolCards=r.tools.map(id=>TOOLS.find(x=>x.id===id)).filter(Boolean).map(t=>`
+    <div class="rcard" data-tool="${esc(t.id)}"><b>${esc(t.icon)} ${esc(t.name)}</b>
+      <span class="m">${esc(t.owner)} ・ ${esc(t.dekiru)}</span>
+      <span class="m">📍 ${esc(t.loc_label)}</span>
+      <span class="go">${t.url?"開く →":"聞く →"}</span></div>`);
+  if(toolCards.length)groups.push(`<div class="rgroup">TOOL</div><div class="rcards">${toolCards.join("")}</div>`);
+  const caseCards=r.cases.map(id=>CARDS.find(x=>x.id===id)).filter(Boolean).map(c=>`
+    <div class="rcard" data-case="${esc(c.id)}"><b>${esc(c.title)}</b>
+      <span class="m">${esc(c.person)}${c.monthly_saved_minutes?" ・ "+esc(fmtMonthly(c.monthly_saved_minutes)):""}</span>
+      <span class="go">見る →</span></div>`);
+  if(caseCards.length)groups.push(`<div class="rgroup">事例</div><div class="rcards">${caseCards.join("")}</div>`);
+  const guideCards=r.guides.map(g=>`
+    <div class="rcard" data-href="${esc(g[1])}"><b>${esc(g[0])}</b>
+      <span class="go">PDF →</span></div>`);
+  if(guideCards.length)groups.push(`<div class="rgroup">GUIDE</div><div class="rcards">${guideCards.join("")}</div>`);
+  const el=document.getElementById("rev-pane");
+  el.innerHTML=groups.join("")||'<p class="rempty">まだ登録なし — 最初の事例を登録するチャンス！</p>';
+  el.querySelectorAll(".rcard").forEach(h=>{
+    h.onclick=()=>{
+      if(h.dataset.tool)toolChipAction(TOOLS.find(t=>t.id===h.dataset.tool));
+      else if(h.dataset.case)openCase(h.dataset.case);
+      else if(h.dataset.href)window.open(h.dataset.href,"_blank","noopener");
     };
   });
 }
@@ -549,7 +574,7 @@ function render(list){
         ${(c.tags||[]).map(t=>`<span class="b-tag">#${esc(t)}</span>`).join("")}
         ${toolBtn}
       </div>
-    </article>`;}).join("")||'<p class="rempty">まだこの条件の事例は無いよ。他の「〇〇したい」も見てみて、なければ登録してみて！</p>';
+    </article>`;}).join("");
   document.getElementById("count").textContent=list.length+" 件 / 全 "+CARDS.length+" 件";
   el.querySelectorAll(".case").forEach(a=>{
     a.onclick=e=>{
@@ -563,7 +588,6 @@ function applyFilters(){
   const q=document.getElementById("search").value.trim().toLowerCase();
   const p=document.getElementById("person").value;
   let list=CARDS.filter(c=>{
-    if(activeWant&&!(activeWant.cases||[]).includes(c.id))return false;
     const hay=((c.title||"")+(c.person||"")+(c.tool||"")+(c.desc||"")+(c.tags||[]).join()).toLowerCase();
     if(q&&!hay.includes(q))return false;
     if(p&&c.person!==p)return false;
@@ -610,7 +634,7 @@ Promise.all([
   animateNum(document.getElementById("kpi-cases"),CARDS.length,0);
   document.getElementById("kpi-people").textContent=new Set(CARDS.map(c=>c.person)).size;
   renderTools();
-  renderWantRow();
+  renderReverse();
   buildControls(CARDS);
   applyFilters();
 }).catch(()=>{
