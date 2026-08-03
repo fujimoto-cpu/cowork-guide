@@ -217,6 +217,12 @@
       </div>
 
       <div class="field">
+        <label>🔗 リンク<span class="opt">任意</span></label>
+        <input type="text" id="link" placeholder="https://..." />
+        <div class="hint-s">作ったもの・スプレッドシート・Artifact など。詳細を開いたときにボタンで出ます。</div>
+      </div>
+
+      <div class="field">
         <label>どれくらい時短できた？<span class="opt">任意・入れると削減時間が自動計算されます</span></label>
         <div class="row3">
           <div><input type="number" id="before_minutes" min="0" placeholder="120" /><div class="sub">AIなし（分）</div></div>
@@ -327,6 +333,7 @@
         role:[],
         title:document.getElementById('title').value.trim(),
         tool:document.getElementById('tool').value.trim(),
+        link:document.getElementById('link').value.trim(),
         desc:document.getElementById('desc').value.trim(),
         detail:document.getElementById('detail').value.trim(),
         before_minutes:Number(document.getElementById('before_minutes').value)||null,

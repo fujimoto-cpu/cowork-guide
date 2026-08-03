@@ -351,7 +351,8 @@ function saveToNotion_(data, scenes, tags, fileUrl, cardId, token) {
         : (data.desc || '') } }] },
     'タグ': { multi_select: tags.map(t => ({ name: t })) },
     'Scenes': { multi_select: scenes.map(s => ({ name: s })) },
-    '添付ファイルURL': { rich_text: [{ text: { content: fileUrl || '' } }] },
+    // 添付ファイルと「🔗 リンク」欄をまとめて格納（Notion DBのスキーマを変えずに情報を落とさない）
+    '添付ファイルURL': { rich_text: [{ text: { content: [fileUrl, data.link].filter(Boolean).join('\n') } }] },
     'cards_id': { rich_text: [{ text: { content: cardId } }] },
     '投稿日': { date: { start: today } },
     'Status': { select: { name: 'published' } },
@@ -470,6 +471,7 @@ function updateCardsJson_(data, scenes, tags, fileUrl, cardId, token) {
     common_tool_status: null,
     desc: data.desc || '',
     detail: `<p>${(data.detail || data.desc || '').replace(/\n/g, '<br>')}</p>`,
+    link: data.link || null,   // 2026-08-03 追加：フォームの「🔗 リンク」欄
     skill_link: null,
     github_url: null,
     attachments: fileUrl ? [fileUrl] : [],

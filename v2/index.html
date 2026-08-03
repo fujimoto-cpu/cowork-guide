@@ -179,6 +179,18 @@
     .person-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink2);background:var(--tint);border-radius:99px;padding:3px 12px;}
     .person-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--p);}
     .cmd-box{background:#101828;color:#E5E7EB;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.7;border-radius:10px;padding:12px 14px;white-space:pre-wrap;word-break:break-word;}
+    /* ===== モーダル本文・リンク（2026-08-03 追加） ===== */
+    .modal-text{font-size:12.5px;line-height:1.8;color:var(--ink2);overflow-wrap:anywhere;}
+    .modal-text p{margin-bottom:8px;}
+    .modal-text p:last-child{margin-bottom:0;}
+    .inline-link{color:var(--p);font-weight:600;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere;}
+    .inline-link:hover{color:var(--p2);}
+    .linkrow{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;}
+    .linkbtn{display:inline-flex;align-items:center;background:var(--p);color:#fff;font-weight:600;font-size:12px;border-radius:9px;padding:9px 15px;transition:.14s;}
+    .linkbtn:hover{background:var(--p2);}
+    .linkbtn.ghost{background:#fff;color:var(--p2);border:1px solid var(--border);}
+    .linkbtn.ghost:hover{border-color:var(--p);background:var(--tint);}
+
     .mb-2{margin-bottom:8px;}.mb-3{margin-bottom:12px;}.mb-4{margin-bottom:16px;}
     .text-xs{font-size:11px;}.font-semibold{font-weight:600;}.text-gray-600{color:var(--ink2);}
 
@@ -542,14 +554,35 @@ function quickSearch(q){document.getElementById("search").value=q;applyFilters()
 function jumpTo(id){showHome();document.getElementById(id).scrollIntoView({behavior:"smooth"});}
 document.getElementById("search").addEventListener("input",applyFilters);
 
+/* 本文中の裸URLをリンク化する（2026-08-03 追加）。
+   detail は GAS が組み立てたHTML断片なので、既存タグを壊さないよう
+   「タグの外側にあるテキスト」だけを対象にする。 */
+function linkify(html){
+  return String(html||"").split(/(<[^>]+>)/).map(part=>{
+    if(part.startsWith("<")) return part;                 // タグはそのまま
+    return part.replace(/(https?:\/\/[^\s<>"']+)/g, u=>{
+      const label=u.length>52?u.slice(0,52)+"…":u;
+      return `<a class="inline-link" href="${u}" target="_blank" rel="noopener">${label}</a>`;
+    });
+  }).join("");
+}
 function openCase(id){
   const c=CARDS.find(x=>x.id===id);if(!c)return;
   const badges=`<div class="badges" style="margin:6px 0 14px;">
     ${c.saved_minutes?`<span class="b-saved">⏱ 1回 -${esc(c.saved_minutes)}分</span>`:""}
     ${c.monthly_saved_minutes?`<span class="b-month">${esc(fmtMonthly(c.monthly_saved_minutes))}</span>`:""}
     ${c.tool?`<span class="b-tool">${esc(c.tool)}</span>`:""}</div>`;
+  // 参考リンク（フォームの「リンク」欄）＋ 添付ファイルを大きなボタンで先頭に出す
+  const links=[];
+  if(c.link) links.push(`<a class="linkbtn" href="${esc(c.link)}" target="_blank" rel="noopener">🔗 このツール・資料を開く</a>`);
+  (c.attachments||[]).forEach(a=>links.push(`<a class="linkbtn ghost" href="${esc(a)}" target="_blank" rel="noopener">📎 添付を開く</a>`));
+  const linkRow=links.length?`<div class="linkrow">${links.join("")}</div>`:"";
+  // 本文が「リンクそのもの」しかない場合は、上のボタンと重複するので本文を出さない
+  const raw=(c.detail||c.desc||"").replace(/<[^>]*>/g,"").trim();
+  const bodyIsJustLink=c.link&&raw===String(c.link).trim();
+  const body=bodyIsJustLink?"":`<div class="modal-text">${linkify(c.detail||("<p>"+esc(c.desc||"")+"</p>"))}</div>`;
   document.getElementById("modal-body").innerHTML=
-    "<h3>"+esc(c.title)+"</h3>"+badges+(c.detail||("<p>"+esc(c.desc||"")+"</p>"));
+    "<h3>"+esc(c.title)+"</h3>"+badges+linkRow+body;
   document.getElementById("backdrop").classList.add("open");
 }
 function closeModal(){document.getElementById("backdrop").classList.remove("open");}
