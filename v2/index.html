@@ -199,7 +199,6 @@
     <span class="logo"><span class="dia">🔷</span> KONNEKT AI情報ハブ</span>
     <a class="np" href="#tools" onclick="showHome();return true;">ツール</a>
     <a class="np" href="#reverse" onclick="showHome();return true;">やりたいこと</a>
-    <a class="np" href="#cases" onclick="showHome();return true;">活用事例</a>
     <a class="np" href="javascript:void(0)" onclick="showTab('guide')">ガイド</a>
     <a class="np" href="javascript:void(0)" onclick="showTab('archive')">発信</a>
     <a class="np cta" href="./register-hub.html">＋ 事例を登録</a>
@@ -257,29 +256,6 @@
       <div class="rev-list" id="rev-list"></div>
       <div class="rev-pane" id="rev-pane"></div>
     </div>
-  </section>
-
-  <!-- ===== 03 活用事例 ===== -->
-  <section id="cases">
-    <div class="num-head">
-      <span class="sec-badge">03</span>
-      <div class="titles">
-        <h2>活用事例</h2>
-        <span class="sec-note">みんながAIで何をしたか。※一部の削減値は本人確認前の推定（登録し直し歓迎）</span>
-      </div>
-    </div>
-    <div class="controls">
-      <span class="ctrl-label">並べ替え</span>
-      <button class="sortbtn on" id="sort-new" onclick="setSort('new')">新しい順</button>
-      <button class="sortbtn" id="sort-saved" onclick="setSort('saved')">削減時間順</button>
-      <span class="ctrl-label" style="margin-left:8px;">登録者</span>
-      <select class="person" id="person" onchange="applyFilters()">
-        <option value="">全員</option>
-      </select>
-      <span class="count" id="count"></span>
-    </div>
-    <div class="chips" id="chips"></div>
-    <div class="cases" id="cases-grid"></div>
   </section>
 
   <div class="cta">
@@ -369,7 +345,7 @@
 </div>
 
 <script>
-let CARDS=[], TOOLS=[], sortMode="new", activeTags=new Set();
+let CARDS=[], TOOLS=[];
 const isTest=c=>/^てすと/.test(c.person||"")||/^case-----/.test(c.id||"");
 
 /* 業務エリア（カバレッジマップの軸） */
@@ -386,19 +362,34 @@ const KIND_LABEL={common:"全社共通",personal:"社員の発明",system:"自�
 /* 事例→ツールの紐付け（ツールに飛ぶボタン用） */
 const TOOL_OF={"case-wataru-006":"receipt","case-wataru-007":"slash"};
 
-/* 逆引きマップ：やりたいこと → ツール/事例/ガイド */
+/* 逆引きマップ：やりたいこと → ツール/事例/ガイド
+   ★2026-08-03 変更：03「活用事例」セクションを廃止し、事例はここ（02）だけで見せる形にした。
+   cases は手で並べた既存分。scenes は「このやりたいことに該当するシーン」で、
+   登録フォーム経由で増えた事例は scenes 一致で自動的にここに載る（手打ち不要）。
+   areas はツールの自動マッチ用（tools.json の areas と突き合わせ）。 */
 const REVERSE=[
-  {label:"📅 スケジュール管理したい",tools:["gantt","slash"],cases:["nishijima-calendar"],guides:[]},
-  {label:"🧾 経費・レシートを楽にしたい",tools:["receipt"],cases:["case-fujimoto-008","case-wataru-006"],guides:[]},
-  {label:"📝 資料をはやく作りたい",tools:[],cases:["case-mizuki-004","case-hiro-001"],guides:[["💼 PM 30事例集","../docs/pm-30cases.pdf"]]},
-  {label:"🎨 版下・デザインを時短したい",tools:["quality","pantone"],cases:["case-hiro-002"],guides:[]},
-  {label:"🖼 商品画像をつくりたい",tools:[],cases:["case-hiro-001"],guides:[]},
-  {label:"🌏 翻訳したい",tools:[],cases:["case-hiro-010"],guides:[]},
-  {label:"📋 議事録を自動にしたい",tools:["minutes"],cases:[],guides:[["📋 Google Meet 議事録ガイド","../docs/google-meet-guide.pdf"]]},
-  {label:"💰 PL・予算を組みたい",tools:["pl"],cases:[],guides:[["👔 PM向けガイド","../docs/pm-guide.pdf"]]},
-  {label:"📱 SNSスケジュールを立てたい",tools:[],cases:["case-pm担当-009"],guides:[]},
-  {label:"📊 集計・自動判定させたい",tools:[],cases:["case-mizuki-005","case-wataru-007"],guides:[]},
+  {label:"📅 スケジュール管理したい",tools:["gantt","slash"],cases:["nishijima-calendar"],guides:[],scenes:["calendar-add","morning-brief","shift"],areas:["schedule"]},
+  {label:"🧾 経費・レシートを楽にしたい",tools:["receipt"],cases:["case-fujimoto-008","case-wataru-006"],guides:[],scenes:["expense","receipt"],areas:["money"]},
+  {label:"📝 資料をはやく作りたい",tools:[],cases:["case-mizuki-004","case-hiro-001"],guides:[["💼 PM 30事例集","../docs/pm-30cases.pdf"]],scenes:["document","proposal"],areas:["docs"]},
+  {label:"🎨 版下・デザインを時短したい",tools:["quality","pantone"],cases:["case-hiro-002"],guides:[],scenes:["design-template"],areas:["create"]},
+  {label:"🖼 商品画像をつくりたい",tools:[],cases:["case-hiro-001"],guides:[],scenes:["product-image"],areas:["create"]},
+  {label:"🌏 翻訳したい",tools:[],cases:["case-hiro-010"],guides:[],scenes:["translation"],areas:[]},
+  {label:"📋 議事録を自動にしたい",tools:["minutes"],cases:[],guides:[["📋 Google Meet 議事録ガイド","../docs/google-meet-guide.pdf"]],scenes:["minutes"],areas:["minutes"]},
+  {label:"💰 PL・予算を組みたい",tools:["pl"],cases:[],guides:[["👔 PM向けガイド","../docs/pm-guide.pdf"]],scenes:["pl"],areas:["money"]},
+  {label:"📱 SNSスケジュールを立てたい",tools:[],cases:["case-pm担当-009"],guides:[],scenes:["sns-schedule","slack-share"],areas:["comms"]},
+  {label:"📊 集計・自動判定させたい",tools:[],cases:["case-mizuki-005","case-wataru-007"],guides:[],scenes:["auto-check"],areas:["research"]},
 ];
+/* 手打ちリスト＋自動マッチ（scenes / areas 一致）を重複なしで合成する */
+function toolsFor(r){
+  const ids=new Set(r.tools||[]);
+  TOOLS.forEach(t=>{ if((t.areas||[]).some(a=>(r.areas||[]).includes(a))) ids.add(t.id); });
+  return [...ids].map(id=>TOOLS.find(t=>t.id===id)).filter(Boolean);
+}
+function casesFor(r){
+  const ids=new Set(r.cases||[]);
+  CARDS.forEach(c=>{ if((c.scenes||[]).some(s=>(r.scenes||[]).includes(s))) ids.add(c.id); });
+  return [...ids].map(id=>CARDS.find(c=>c.id===id)).filter(Boolean);
+}
 
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
 function fmtMonthly(min){const h=min/60;return "月 -"+(h>=10?Math.round(h):h.toFixed(1))+"h";}
@@ -490,13 +481,13 @@ function renderReverse(){
 }
 function showReverse(r){
   const groups=[];
-  const toolCards=r.tools.map(id=>TOOLS.find(x=>x.id===id)).filter(Boolean).map(t=>`
+  const toolCards=toolsFor(r).map(t=>`
     <div class="rcard" data-tool="${esc(t.id)}"><b>${esc(t.icon)} ${esc(t.name)}</b>
       <span class="m">${esc(t.dekiru)}</span>
       <span class="m">📍 ${esc(t.loc_label)}</span>
       <span class="go">${t.url?"開く →":"聞く →"}</span></div>`);
   if(toolCards.length)groups.push(`<div class="rgroup">TOOL</div><div class="rcards">${toolCards.join("")}</div>`);
-  const caseCards=r.cases.map(id=>CARDS.find(x=>x.id===id)).filter(Boolean).map(c=>`
+  const caseCards=casesFor(r).map(c=>`
     <div class="rcard" data-case="${esc(c.id)}"><b>${esc(c.title)}</b>
       <span class="m">${esc(c.person)}${c.monthly_saved_minutes?" ・ "+esc(fmtMonthly(c.monthly_saved_minutes)):""}</span>
       <span class="go">見る →</span></div>`);
@@ -532,77 +523,11 @@ function showTab(which){
 }
 
 /* ===== 事例 ===== */
-function buildControls(list){
-  const tags=[...new Set(list.flatMap(c=>c.tags||[]))];
-  const chipsEl=document.getElementById("chips");
-  tags.forEach(t=>{
-    const b=document.createElement("button");
-    b.className="chip";b.textContent="# "+t;
-    b.onclick=()=>{activeTags.has(t)?activeTags.delete(t):activeTags.add(t);b.classList.toggle("on");applyFilters();};
-    chipsEl.appendChild(b);
-  });
-  const sel=document.getElementById("person");
-  [...new Set(list.map(c=>c.person))].forEach(p=>{
-    const o=document.createElement("option");o.value=p;o.textContent=p;sel.appendChild(o);
-  });
-}
-function render(list){
-  const el=document.getElementById("cases-grid");
-  el.innerHTML=list.map(c=>{
-    const ba=(c.before_minutes!=null&&c.after_minutes!=null)
-      ?`<div class="ba-line"><span class="bf">😓 ${esc(fmtBA(c.before_minutes))}</span>
-         <span style="color:var(--ink3);">→</span>
-         <span class="af">✅ ${esc(fmtBA(c.after_minutes))}</span></div>`:"";
-    const toolId=TOOL_OF[c.id];
-    const tool=toolId?TOOLS.find(t=>t.id===toolId):null;
-    const toolBtn=tool?`<span class="toolbtn" data-tool="${esc(tool.id)}">${tool.url?"🔗 ツールを開く":"💬 "+esc(tool.owner)+"に聞く"}</span>`:"";
-    return `
-    <article class="case" data-case="${esc(c.id)}">
-      <div class="case-top">
-        <span class="avatar">${esc(String(c.person||"?").slice(0,2))}</span>
-        <span class="name">${esc(c.person)}</span>
-        <span class="date">${esc(c.created_at||"")}</span>
-      </div>
-      <h3>${esc(c.title)}</h3>
-      ${c.desc?`<div class="dekiru">✨ ${esc(c.desc)}</div>`:""}
-      ${ba}
-      <div class="badges">
-        ${c.saved_minutes?`<span class="b-saved">⏱ 1回 -${esc(c.saved_minutes)}分</span>`:""}
-        ${c.monthly_saved_minutes?`<span class="b-month">${esc(fmtMonthly(c.monthly_saved_minutes))}</span>`:""}
-        ${c.tool?`<span class="b-tool">${esc(c.tool)}</span>`:""}
-        ${(c.tags||[]).map(t=>`<span class="b-tag">#${esc(t)}</span>`).join("")}
-        ${toolBtn}
-      </div>
-    </article>`;}).join("")||'<p class="rempty">まだ事例がないよ。いちばん最初の事例を登録してみて 👇</p>';
-  document.getElementById("count").textContent=list.length+" 件 / 全 "+CARDS.length+" 件";
-  el.querySelectorAll(".case").forEach(a=>{
-    a.onclick=e=>{
-      const tb=e.target.closest(".toolbtn");
-      if(tb){e.stopPropagation();toolChipAction(TOOLS.find(t=>t.id===tb.dataset.tool));return;}
-      openCase(a.dataset.case);
-    };
-  });
-}
+/* 検索：03「活用事例」グリッド廃止（2026-08-03）に伴い、
+   検索は 01 のツールを絞り込む（ヒットしないツールを薄くする）役目だけになった。 */
 function applyFilters(){
-  const q=document.getElementById("search").value.trim().toLowerCase();
-  const p=document.getElementById("person").value;
-  let list=CARDS.filter(c=>{
-    const hay=((c.title||"")+(c.person||"")+(c.tool||"")+(c.desc||"")+(c.tags||[]).join()).toLowerCase();
-    if(q&&!hay.includes(q))return false;
-    if(p&&c.person!==p)return false;
-    if(activeTags.size&&![...activeTags].some(t=>(c.tags||[]).includes(t)))return false;
-    return true;
-  });
-  list=list.slice().sort((a,b)=>sortMode==="new"
-    ?String(b.created_at||"").localeCompare(String(a.created_at||""))
-    :(b.monthly_saved_minutes||0)-(a.monthly_saved_minutes||0));
-  render(list);
-  dimTools(q);
+  dimTools(document.getElementById("search").value.trim().toLowerCase());
 }
-function setSort(m){sortMode=m;
-  document.getElementById("sort-new").classList.toggle("on",m==="new");
-  document.getElementById("sort-saved").classList.toggle("on",m==="saved");
-  applyFilters();}
 function quickSearch(q){document.getElementById("search").value=q;applyFilters();jumpTo("tools");}
 function jumpTo(id){showHome();document.getElementById(id).scrollIntoView({behavior:"smooth"});}
 document.getElementById("search").addEventListener("input",applyFilters);
@@ -632,10 +557,8 @@ Promise.all([
   document.getElementById("kpi-people").textContent=new Set(CARDS.map(c=>c.person)).size;
   renderTools();
   renderReverse();
-  buildControls(CARDS);
-  applyFilters();
 }).catch(()=>{
-  document.getElementById("cases-grid").innerHTML=
+  document.getElementById("rev-pane").innerHTML=
     '<p style="font-size:12.5px;color:var(--ink3);">データの読み込みに失敗しました。リロードしてみてください。</p>';
 });
 </script>
