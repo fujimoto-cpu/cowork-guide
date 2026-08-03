@@ -68,5 +68,40 @@
       "research",
       "trend-collect"
     ]
+  },
+  {
+    "id": "case-member-1785760952183",
+    "version": 2,
+    "type": "case",
+    "title": "shopifyの情報から今までの売上ランキングを作成",
+    "person": "藤本有璃子",
+    "person_slack_id": null,
+    "role": [],
+    "tool": "Claude",
+    "before_minutes": 180,
+    "after_minutes": 10,
+    "saved_minutes": 170,
+    "monthly_frequency": 1,
+    "monthly_saved_minutes": 170,
+    "tags": [
+      "資料作成",
+      "自動化"
+    ],
+    "is_common_tool": false,
+    "common_tool_status": null,
+    "desc": "画像付きで各コレクションのランキングを表示。\nshopifyリンク付き。",
+    "detail": "<p>画像付きで各コレクションのランキングを表示。<br>shopifyリンク付き。</p>",
+    "link": "https://claude.ai/code/artifact/e1a6fcb6-ccc7-4c9d-9f7b-028b2e0c5525?open_in_browser=1&via=user_open&org=d876e55a-04c2-4858-9243-79fa8381a7c4",
+    "skill_link": null,
+    "github_url": null,
+    "attachments": [],
+    "stat_legacy": "月2.8時間の削減",
+    "created_at": "2026-08-03",
+    "updated_at": "2026-08-03",
+    "presented_at": null,
+    "scenes": [
+      "brand-analysis",
+      "document"
+    ]
   }
 ]
